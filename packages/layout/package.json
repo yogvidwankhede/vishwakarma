@@ -1,0 +1,66 @@
+{
+  "name": "@vishwakarma/layout",
+  "version": "0.1.0",
+  "description": "Composition primitives: intrinsic layouts, bento grids, container-query components, and full-bleed sections.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "vishwakarma",
+    "layout",
+    "css-grid",
+    "container-queries",
+    "responsive",
+    "bento"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishwakarma-dev/vishwakarma.git",
+    "directory": "packages/layout"
+  },
+  "homepage": "https://github.com/vishwakarma-dev/vishwakarma/tree/main/packages/layout#readme",
+  "bugs": "https://github.com/vishwakarma-dev/vishwakarma/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@vishwakarma/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

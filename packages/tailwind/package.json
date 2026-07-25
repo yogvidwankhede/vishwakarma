@@ -1,0 +1,62 @@
+{
+  "name": "@vishwakarma/tailwind",
+  "version": "0.1.0",
+  "description": "Tailwind CSS v4 preset generated from Vishwakarma design tokens.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "vishwakarma",
+    "tailwindcss",
+    "tailwind-v4",
+    "preset",
+    "design-tokens"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishwakarma-dev/vishwakarma.git",
+    "directory": "packages/tailwind"
+  },
+  "homepage": "https://github.com/vishwakarma-dev/vishwakarma/tree/main/packages/tailwind#readme",
+  "bugs": "https://github.com/vishwakarma-dev/vishwakarma/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "theme.css",
+    "preset.css"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@vishwakarma/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

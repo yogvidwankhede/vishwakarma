@@ -1,0 +1,60 @@
+{
+  "name": "@vishwakarma/skills",
+  "version": "0.1.0",
+  "description": "The Vishwakarma skill catalog and the VSM manifest format, schema, and validator.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "vishwakarma",
+    "ai",
+    "agent-skills",
+    "claude-code",
+    "cursor",
+    "prompt-engineering"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishwakarma-dev/vishwakarma.git",
+    "directory": "packages/skills"
+  },
+  "homepage": "https://github.com/vishwakarma-dev/vishwakarma/tree/main/packages/skills#readme",
+  "bugs": "https://github.com/vishwakarma-dev/vishwakarma/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@vishwakarma/core": "workspace:*"
+  },
+  "devDependencies": {
+    "yaml": "^2.8.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

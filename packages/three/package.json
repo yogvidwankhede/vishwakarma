@@ -1,0 +1,79 @@
+{
+  "name": "@vishwakarma/three",
+  "version": "0.1.0",
+  "description": "React Three Fiber helpers with performance budgets, lazy loading, and reduced-motion handling.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "vishwakarma",
+    "threejs",
+    "react-three-fiber",
+    "webgl",
+    "3d"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishwakarma-dev/vishwakarma.git",
+    "directory": "packages/three"
+  },
+  "homepage": "https://github.com/vishwakarma-dev/vishwakarma/tree/main/packages/three#readme",
+  "bugs": "https://github.com/vishwakarma-dev/vishwakarma/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@vishwakarma/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.180.0",
+    "@react-three/fiber": "^9.3.0",
+    "@react-three/drei": "^10.7.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    },
+    "@react-three/fiber": {
+      "optional": true
+    },
+    "@react-three/drei": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

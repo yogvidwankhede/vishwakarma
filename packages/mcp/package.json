@@ -1,0 +1,66 @@
+{
+  "name": "@vishwakarma/mcp",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server exposing Vishwakarma skills, tokens, components, and audits to any MCP client.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "vishwakarma",
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "agents"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishwakarma-dev/vishwakarma.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://github.com/vishwakarma-dev/vishwakarma/tree/main/packages/mcp#readme",
+  "bugs": "https://github.com/vishwakarma-dev/vishwakarma/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@vishwakarma/skills": "workspace:*",
+    "@vishwakarma/registry": "workspace:*",
+    "@vishwakarma/audit": "workspace:*",
+    "@vishwakarma/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "zod": "^4.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "bin": {
+    "vishwakarma-mcp": "./dist/server.js"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

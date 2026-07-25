@@ -1,0 +1,18 @@
+# @vishwakarma/mcp
+
+Model Context Protocol server exposing Vishwakarma skills, tokens, components, and audits to any MCP client.
+
+## Install
+
+```bash
+pnpm add @vishwakarma/mcp
+```
+
+## Documentation
+
+Full documentation lives at [the Vishwakarma docs](https://github.com/vishwakarma-dev/vishwakarma#readme). This package's
+reference is under `docs/packages/mcp`.
+
+## Licence
+
+MIT — see [LICENSE](https://github.com/vishwakarma-dev/vishwakarma/blob/main/LICENSE).

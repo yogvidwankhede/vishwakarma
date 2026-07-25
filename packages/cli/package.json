@@ -1,0 +1,71 @@
+{
+  "name": "@vishwakarma/cli",
+  "version": "0.1.0",
+  "description": "The Vishwakarma CLI: install skills into any agent, add components, generate themes, and audit output.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "vishwakarma",
+    "cli",
+    "ai",
+    "agent-skills",
+    "scaffolding"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishwakarma-dev/vishwakarma.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/vishwakarma-dev/vishwakarma/tree/main/packages/cli#readme",
+  "bugs": "https://github.com/vishwakarma-dev/vishwakarma/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@vishwakarma/skills": "workspace:*",
+    "@vishwakarma/adapters": "workspace:*",
+    "@vishwakarma/registry": "workspace:*",
+    "@vishwakarma/tokens": "workspace:*",
+    "@vishwakarma/audit": "workspace:*"
+  },
+  "devDependencies": {
+    "commander": "^14.0.0",
+    "prompts": "^2.4.2",
+    "picocolors": "^1.1.1",
+    "fast-glob": "^3.3.3",
+    "yaml": "^2.8.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "bin": {
+    "vishwakarma": "./dist/index.js",
+    "vk": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}
