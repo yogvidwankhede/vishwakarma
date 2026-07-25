@@ -533,7 +533,8 @@ before they exist.`,
       evidence: {
         rationale:
           'A viewport query encodes an assumption about where the component will be placed. The same component in a full-width region and in a 320px sidebar receives identical styles at the same viewport width, so one of the two placements is always wrong.',
-        source: 'CSS Containment Module Level 3; container queries widely available since August 2025',
+        source:
+          'CSS Containment Module Level 3; container queries widely available since August 2025',
         confidence: 'strong',
       },
       exceptions: [
@@ -812,5 +813,10 @@ before they exist.`,
     },
   ],
 
-  relatedSkills: ['design-judgment', 'responsive-architecture', 'typographic-systems', 'accessible-components'],
+  relatedSkills: [
+    'design-judgment',
+    'responsive-architecture',
+    'typographic-systems',
+    'accessible-components',
+  ],
 }

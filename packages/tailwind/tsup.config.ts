@@ -6,6 +6,10 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
+  // Tree-shaking here runs a rollup pass that strips top-level directives, which silently
+  // removes the "use client" banner and breaks the package inside a React Server
+  // Components tree. Consumers tree-shake it anyway via "sideEffects": false, so the pass
+  // buys us nothing and costs correctness.
   treeshake: true,
   splitting: false,
   target: 'es2022',
