@@ -49,14 +49,14 @@
     "@vishwakarma/adapters": "workspace:*",
     "@vishwakarma/registry": "workspace:*",
     "@vishwakarma/tokens": "workspace:*",
-    "@vishwakarma/audit": "workspace:*"
-  },
-  "devDependencies": {
+    "@vishwakarma/audit": "workspace:*",
     "commander": "^14.0.0",
     "prompts": "^2.4.2",
     "picocolors": "^1.1.1",
     "fast-glob": "^3.3.3",
-    "yaml": "^2.8.0",
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
     "tsup": "^8.5.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"

@@ -44,8 +44,10 @@
     "test:watch": "vitest",
     "clean": "rimraf dist .turbo"
   },
+  "dependencies": {
+    "zod": "^4.0.0"
+  },
   "devDependencies": {
-    "zod": "^4.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"

@@ -66,151 +66,120 @@ export const layoutComposition: SkillManifest = {
     body: `# Layout & Composition
 
 Layout is the assignment of space, and space is the strongest signal an interface has. A
-wider tile is a claim about importance. A larger gap is a claim about separation. When those
-claims are made by accident — because a flex container distributed free space evenly, or
-because every section inherited the same max-width — the layout says nothing, and the page
-reads as filled in rather than composed.
-
-Two questions govern almost every decision here: **what is the structure, and who decides
-it — the author or the content?**
+wider tile is a claim about importance; a larger gap is a claim about separation. When those
+claims are made by accident — a flex container distributing free space evenly, every section
+inheriting one max-width — the layout says nothing, and the page reads as filled in rather
+than composed.
 
 ---
 
-## 1. Flow, flex, grid: pick the one that models the problem
+## 1. Flow, flex, grid
 
-**Normal flow** stacks blocks and lets content size itself. It is still correct for prose,
-articles, and any vertical sequence, and it is cheaper than the alternatives. Since 2024
-\`align-content\` works in block layout across all engines (Chrome 123, Safari 17.4,
-Firefox 125), so vertical centring is no longer a reason to reach for flex.
+**Normal flow** stacks blocks and lets content size itself. It remains correct for prose and
+any vertical sequence, and since 2024 \`align-content\` works in block layout in every engine
+(Chrome 123, Safari 17.4, Firefox 125), so vertical centring is no longer a reason to reach
+for flex.
 
 **Flex** distributes free space along one axis among items whose number and size you do not
-control. Toolbars, button rows, a label beside a badge, anything that says "lay these out in
-a line and let them sort out the widths".
-
-**Grid** places items into a structure the author defines, in two dimensions, before the
-items exist. Page shells, dashboards, card sets that must align across rows, forms with a
-label column.
+control: toolbars, button rows, breadcrumbs. **Grid** places items into a structure the
+author defines, in two dimensions, before the items exist: page shells, dashboards, card sets
+that must align across rows.
 
 The discriminator: *do the items decide the structure, or does the structure decide the
 items?* The common error is reaching for flex where grid expresses the intent. A card set
 written as \`display: flex; flex-wrap: wrap\` with \`flex: 1 1 18rem\` produces a last row
-whose two survivors stretch to half the page each, and the fix is a chain of
-\`:nth-last-child\` hacks. Written as
-\`grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr))\` it produces the intended
-behaviour directly, because that is literally the sentence "as many equal columns of at
-least 18rem as fit".
-
-Flex also cannot align across rows. If items in row two must line up with items in row one,
-flex has no mechanism and grid has three.
+whose two survivors stretch to half the page each, then a chain of \`:nth-last-child\` hacks
+to correct it. Written as \`repeat(auto-fill, minmax(18rem, 1fr))\` it is right at once,
+because that is literally the sentence "as many equal columns of at least 18rem as fit". Flex
+also cannot align across rows: if an item in row two must line up with one in row one, flex
+has no mechanism and grid has three.
 
 ---
 
 ## 2. Grid, concretely
 
-**Named areas** make the shell legible and re-arrangeable without touching children.
-Declaring \`grid-template-areas: 'nav header' 'nav main'\` and switching to
-\`'header' 'main' 'nav'\` inside a media query moves the navigation without altering DOM
-order, which keeps focus order intact.
+**Named areas** make a shell legible and re-arrangeable without touching children: switching
+\`grid-template-areas\` inside a query moves a region without altering DOM order, so reading
+and focus order stay intact.
 
 **\`auto-fit\` vs \`auto-fill\`** differ only when there are fewer items than tracks.
-\`auto-fill\` creates every track that fits and leaves the empty ones at their minimum;
-\`auto-fit\` collapses empty tracks to zero so the existing items absorb the space. In a
-1000px container with \`minmax(240px, 1fr)\` and a 16px gap, four tracks fit. With two
-items, \`auto-fill\` leaves two cards at 240px sitting in the left half of the row;
-\`auto-fit\` stretches them to roughly 492px each. Pick \`auto-fill\` when card width should
-stay stable, \`auto-fit\` when the row should be filled — and know that \`auto-fit\` with
-few items produces enormous cards, which is its own failure.
+\`auto-fill\` creates every track that fits and leaves empty ones at their minimum;
+\`auto-fit\` collapses empty tracks to zero so existing items absorb the space. In a 1000px
+container with \`minmax(240px, 1fr)\` and a 16px gap, four tracks fit; with two items,
+\`auto-fill\` strands two 240px cards at the left while \`auto-fit\` stretches them to roughly
+492px each. Use \`auto-fill\` for stable card width, \`auto-fit\` to fill the row.
 
 **Intrinsic sizing** replaces most magic numbers. \`max-content\` is the width with no
-wrapping, \`min-content\` the width of the widest unbreakable piece, and
-\`fit-content(24rem)\` means "shrink to content but never exceed 24rem".
-\`grid-template-columns: max-content 1fr\` gives a label column that fits the longest label
-in any language, which no hard-coded \`180px\` ever will.
+wrapping, \`min-content\` the widest unbreakable piece, \`fit-content(24rem)\` means "shrink
+to content, cap at 24rem". \`grid-template-columns: max-content 1fr\` gives a label column
+that fits the longest label in any language, which no hard-coded \`180px\` ever will.
 
 **Subgrid** (Baseline widely available since March 2026; Firefox 71, Safari 16, Chrome 117)
-solves cross-card alignment. Cards whose titles wrap to different line counts will have
-misaligned bodies and footers unless the card interior inherits the parent's rows. Subgrid
-does that. The alternatives — fixed heights that clip, or measuring in JavaScript — are both
-worse.
-
-Masonry is arriving as \`display: grid-lanes\` in CSS Grid Level 3, but it is experimental
-and not Baseline. Unsupported browsers fall back to ordinary auto-placement, so treat it as
-progressive enhancement, never as load-bearing.
+solves cross-card alignment: cards whose titles wrap to different line counts have misaligned
+bodies and footers unless the card interior inherits the parent's rows. The alternatives,
+fixed heights that clip or measurement in JavaScript, are both worse. Masonry is arriving as
+\`display: grid-lanes\` in Grid Level 3 but is experimental; unsupported browsers fall back to
+auto-placement, so treat it as enhancement only.
 
 ---
 
 ## 3. Every layout is a container query problem
 
-A component sized against the viewport is asserting where it will be placed. The same card
-at 1200px viewport gets identical styles whether it sits in a full-width region or a 320px
-sidebar, and in the sidebar it breaks. Container queries (widely available since August
-2025) remove the assertion: set \`container-type: inline-size\` on the wrapper and query
-\`@container (min-width: 30rem)\` in the child. \`cqi\` units let type and spacing scale with
-the container rather than the window.
-
-Query the wrapper, style the child — an element cannot query itself, and
-\`container-type: inline-size\` applies inline-axis size containment, so the element stops
-sizing from its own content in that axis. Keep media queries for what is genuinely a
-viewport question: the page shell, print, and \`prefers-*\` features.
+A component sized against the viewport is asserting where it will be placed. The same card at
+a 1200px viewport gets identical styles in a full-width region and in a 320px sidebar, and in
+the sidebar it breaks. Container queries (widely available since August 2025) remove the
+assertion: \`container-type: inline-size\` on the wrapper, \`@container (min-width: 30rem)\` in
+the child, \`cqi\` units for anything that should track the container rather than the window.
+Query the wrapper and style the child — an element cannot query itself, and
+\`container-type: inline-size\` applies inline-axis containment, so the element stops sizing
+from its own content in that axis. Media queries are for genuine viewport questions: the page
+shell, print, and \`prefers-*\`.
 
 ---
 
-## 4. Bento layouts: span is rank, not decoration
+## 4. Bento: span is rank, not decoration
 
 A bento grid works when tile size encodes importance. A 2×2 tile says "this is the number
 that matters"; a 1×1 says "supporting detail". When spans are assigned to make the mosaic
-look interesting, the layout is lying about hierarchy, and users read the lie.
+look interesting, the layout lies about hierarchy, and users believe the layout.
 
-The ragged bottom is the recurring defect: mixed spans plus auto-placement leave holes in
-the last row. Three fixes, in order of preference. Make the total span count a multiple of
-the column count at each breakpoint — do the arithmetic rather than hoping. Let one tile in
-the final row take \`grid-column: 1 / -1\`. Or, only when tiles are genuinely
-order-independent, use \`grid-auto-flow: dense\`, accepting that it reorders visual position
-away from DOM order and therefore away from focus and reading order.
+The ragged bottom is the recurring defect: mixed spans plus auto-placement leave holes in the
+last row. Make the span total a multiple of the column count at each breakpoint — do the
+arithmetic rather than hoping — or let one tile in the final row take \`grid-column: 1 / -1\`.
+Use \`grid-auto-flow: dense\` only for order-independent tiles: it moves visual position away
+from DOM order, and therefore away from focus order.
 
 ---
 
 ## 5. Full-bleed inside a constrained column
 
-Define the bleed in the grid itself rather than escaping it with negative margins:
-
-\`\`\`css
-.page {
-  display: grid;
-  grid-template-columns:
-    [full-start] minmax(1rem, 1fr)
-    [content-start] min(72ch, 100% - 2rem)
-    [content-end] minmax(1rem, 1fr)
-    [full-end];
-}
-.page > * { grid-column: content; }
-.page > .bleed { grid-column: full; }
-\`\`\`
+Define the bleed in the grid rather than escaping it. Give the page a track list of
+\`[full-start] minmax(1rem, 1fr) [content-start] min(72ch, 100% - 2rem) [content-end]
+minmax(1rem, 1fr) [full-end]\`, put every child on \`grid-column: content\`, and put bleeding
+children on \`grid-column: full\`.
 
 The negative-margin alternative — \`width: 100vw; margin-inline: calc(50% - 50vw)\` — is
-broken by construction on desktop, because \`100vw\` includes the classic scrollbar gutter
-while the containing block does not. That is a permanent 15-ish px of horizontal overflow,
-and it is the most common single cause of an unexplained horizontal scrollbar. Grid tracks
-are resolved against the container's content box, which already excludes the scrollbar.
+broken by construction, because \`100vw\` includes the classic scrollbar gutter while the
+containing block does not. That is a permanent 15-ish px of horizontal overflow, and the most
+common cause of an unexplained scrollbar. Grid tracks resolve against the container's content
+box, which already excludes the scrollbar.
 
-Vary the widths. A page where every section shares one max-width reads as a template;
-alternating contained, wide, and full-bleed sections gives the page a rhythm at no cost.
+Vary the widths while you are here: a page where every section shares one max-width reads as
+a template.
 
 ---
 
-## 6. \`min-width: 0\` — the single most common flex and grid bug
+## 6. \`min-width: 0\` — the most common flex and grid bug
 
-Flex and grid items get an **automatic minimum size**: their \`min-width\` computes to
-\`auto\`, which resolves to the item's min-content size. So a flex child containing a long
-URL, a \`<pre>\` block, a table, or a text node with a long unbroken token refuses to shrink
-below that content and pushes its parent wider than the viewport. Nothing in the CSS you
-wrote mentions a width, which is why it is so hard to find.
+Flex and grid items get an **automatic minimum size**: \`min-width\` computes to \`auto\`,
+which resolves to the item's min-content size. A child containing a long URL, a \`<pre>\`, a
+table, or one unbroken token cannot shrink below that and pushes its parent past the
+viewport. Nothing in the CSS you wrote mentions a width, which is why it is hard to find.
 
-The corrections: \`min-width: 0\` on the flex or grid child, \`minmax(0, 1fr)\` instead of
-\`1fr\` for grid tracks, and \`min-height: 0\` on a flex column child that should scroll —
-that last one is the answer to "why does my scroll container not scroll". \`overflow: hidden\`
-also resets the automatic minimum, which is why adding it sometimes fixes overflow by
-accident.
+The corrections: \`min-width: 0\` on the child, \`minmax(0, 1fr)\` instead of \`1fr\` for
+tracks, and \`min-height: 0\` on a flex column child that should scroll — the last is the
+answer to "why does my scroll container not scroll". \`overflow: hidden\` also resets the
+automatic minimum, which is why adding it sometimes fixes overflow by accident.
 
 ---
 
@@ -218,46 +187,39 @@ accident.
 
 Anything whose size arrives after first paint must reserve its box: \`width\` and \`height\`
 attributes on every \`<img>\` so the browser derives an aspect ratio, \`aspect-ratio\` on
-embed and media wrappers, and a \`min-height\` on regions that populate asynchronously.
-Cumulative Layout Shift is judged good at 0.1 or below, and a single unreserved hero image
-exceeds that on its own.
+media wrappers, \`min-height\` on asynchronous regions. Cumulative Layout Shift is judged good
+at 0.1 or below, and one unreserved hero image exceeds that alone.
 
-\`z-index\` needs a documented scale — for example base 0, raised 10, sticky 100, header 200,
-dropdown 300, overlay 400, modal 500, toast 600, tooltip 700 — because arbitrary values
-compound into \`9999\` and then \`10000\`. More importantly, \`z-index\` only orders siblings
-within a stacking context, so a value is meaningless across contexts. \`transform\`,
-\`filter\`, \`opacity\` below 1, \`will-change\`, \`backdrop-filter\`, and \`contain: paint\`
-all create one silently — which is why a modal at \`z-index: 500\` can still render beneath
-a card that merely has a hover transform. Use \`isolation: isolate\` to make that
-containment intentional.
-
-Sticky has a sibling trap: \`position: sticky\` silently does nothing if any ancestor has
-\`overflow\` set to \`hidden\`, \`auto\`, or \`scroll\`. And a sticky header needs
-\`scroll-padding-top\` on the scroll container equal to its height, or every anchor link and
-\`scrollIntoView\` call lands with the target hidden behind it.
+\`z-index\` needs a documented scale — base 0, raised 10, sticky 100, header 200, dropdown
+300, overlay 400, modal 500, toast 600, tooltip 700 — because arbitrary values compound into
+\`9999\`. More importantly, \`z-index\` orders siblings only within a stacking context, and
+\`transform\`, \`filter\`, \`opacity\` below 1, \`will-change\`, \`backdrop-filter\`, and
+\`contain: paint\` create one silently. That is why a modal at 500 can render beneath a card
+that merely has a hover transform; the fix is the top layer (\`<dialog>\`, the \`popover\`
+attribute), not a larger number. Sticky is the mirror trap: it does nothing if an ancestor
+sets \`overflow\` to \`hidden\`, \`auto\`, or \`scroll\`, and a sticky header needs
+\`scroll-padding-top\` equal to its height or anchor links land behind it.
 
 ---
 
 ## 8. Optical alignment
 
-Mathematical centring and visual centring differ whenever a shape's mass is not evenly
-distributed. A triangular play glyph centred by its bounding box looks pushed right, because
-its mass sits left; nudge it left by roughly 5–8% of its width. A circle sharing a square's
-bounding box has about 78% of its area and reads smaller, so a circular avatar beside a
-square thumbnail needs to be 3–5% larger to match. Text in a tight control sits low with
-equal padding, because cap height is shorter than the em box. Quotation marks and bullets
-should hang into the margin so the text edge stays straight. These corrections are small,
-unmeasurable by any linter, and among the clearest signals that a human looked at the result.
+Mathematical and visual centring differ whenever a shape's mass is unevenly distributed. A
+triangular play glyph centred by its bounding box looks pushed right; nudge it left by 5–8%
+of its width. A circle inscribed in a square covers about 78% of the area and reads smaller,
+so a circular avatar beside a square thumbnail needs to be 3–5% larger. Text in a tight
+control sits low under equal padding, because cap height is shorter than the em box. No
+linter measures this, and all of it signals that someone looked.
 
 ---
 
 ## 9. The recurring failures
 
-Three equal cards forever. Everything centred. Prose running the full viewport width.
-Every section at the same max-width. Negative margins standing in for a grid. Fixed heights
-forcing alignment that subgrid should provide. \`100vh\` on mobile, where the dynamic toolbar
-makes it wrong — use \`100dvh\`, or \`100svh\` when the layout must not resize during scroll.
-Each of these is a decision that was not made.`,
+Three equal cards forever. Everything centred. Prose at full viewport width. Uniform section
+widths. Negative margins standing in for a grid. Fixed heights forcing alignment that subgrid
+should provide. \`100vh\` on mobile, where the retracting toolbar makes it wrong — use
+\`100dvh\`, or \`100svh\` where the region must not resize mid-scroll. Each is a decision that
+was not made.`,
 
     references: [
       {

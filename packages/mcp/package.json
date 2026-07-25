@@ -48,11 +48,11 @@
     "@vishwakarma/skills": "workspace:*",
     "@vishwakarma/registry": "workspace:*",
     "@vishwakarma/audit": "workspace:*",
-    "@vishwakarma/core": "workspace:*"
+    "@vishwakarma/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@modelcontextprotocol/sdk": "^1.18.0",
-    "zod": "^4.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"
