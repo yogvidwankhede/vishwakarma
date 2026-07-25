@@ -264,6 +264,10 @@ export function toFrontmatter(fields: Record<string, unknown>): string {
 function quoteYaml(value: string): string {
   const needsQuoting =
     /[:#\[\]{}&*!|>'"%@`,]/.test(value) ||
+    // A newline inside an unquoted scalar terminates it, so the remainder of the value
+    // becomes a syntax error or, worse, is silently parsed as the next key. Descriptions
+    // are the field most likely to arrive wrapped, so this is not a theoretical case.
+    /[\n\r\t]/.test(value) ||
     /^\s|\s$/.test(value) ||
     /^(true|false|null|yes|no|on|off|~)$/i.test(value) ||
     /^[\d.+-]/.test(value)

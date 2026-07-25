@@ -452,8 +452,7 @@ what keeps the net effect positive; verify at 200% zoom that text genuinely got 
     {
       id: 'responsive-architecture/em-breakpoints',
       strength: 'should',
-      statement:
-        'Express media query breakpoints in em units rather than px.',
+      statement: 'Express media query breakpoints in em units rather than px.',
       evidence: {
         rationale:
           'An em breakpoint is evaluated against the browser default font size, so a user who raises theirs receives the simpler layout at a proportionally wider viewport — which is correct, because their larger text fits less content in the same space.',
@@ -546,8 +545,7 @@ what keeps the net effect positive; verify at 200% zoom that text genuinely got 
     {
       id: 'responsive-architecture/no-horizontal-overflow',
       strength: 'must',
-      statement:
-        'The page must not scroll horizontally at a 320 CSS px viewport width.',
+      statement: 'The page must not scroll horizontally at a 320 CSS px viewport width.',
       evidence: {
         rationale:
           'Reflow requires content to be presentable at 320 CSS px without two-dimensional scrolling, because that is the layout width a 1280px window produces at 400% zoom. Horizontal page scrolling at that width makes reading require a horizontal sweep on every line.',
@@ -586,8 +584,7 @@ what keeps the net effect positive; verify at 200% zoom that text genuinely got 
     {
       id: 'responsive-architecture/gate-hover-styles',
       strength: 'must',
-      statement:
-        'Gate hover-dependent styling behind @media (hover: hover).',
+      statement: 'Gate hover-dependent styling behind @media (hover: hover).',
       evidence: {
         rationale:
           'Touch browsers emulate a hover event on tap, so an ungated :hover rule applies on touch and persists until the user taps elsewhere, leaving controls stuck in a highlighted state that misrepresents the interface.',
@@ -602,8 +599,7 @@ what keeps the net effect positive; verify at 200% zoom that text genuinely got 
     {
       id: 'responsive-architecture/no-hover-only-affordances',
       strength: 'must-not',
-      statement:
-        'Do not make any action or information available only on hover.',
+      statement: 'Do not make any action or information available only on hover.',
       evidence: {
         rationale:
           'Touch devices have no hover state and keyboard navigation produces focus rather than hover, so a hover-only affordance is simply absent for both. Revealing row actions or opening menus on hover removes functionality for the majority of traffic.',
@@ -794,11 +790,17 @@ what keeps the net effect positive; verify at 200% zoom that text genuinely got 
     {
       id: 'responsive-contract',
       kind: 'contract',
-      description: 'Evaluate the output against the responsive section of the project Design Contract.',
+      description:
+        'Evaluate the output against the responsive section of the project Design Contract.',
       contractSection: 'responsive',
       blocking: true,
     },
   ],
 
-  relatedSkills: ['layout-composition', 'typographic-systems', 'design-judgment', 'accessible-components'],
+  relatedSkills: [
+    'layout-composition',
+    'typographic-systems',
+    'design-judgment',
+    'accessible-components',
+  ],
 }
