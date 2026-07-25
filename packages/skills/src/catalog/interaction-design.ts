@@ -35,14 +35,7 @@ export const interactionDesign: SkillManifest = {
       'the user reports that something feels unresponsive, confusing, or unforgiving',
       'reviewing an interface for usability before shipping it',
     ],
-    globs: [
-      '**/*.tsx',
-      '**/*.jsx',
-      '**/*.vue',
-      '**/*.svelte',
-      '**/components/**',
-      '**/forms/**',
-    ],
+    globs: ['**/*.tsx', '**/*.jsx', '**/*.vue', '**/*.svelte', '**/components/**', '**/forms/**'],
     keywords: [
       'button',
       'form',
@@ -66,183 +59,157 @@ export const interactionDesign: SkillManifest = {
 
     body: `# Interaction Design
 
-An interface is a conversation in which the machine is the slower party. Every interaction
-is the same three beats: the user works out what can be done, does it, and finds out what
-happened. Interaction design is making all three beats reliable. Visual design failures are
-embarrassing; interaction failures cost people their work.
+Every interaction is the same three beats: the user works out what can be done, does it,
+and finds out what happened. Visual failures are embarrassing; interaction failures cost
+people their work.
 
 The dominant defect in generated UI is that only the rest state exists. A component looks
 finished because it renders, and the states nobody screenshots — focus, loading, error,
-empty, disabled — are guessed or omitted.
+disabled — are guessed or omitted.
 
 ---
 
 ## 1. Every control has a state matrix
 
-Before styling a control, enumerate its states and decide which apply: **rest, hover,
-focus-visible, active, disabled, loading, selected, error, read-only**. Most are
-independent, so they combine — a selected row can be hovered and focused simultaneously.
-Define the composition order once rather than discovering conflicts later.
-
-Three of these are almost always wrong in generated code.
+Enumerate the states before styling: **rest, hover, focus-visible, active, disabled,
+loading, selected, error, read-only**. They combine — a selected row can be hovered and
+focused at once — so fix precedence once rather than discovering conflicts later. Details
+are in the state-matrix reference. Three are almost always wrong in generated code.
 
 **Focus must use \`:focus-visible\`, not \`:focus\`.** A plain \`:focus\` rule fires on mouse
 clicks too, so authors delete the ring to stop buttons "flashing", and keyboard users lose
 the only cue telling them where they are. \`:focus-visible\` applies the browser's own
-heuristic: keyboard and assistive-technology focus gets a ring, pointer focus does not.
-Never write \`outline: none\` without a replacement indicator in the same rule.
+heuristic: keyboard focus gets a ring, pointer focus does not. Never write \`outline: none\`
+without a replacement in the same rule.
 
-**Hover is not a state on touch devices.** Anything reachable only by hovering is
-unreachable for roughly half your users. Gate hover styling behind
-\`@media (hover: hover)\` so touch devices do not inherit sticky hover after a tap.
+**Hover does not exist on touch.** Gate it behind \`@media (hover: hover)\` so a tap does
+not leave the control stuck in hover, and never put functionality behind it alone.
 
-**Disabled must communicate why.** A greyed-out control with no explanation is a dead end.
-See section 6.
+**Disabled must communicate why.** A greyed control with no explanation is a dead end.
 
 ---
 
 ## 2. Affordance without colour
 
-A control must read as operable from its shape, not its hue. Around one in twelve men has a
-colour vision deficiency, and text that is merely blue in a paragraph of black is not a
-link to them. Carry affordance in at least one non-colour channel: an underline on inline
-links, a filled or outlined surface on buttons, a border and inset shading on inputs, a
-cursor change, a caret on menus. The test is simple — render the screen in greyscale and
-ask whether you can still tell what is clickable.
+A control must read as operable from its shape, not its hue — text that is merely blue in a
+paragraph of black is not a link to the one man in twelve with a colour vision deficiency.
+Carry affordance in a non-colour channel: an underline on inline links, a filled or
+outlined surface on buttons, a border and inset shading on inputs, a caret on menus. Render it
+in greyscale and ask what still looks clickable.
 
-The mirror failure is *false affordance*: cards with elevation and hover lift that are not
-clickable, or headings styled like links. A user who clicks something that does nothing
-learns to distrust everything.
+The mirror failure is *false affordance* — cards with hover lift that are not clickable. A
+user who clicks something inert learns to distrust everything.
 
 ---
 
 ## 3. Feedback latency has hard thresholds
 
-These numbers come from human perception, not fashion, and they have been stable since the
-1960s.
+These come from perception, not fashion.
 
-- **Under ~100ms** the response feels caused by the user's own action. Nothing needs to be
-  shown; showing a spinner here makes the interaction feel *slower*.
-- **Around 400ms** is where perceived responsiveness starts affecting how much work people
-  do. Acknowledge the input immediately — press state, optimistic row, disabled-on-submit —
-  even if the result is not ready.
-- **Up to ~1s** attention holds without help. Show an indeterminate indicator.
-- **Beyond ~1s** the user's train of thought breaks. Show *determinate* progress — a
-  percentage, a step count, "3 of 12 files" — because an indeterminate spinner gives no
-  basis for deciding whether to wait.
-- **Beyond ~10s** attention is gone. Move the work to the background, let the user leave,
-  and notify on completion.
+- **Under ~100ms** the response feels caused by the user's own action. Show nothing; a
+  spinner here makes the interaction feel *slower*.
+- **Up to ~1s** attention holds. An indeterminate indicator suffices.
+- **Beyond ~1s** the train of thought breaks. Show *determinate* progress — "3 of 12
+  files" — because a spinner gives no basis for deciding whether to keep waiting.
+- **Beyond ~10s** attention is gone. Move the work to the background and notify on
+  completion.
 
-Acknowledgement is separate from completion. The press state must render within one frame
-of pointer-down regardless of how long the request takes.
+Acknowledgement is separate from completion: the press state must render within one frame
+of pointer-down no matter how long the request takes.
 
 ---
 
 ## 4. Loading: nothing, spinner, skeleton, progress
 
-Choose by duration and by whether the eventual layout is known.
+**Nothing** is correct under about 300ms. Add hysteresis — delay the indicator ~300ms, then
+hold it ~500ms minimum. Without both, fast responses flash and read as a glitch.
 
-**Nothing** is correct under about 300ms. Add hysteresis: delay the indicator ~300ms, and
-once shown keep it ~500ms minimum. Without both, fast responses produce a visible flash
-that reads as a glitch.
-
-**A spinner** suits short, unknown-shape waits and in-place actions — a button's own label
-swapping for a spinner of the same width. Never let a button change size when it enters
-loading.
+**A spinner** suits short waits of unknown shape and in-place actions, such as a button's
+label swapping for a spinner of the same width. Never let a button resize.
 
 **A skeleton** suits a first load whose layout is known. Its whole justification is
-reserving space, so **a skeleton whose geometry differs from the loaded content is worse
-than no skeleton** — it guarantees layout shift at the moment the user starts reading.
-Match line counts, heights, and column widths to the real thing. Do not skeleton an
-unpredictable list length; render a fixed plausible count.
-
-**Determinate progress** is required past a second when the total is knowable.
+reserving space, so **a skeleton whose geometry differs from the real content is worse than
+no skeleton** — it guarantees layout shift at the moment the user starts reading. Match
+line counts, heights, and column widths.
 
 ---
 
 ## 5. Optimistic UI, and when it lies
 
-Rendering the result before the server confirms it is correct when the operation is highly
-likely to succeed, cheap to reverse, and locally computable — toggling a like, renaming an
-item, reordering a list. It is dishonest when failure is plausible, when the true result
-differs from the guess (server-assigned ids, computed totals, moderation), or when the user
-would act on the false state. Showing "Payment complete" before the charge settles is not
-optimism, it is a lie with financial consequences.
+Rendering the result before the server confirms it is right when the operation is very
+likely to succeed, cheap to reverse, and locally computable — a like, a rename, a reorder.
+It is dishonest when failure is plausible, when the true result differs from the guess
+(server-assigned ids, computed totals, moderation), or when the user would act on the false
+state. "Payment complete" before the charge settles is not optimism but a lie.
 
-Optimistic UI is only complete with a rollback path: revert the change, tell the user it
-failed, and — critically — do not silently discard what they typed.
+Optimistic UI is incomplete without a rollback path: revert, report the failure, and do not
+silently discard what the user typed.
 
 ---
 
 ## 6. Destructive actions: prefer undo to confirmation
 
-A confirmation dialog interrupts every user to catch the rare mistaken one, and because it
-appears constantly it gets clicked through reflexively. It trains dismissal, then fails at
-exactly the moment it was built for.
+A confirmation dialog taxes every user to catch the rare mistaken one, and because it
+appears constantly it is clicked through reflexively. It trains dismissal, then fails at the
+moment it was built for.
 
-Undo inverts this. The action happens immediately, and a transient affordance offers
-reversal for 5-10 seconds. The common case costs nothing and the mistake is recoverable.
+Undo inverts the cost. The action happens immediately and a transient affordance offers
+reversal for 5-10 seconds. The common case costs nothing; the mistake is recoverable.
 
-Confirm only when reversal is genuinely impossible: permanent deletion with no soft-delete,
-irreversible external side effects, destroying other people's data. Then make the
-confirmation *effortful* — require typing the resource name — and state the blast radius
-concretely ("deletes 1,204 records and 3 API keys"), never "Are you sure?".
+Confirm only when reversal is genuinely impossible: hard deletion with no soft-delete,
+irreversible external side effects, destroying other people's data. Then make it
+*effortful* — require typing the resource name — and state the blast radius concretely
+("deletes 1,204 records"), never "Are you sure?".
 
 ---
 
 ## 7. Disabled buttons are an anti-pattern
 
 Disabling a submit button until a form is valid is the most common way to make a form
-unusable. It removes the element from the tab order, so keyboard users cannot even reach
-it; it gives no reason; and it leaves the user hunting for whichever field is at fault with
-no feedback loop.
+unusable. The \`disabled\` attribute removes the element from the tab order, so keyboard
+users cannot reach it; it gives no reason; and it leaves the user hunting for the offending
+field with no feedback loop.
 
-The correct pattern is: **keep the button operable, let the click fail, and explain the
-failure.** On submit, validate, focus the first invalid field, and announce a summary. The
-click is the user asking "what's wrong?" — answer it.
+The correct pattern: **keep the button operable, let the click fail, explain the failure.**
+On submit, validate, focus the first invalid field, announce a summary. The click is the
+user asking "what's wrong?" — answer it.
 
-Legitimate uses of \`disabled\` are narrow: a control genuinely inapplicable in the current
-mode, or a control mid-submission (see section 9). When a control is inert but should stay
-discoverable, prefer \`aria-disabled="true"\` with a tooltip and an explaining click handler
-over the \`disabled\` attribute, which is invisible to exploration.
+Legitimate uses of \`disabled\` are narrow: a control inapplicable in the current mode, or
+one mid-submission. Where a control is inert but should stay discoverable, prefer
+\`aria-disabled="true"\` with an explanation.
 
 ---
 
 ## 8. Errors that can be recovered from
 
-A usable error message contains three things: **what happened**, **why**, and **what to do
-next**. "Something went wrong" contains none of them and is the single most common failure
-message in shipped software.
+A usable error contains three things: **what happened**, **why**, and **what to do next**.
+"Something went wrong" contains none of them.
 
-Write in the user's terms, not the system's. Never blame the user ("Invalid input"), never
-expose raw exception text as the primary message, and never lose their data on failure. Put
-the message next to the thing that failed, keep a correlation id available for support, and
-give a real next step: retry, an alternative path, or a link to help. Retry only when it
-might work; a 404 does not need a retry button.
+Write in the user's terms. Never blame them ("Invalid input"), never surface raw exception
+text as the primary message, never lose their data. Put the message next to what failed,
+keep a correlation id available for support, and give a real next step. Offer retry only
+when retrying might work.
 
 ---
 
 ## 9. Forms are the hardest surface
 
 **Validation timing.** Validate on blur, then re-validate on change *once a field has
-already errored*. Validating on every keystroke tells someone their email is invalid while
-they type the second character, which is both wrong and hostile. CSS \`:user-invalid\` gives
-this behaviour natively — unlike \`:invalid\`, it only matches after interaction. Errors
-must clear as soon as they are fixed.
+already errored*. Per-keystroke validation tells someone their email is invalid at the
+second character, which is both wrong and hostile. CSS \`:user-invalid\` gives this natively
+— unlike \`:invalid\` it matches only after interaction. Errors must clear once fixed.
 
-**Announcement.** Bind each message with \`aria-describedby\` and set \`aria-invalid\` on the
-field. On failed submit, render a summary listing every error as links to their fields, and
-move focus to it.
+**Announcement.** Bind each message with \`aria-describedby\` and set \`aria-invalid\`. On
+failed submit, render a summary listing every error as links to their fields, and move
+focus to it — it is the only way a screen-reader user learns a long form failed.
 
-**Let the browser help.** Correct \`autocomplete\` tokens (\`email\`, \`given-name\`,
-\`street-address\`, \`cc-number\`, \`one-time-code\`, \`new-password\`) enable autofill and
-password managers, and are a WCAG requirement. Set \`inputmode\` and \`type\` so mobile
-keyboards match — \`inputmode="numeric"\` for codes, \`type="email"\`, \`type="tel"\` — and
-\`enterkeyhint\` so the return key says the right thing.
+**Let the browser help.** Correct \`autocomplete\` tokens (\`email\`, \`street-address\`,
+\`cc-number\`, \`one-time-code\`, \`new-password\`) enable autofill and password managers, and
+are a WCAG requirement. Match the keyboard to the data with \`type\` and \`inputmode\` —
+\`inputmode="numeric"\` for codes rather than \`type="number"\` — and set \`enterkeyhint\`.
 
-**Double submission.** On submit, disable the button *and* guard the handler with an
-in-flight flag, and send an idempotency key so a retried request cannot create two orders.
-Client-side guards alone lose to a flaky network.
+**Double submission.** Disable the button *and* guard the handler with an in-flight flag,
+and send an idempotency key so a retried request cannot create two orders.
 
 **Never destroy input.** Preserve values across failed submits, and never clear a password
 field on error.
@@ -251,14 +218,13 @@ field on error.
 
 ## 10. Pointer, touch, and keyboard parity
 
-Hit targets must be at least 24x24 CSS pixels, and 44x44 on touch. Expand the *target*
-without expanding the *visual* using padding or a pseudo-element overlay — small icon
-buttons should stay small and hit large.
+Hit targets need at least 24x24 CSS pixels, and 44x44 on touch. Expand the *target* without
+expanding the *visual*, using padding or a pseudo-element overlay: an icon button should
+look small and hit large.
 
-Anything achievable by dragging must also be achievable with single clicks or keyboard:
-move-up/move-down controls, a "move to" menu, or cut-and-paste semantics. Drag-only
-reordering excludes keyboard users, screen-reader users, and anyone with a motor
-impairment, and it is a conformance failure under WCAG 2.2.`,
+Anything achievable by dragging must also be achievable by single clicks or keyboard —
+move-up/move-down controls, a "move to" menu, cut-and-paste semantics. Drag-only reordering
+excludes keyboard and screen-reader users and anyone with a motor impairment.`,
 
     references: [
       {
@@ -585,7 +551,9 @@ task requires — every optional field is an opportunity to fail.`,
           'Around one second the user’s train of thought breaks and they begin deciding whether to wait. An indeterminate spinner supplies no information on which to base that decision, whereas a percentage or step count does.',
         confidence: 'strong',
       },
-      exceptions: ['Operations whose total work is genuinely unknowable, where an elapsed-time or step label is the best available substitute.'],
+      exceptions: [
+        'Operations whose total work is genuinely unknowable, where an elapsed-time or step label is the best available substitute.',
+      ],
     },
     {
       id: 'interaction-design/spinner-hysteresis',
@@ -647,7 +615,9 @@ task requires — every optional field is an opportunity to fail.`,
           'A confirmation taxes every correct invocation to catch a rare incorrect one, and its frequency trains reflexive dismissal, so it stops being read before it is ever needed. Undo moves the cost onto the rare mistake instead of the common success.',
         confidence: 'strong',
       },
-      exceptions: ['Actions with irreversible external side effects, such as sending an email that has already left, or permanently destroying data with no soft-delete window.'],
+      exceptions: [
+        'Actions with irreversible external side effects, such as sending an email that has already left, or permanently destroying data with no soft-delete window.',
+      ],
     },
     {
       id: 'interaction-design/confirm-irreversible-with-effort',
@@ -671,7 +641,9 @@ task requires — every optional field is an opportunity to fail.`,
           'The disabled attribute removes the element from the tab order and suppresses events, so a keyboard user cannot reach it and no user receives any explanation. The click is the user asking why they cannot proceed, and disabling it refuses to answer.',
         confidence: 'strong',
       },
-      exceptions: ['Suppressing re-submission while a submission is in flight, where the reason is already visible in the button itself.'],
+      exceptions: [
+        'Suppressing re-submission while a submission is in flight, where the reason is already visible in the button itself.',
+      ],
       examples: {
         language: 'tsx',
         bad: '<button type="submit" disabled={!isValid}>Create account</button>',
@@ -719,7 +691,9 @@ task requires — every optional field is an opportunity to fail.`,
           'Such a message conveys only that the interface is aware of a problem. It distinguishes no cause, suggests no remedy, and cannot be reported usefully to support, so it costs the user attention while giving them nothing to act on.',
         confidence: 'strong',
       },
-      exceptions: ['Genuinely unclassifiable failures, which still need a correlation id and a stated next step such as retrying or contacting support.'],
+      exceptions: [
+        'Genuinely unclassifiable failures, which still need a correlation id and a stated next step such as retrying or contacting support.',
+      ],
     },
     {
       id: 'interaction-design/validate-on-blur',
@@ -731,7 +705,9 @@ task requires — every optional field is an opportunity to fail.`,
           'A partially typed value is not an invalid value, so keystroke validation reports failures that are merely incomplete. Once the user is repairing a known error, per-keystroke feedback becomes correct because it confirms the fix the moment it lands.',
         confidence: 'strong',
       },
-      exceptions: ['Password-strength meters and debounced availability checks, where continuous feedback is the feature.'],
+      exceptions: [
+        'Password-strength meters and debounced availability checks, where continuous feedback is the feature.',
+      ],
       examples: {
         language: 'css',
         bad: 'input:invalid { border-color: red }',
@@ -843,7 +819,9 @@ task requires — every optional field is an opportunity to fail.`,
           'A spinner and a rendered result are purely visual events. Without a live region a screen-reader user receives no notification that the operation finished, so they cannot tell a slow response from a completed one.',
         confidence: 'established',
       },
-      exceptions: ['Changes that move focus to the new content, which are announced by the focus change itself.'],
+      exceptions: [
+        'Changes that move focus to the new content, which are announced by the focus change itself.',
+      ],
     },
   ],
 

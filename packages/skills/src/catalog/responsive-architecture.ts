@@ -61,9 +61,9 @@ export const responsiveArchitecture: SkillManifest = {
     body: `# Responsive Architecture
 
 A layout is not responsive because it has breakpoints. It is responsive because it stays
-usable at every width it will ever be given — including the widths nobody tested, which is
-most of them. A breakpoint is a repair, and reaching for one should feel like an admission
-that the layout could not solve the problem on its own.
+usable at every width it is given, including the widths nobody tested — which is most of
+them. A breakpoint is a repair, and reaching for one should feel like an admission that the
+layout could not solve the problem itself.
 
 ---
 
@@ -78,12 +78,10 @@ slowly and watch. The breakpoint is the width at which something specifically fa
 headline wraps to four lines, a navigation row runs out of space, a measure passes 75
 characters. Put the breakpoint just past that failure and name it for the failure —
 \`--bp-nav-collapse\`, \`--bp-sidebar-fits\`. Different components break at different widths,
-so a project has more breakpoints than the framework default and each belongs to the
-component that needs it.
-
-Express them in \`em\`, not \`px\`: an \`em\` query is evaluated against the browser's default
-font size, so a user who has raised theirs gets the simpler layout sooner — correct, because
-less content now fits.
+so a project has more breakpoints than the framework default and each belongs to its own
+component. Express them in \`em\`, not \`px\`: an \`em\` query is evaluated against the
+browser's default font size, so a user who has raised theirs gets the simpler layout sooner —
+correct, because less content now fits.
 
 ---
 
@@ -92,12 +90,11 @@ less content now fits.
 Most adaptation needs no query. \`grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))\`
 reflows a card grid at every width in one declaration — \`auto-fill\` instead when a lone item
 should not stretch. \`width: min(65ch, 100%)\` is a max-width that cannot overflow its parent;
-\`fit-content(20rem)\` sizes a sidebar to its content up to a ceiling.
+\`fit-content(20rem)\` sizes a sidebar to its content, up to a cap.
 
 A media query changes layout in steps, so between two breakpoints the layout is frozen and
-only accidentally correct — which is exactly where untested dead zones live. Reach for one
-only when the change is genuinely discontinuous: a nav becoming a drawer, two panes becoming
-a stack.
+only accidentally correct — which is where untested dead zones live. Reach for one only when
+the change is genuinely discontinuous: a nav becoming a drawer, two panes becoming a stack.
 
 ---
 
@@ -115,8 +112,7 @@ are computed from the viewport alone and ignore the root font size, so
 who set their browser default to 24px because they need 24px gets 20px anyway. A \`rem\`
 component makes the entire interpolation line shift when the root size does. State both
 bounds in \`rem\` for the same reason. Keep the min-to-max ratio under roughly 1.6x, and check
-that the smallest heading is still clearly larger than body text at the narrow anchor — that
-is where fluid scales collapse into each other.
+that the smallest heading still outranks body text at the narrow anchor.
 
 ---
 
@@ -128,7 +124,7 @@ sits in a 1200px feature slot and a 320px sidebar; a viewport query tells it "wi
     .card-wrap { container-type: inline-size; container-name: card; }
     @container card (min-width: 24rem) { .card { grid-template-columns: 8rem 1fr; } }
 
-Three pitfalls account for most container-query bugs. **You cannot query the element you are
+Three pitfalls cause most container-query bugs. **You cannot query the element you are
 styling** — the query matches an ancestor, so the component needs a wrapper carrying
 \`container-type\`. **\`container-type: size\` collapses height**: it contains both axes, so
 the element stops sizing to its content and resolves to zero height unless one is set
@@ -136,27 +132,26 @@ explicitly; use \`inline-size\`. **Containment changes positioning** — a conta
 containing block for absolutely and fixed-positioned descendants, so a dropdown that used to
 escape to the viewport is now clipped by the card. Use the popover API or a portal.
 
-Size internals with \`cqi\` rather than \`vw\`, so padding and type scale with the slot. Style
-queries — \`@container style(--density: compact)\` — match custom property values rather than
-dimensions; every element is a style container by default, so they propagate a variant through
-a subtree without threading class names through every child.
+Size internals with \`cqi\`, not \`vw\`. Style queries — \`@container style(--density: compact)\`
+— match custom property values rather than dimensions, and every element is a style container
+by default, so they propagate a variant through a subtree without threading class names.
 
 ---
 
 ## 5. Pointer, hover, and target size
 
-WCAG 2.2 SC 2.5.8 (AA) requires interactive targets of at least 24 by 24 CSS pixels, unless
+WCAG 2.2 SC 2.5.8 (AA) requires interactive targets of at least 24 by 24 CSS pixels unless
 spacing leaves a non-overlapping 24px circle around each; SC 2.5.5 (AAA) sets 44 by 44. Treat
-24px as the floor and 44px as the working target for anything a thumb touches, expanding the
-hit area with padding rather than inflating the visible control.
+24px as the floor and 44px as the working target for a thumb, expanding the hit area with
+padding rather than the control itself.
 
 Detect input capability, never viewport width. \`(hover: hover)\` and \`(pointer: fine)\`
 describe the primary pointer, \`(any-pointer: coarse)\` any attached one — a touchscreen
 laptop reports a fine hovering primary and is still used with a finger. Gate hover
-*enhancements* on \`(hover: hover)\` and size targets for \`(any-pointer: coarse)\`. Gating
+*enhancements* on \`(hover: hover)\`, size targets for \`(any-pointer: coarse)\`. Gating
 matters because touch browsers emulate hover on tap: the state applies and sticks until the
-user taps elsewhere. Worse, an affordance that appears only on hover — a row's delete action,
-a menu that opens on hover — is absent for touch and keyboard alike.
+user taps elsewhere. Worse, an affordance revealed only on hover — a row's delete action, a
+menu that opens on hover — is absent for touch and keyboard alike.
 
 ---
 
@@ -167,45 +162,44 @@ retracted, so a \`100vh\` element extends below the fold when the bar is visible
 bottom content — usually the primary action — is unreachable. Use \`svh\` for anything that
 must be visible immediately, \`lvh\` for the largest, \`dvh\` for a value that tracks the bar;
 \`dvh\` reflows during scroll, so \`min-height: 100svh\` is the safer app-shell default.
-\`100vw\` does not subtract a classic scrollbar in every engine, a common source of a few
-pixels of horizontal overflow; prefer \`100%\` or \`scrollbar-gutter: stable\`.
+\`100vw\` does not subtract a classic scrollbar in every engine, a common source of horizontal
+overflow; prefer \`100%\` or \`scrollbar-gutter: stable\`.
 
 For rounded corners and home indicators, add \`viewport-fit=cover\` to the viewport meta tag
-and pad with \`max(1rem, env(safe-area-inset-bottom))\`. Without \`viewport-fit=cover\` the
-\`env()\` values resolve to zero, so the meta change is mandatory rather than optional.
+and pad with \`max(1rem, env(safe-area-inset-bottom))\`; without that meta value the \`env()\`
+insets resolve to zero.
 
 ---
 
 ## 7. Images and tables
 
 **\`sizes\` is wrong by default.** With a \`w\`-descriptor \`srcset\` the browser assumes
-\`sizes="100vw"\` and fetches an image for the whole window even if it renders at 400px — and
-it decides in the preload scanner, before CSS exists to correct it. Declare the rendered
+\`sizes="100vw"\` and fetches an image for the whole window even if it renders at 400px,
+deciding in the preload scanner before CSS exists to correct it. Declare the rendered
 width, or use \`sizes="auto"\`, valid only on \`loading="lazy"\` images. Give every image
 \`width\` and \`height\` or an \`aspect-ratio\` so its box is reserved before it loads, put
 \`fetchpriority="high"\` on the LCP image and never \`loading="lazy"\`, and use \`<picture>\`
 only for art direction — a different crop, not a different resolution.
 
 **Tables are the hardest case**: a table is a two-dimensional relationship and a phone is one
-column. Decide what the user is doing. Comparing across rows, the grid *is* the information —
+column, so decide what the user is doing. Comparing across rows, the grid *is* the information —
 keep the table, wrap it in an \`overflow-x: auto\` container that is focusable and labelled
 (\`tabindex="0"\`, \`role="region"\`, an accessible name), and make the identifying column
 sticky. Reading one record at a time, render a list of records — but change the markup, not
 \`display\`, because \`display: block\` on table elements destroys the row and column
-associations screen readers depend on. Progressive column hiding is acceptable only when
-hidden columns stay reachable in an expandable row detail.
+associations screen readers depend on. Hide columns only when they stay reachable in an
+expandable row detail.
 
 ---
 
 ## 8. The failures, named
 
-**Device-name breakpoints** are correct at five widths and arbitrary everywhere else.
-**Hiding content on mobile** is a decision that mobile users get less product; restructure
-instead. **Horizontal overflow** almost always has one of four causes: a fixed \`min-width\`,
-an unbreakable string (fix with \`overflow-wrap: anywhere\`), a negative margin, or \`100vw\`.
-**Hover-only affordances** are invisible to touch and keyboard. **\`100vh\` on mobile** cuts
-off the bottom of the screen. **Untested zoom**: 200% (SC 1.4.4) and 400% (SC 1.4.10) are
-conformance requirements, broken far more often than 320px.`,
+**Device-name breakpoints**, correct at five widths and arbitrary between them. **Hiding
+content on mobile** instead of restructuring it. **Horizontal overflow** — almost always a
+fixed \`min-width\`, an unbreakable string (\`overflow-wrap: anywhere\`), a negative margin, or
+\`100vw\`. **Hover-only affordances**. **\`100vh\` on mobile**. **Untested zoom**: 200%
+(SC 1.4.4) and 400% (SC 1.4.10) are conformance requirements, broken far more often than
+320px.`,
 
     references: [
       {
