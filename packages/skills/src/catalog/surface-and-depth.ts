@@ -33,7 +33,15 @@ export const surfaceAndDepth: SkillManifest = {
       'nested rounded corners look wrong, or radii need a scale',
       'designing surfaces for a dark theme where shadows have stopped reading',
     ],
-    globs: ['**/*.css', '**/*.scss', '**/*.tsx', '**/*.jsx', '**/*.vue', '**/*.svelte', '**/tailwind.config.*'],
+    globs: [
+      '**/*.css',
+      '**/*.scss',
+      '**/*.tsx',
+      '**/*.jsx',
+      '**/*.vue',
+      '**/*.svelte',
+      '**/tailwind.config.*',
+    ],
     keywords: [
       'shadow',
       'box-shadow',
@@ -571,8 +579,7 @@ gradient is the identity rather than an ornament.`,
     {
       id: 'surface-and-depth/border-xor-shadow',
       strength: 'should-not',
-      statement:
-        'Do not apply a visible border and an outer drop shadow to the same element.',
+      statement: 'Do not apply a visible border and an outer drop shadow to the same element.',
       evidence: {
         rationale:
           'A border states that the element is flush with its parent surface and bounded by a line; an outer shadow states that it is lifted above that surface. Asserting both describes two incompatible physical arrangements, and the eye resolves the conflict by trusting neither.',
@@ -586,8 +593,7 @@ gradient is the identity rather than an ornament.`,
     {
       id: 'surface-and-depth/glass-needs-texture',
       strength: 'must-not',
-      statement:
-        'Do not apply backdrop-filter over a flat, static fill.',
+      statement: 'Do not apply backdrop-filter over a flat, static fill.',
       evidence: {
         rationale:
           'A backdrop filter blurs a snapshot of what is painted behind the element. Over a uniform fill every sample is identical, so the blur output equals its input and only the element tint remains visible — while the compositor still allocates a backdrop texture and runs the blur passes on every frame that invalidates it.',
@@ -629,8 +635,7 @@ gradient is the identity rather than an ornament.`,
     {
       id: 'surface-and-depth/no-animated-blur',
       strength: 'must-not',
-      statement:
-        'Do not animate or transition the radius of a backdrop-filter or filter blur.',
+      statement: 'Do not animate or transition the radius of a backdrop-filter or filter blur.',
       evidence: {
         rationale:
           'A blur radius change invalidates the cached filter result, forcing the compositor to re-sample the backdrop and re-run every blur pass on each frame. The cost scales with the filtered area in device pixels, which is why it drops frames on high-DPR mobile displays specifically.',
@@ -652,7 +657,9 @@ gradient is the identity rather than an ornament.`,
         source: 'CSS Color Module Level 4, colour interpolation',
         url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/color-interpolation-method',
       },
-      exceptions: ['Gradients between two stops of the same hue that differ only in lightness or alpha.'],
+      exceptions: [
+        'Gradients between two stops of the same hue that differ only in lightness or alpha.',
+      ],
       examples: {
         language: 'css',
         bad: 'background: linear-gradient(90deg, #2563eb, #f5d90a);',
@@ -807,5 +814,11 @@ gradient is the identity rather than an ornament.`,
     },
   ],
 
-  relatedSkills: ['design-judgment', 'colour-systems', 'design-tokens', 'motion-design', 'accessible-components'],
+  relatedSkills: [
+    'design-judgment',
+    'colour-systems',
+    'design-tokens',
+    'motion-design',
+    'accessible-components',
+  ],
 }

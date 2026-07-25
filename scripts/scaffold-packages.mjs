@@ -208,6 +208,7 @@ const PACKAGES = [
       '@vishwakarma/registry': 'workspace:*',
       '@vishwakarma/audit': 'workspace:*',
       '@vishwakarma/core': 'workspace:*',
+      '@vishwakarma/tokens': 'workspace:*',
       '@modelcontextprotocol/sdk': V.mcpSdk,
       zod: V.zod,
     },

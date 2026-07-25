@@ -503,10 +503,17 @@ export function checkContract(contract: DesignContract, observation: Observation
 
   /* --- score ------------------------------------------------------------ */
   const penalty = violations.reduce((sum, v) => sum + severityWeight[v.severity], 0)
-  // Normalised against the number of things we actually looked at, so a large clean
-  // surface is not punished for having more opportunities to fail.
-  const denominator = Math.max(checked, 1) * 2
-  const score = Math.max(0, Math.round(100 - (penalty / denominator) * 100))
+
+  // Normalised against how much we actually looked at, so a large clean surface is not
+  // punished for having more opportunities to fail.
+  //
+  // The curve is asymptotic rather than linear on purpose. A linear penalty saturates at
+  // zero almost immediately — five errors across nine checks is a bad result, but it is
+  // not the same result as fifty errors, and a score that reports both as zero cannot show
+  // a team whether they are improving. This form degrades steeply at first and then
+  // gently, so the number stays informative across the whole range it will actually see.
+  const surface = Math.max(checked, 1) * 2
+  const score = Math.round((surface / (surface + penalty)) * 100)
 
   const summary = {
     errors: violations.filter((v) => v.severity === 'error').length,
