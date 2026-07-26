@@ -112,3 +112,16 @@ export {
   mediaDown,
   containerUp,
 } from './viewport.js'
+
+export {
+  type VariantOption,
+  type VariantAxis,
+  type VariationRequest,
+  type ResolvedVariant,
+  type VariationResult,
+  VARIANT_AXES,
+  hashString,
+  hashSequence,
+  resolveVariation,
+  variationSpace,
+} from './variation.js'

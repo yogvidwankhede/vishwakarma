@@ -36,6 +36,8 @@ import {
   oklchToRgb,
   stagger,
   judgeProperty,
+  resolveVariation,
+  variationSpace,
   toCssOklch,
   toHex,
   type MotionIntent,
@@ -475,6 +477,47 @@ server.registerTool(
           ? 'Compressed to stay within the maximum span, so the last element does not arrive after the user has started reading the first.'
           : 'No compression needed.',
     })
+  },
+)
+
+
+server.registerTool(
+  'design_direction',
+  {
+    title: 'Get a design direction for this brief',
+    description:
+      'Resolve a deterministic set of design decisions — hero composition, section rhythm, emphasis strategy, accent discipline, motion character — from the brief. Call this BEFORE designing anything. It exists to stop the design collapsing onto the most predictable option, which is what makes generated work recognisable as generated. Every option in every set is a defensible choice, so an unfamiliar selection is unfamiliar rather than wrong.',
+    inputSchema: {
+      brief: z
+        .string()
+        .describe("The user's brief, verbatim. Do not summarise it first — the exact text is the seed, and summarising collapses distinct briefs onto the same direction."),
+      salt: z
+        .string()
+        .optional()
+        .describe('Extra seed material. Pass something new when the user asks for a different direction for the same brief.'),
+      constraints: z
+        .array(z.string())
+        .optional()
+        .describe('Conditions that exclude options, for when an existing brand or design system fixes a decision.'),
+    },
+  },
+  ({ brief, salt, constraints }) => {
+    const result = resolveVariation({
+      brief,
+      ...(salt ? { salt } : {}),
+      ...(constraints ? { constraints } : {}),
+    })
+    const space = variationSpace()
+
+    return text(
+      [
+        result.directive,
+        '',
+        '---',
+        `Selected from ${space.combinations.toLocaleString()} possible directions across ${space.axes.length} axes.`,
+        'The same brief always resolves to the same direction, so this is reproducible and reviewable.',
+      ].join('\n'),
+    )
   },
 )
 

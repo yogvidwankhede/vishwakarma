@@ -47,3 +47,18 @@ export {
   planFor,
   estimateContextCost,
 } from './compile.js'
+
+export {
+  type Lockfile,
+  type LockEntry,
+  type FileStatus,
+  type StatusReport,
+  LOCKFILE_PATH,
+  LOCKFILE_VERSION,
+  hashContent,
+  classify,
+  buildLockfile,
+  serialiseLockfile,
+  parseLockfile,
+  summariseStatuses,
+} from './lockfile.js'

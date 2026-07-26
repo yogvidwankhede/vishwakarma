@@ -13,7 +13,9 @@ export { designJudgment } from './design-judgment.js'
 export { interactionDesign } from './interaction-design.js'
 export { interfaceCopy } from './interface-copy.js'
 export { layoutComposition } from './layout-composition.js'
+export { motionDesign } from './motion-design.js'
 export { responsiveArchitecture } from './responsive-architecture.js'
+export { scrollExperiences } from './scroll-experiences.js'
 export { surfaceAndDepth } from './surface-and-depth.js'
 export { typographicSystems } from './typographic-systems.js'
 
@@ -23,7 +25,9 @@ import { designJudgment } from './design-judgment.js'
 import { interactionDesign } from './interaction-design.js'
 import { interfaceCopy } from './interface-copy.js'
 import { layoutComposition } from './layout-composition.js'
+import { motionDesign } from './motion-design.js'
 import { responsiveArchitecture } from './responsive-architecture.js'
+import { scrollExperiences } from './scroll-experiences.js'
 import { surfaceAndDepth } from './surface-and-depth.js'
 import { typographicSystems } from './typographic-systems.js'
 
@@ -35,7 +39,9 @@ export const catalog: SkillManifest[] = [
   interactionDesign,
   interfaceCopy,
   layoutComposition,
+  motionDesign,
   responsiveArchitecture,
+  scrollExperiences,
   surfaceAndDepth,
   typographicSystems,
 ]

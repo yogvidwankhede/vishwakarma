@@ -19,11 +19,18 @@ import { Command } from 'commander'
 import pc from 'picocolors'
 import {
   ADAPTER_LIST,
+  LOCKFILE_PATH,
+  buildLockfile,
+  classify,
   compile,
   estimateContextCost,
   getAdapter,
   mergeFile,
+  parseLockfile,
   removeSection,
+  serialiseLockfile,
+  summariseStatuses,
+  type StatusReport,
 } from '@vishwakarma/adapters'
 import {
   catalog,
@@ -98,36 +105,96 @@ interface WriteReport {
 }
 
 /**
- * Write a compiled skill set to disk.
+ * Write a compiled skill set to disk, without destroying anything the user has edited.
  *
- * The dry-run path shares the same code as the real one so that what a dry run reports is
- * what a real run does. A dry run implemented separately is a dry run that lies eventually.
+ * The lockfile records what we wrote last time, which lets us tell a file the user has
+ * modified apart from one that is simply out of date. Without it, `replace` means replace,
+ * and someone who tightened a rule for their codebase loses that edit the next time they
+ * add an unrelated skill — silently, with no way back short of digging through git.
+ *
+ * The dry-run path shares this code so what a dry run reports is what a real run does. A
+ * dry run implemented separately is a dry run that lies eventually.
  */
 async function writeCompiled(
   skills: SkillManifest[],
   targets: AgentTarget[],
   root: string,
-  options: { dryRun?: boolean },
-): Promise<WriteReport[]> {
+  options: { dryRun?: boolean; force?: boolean },
+): Promise<{ reports: WriteReport[]; statuses: StatusReport[] }> {
   const results = compile(skills, { targets })
   const reports: WriteReport[] = []
+  const statuses: StatusReport[] = []
+
+  const lockPath = resolve(root, LOCKFILE_PATH)
+  const previous = parseLockfile(await readIfPresent(lockPath))
+  const written: Array<{ file: (typeof results)[number]['files'][number]; target: AgentTarget }> = []
 
   for (const result of results) {
     for (const file of result.files) {
       const absolute = resolve(root, file.path)
       const existing = await readIfPresent(absolute)
-      const merged = mergeFile(file, existing)
 
-      if (!options.dryRun && merged.action !== 'unchanged' && merged.action !== 'skipped-existing') {
-        await mkdir(dirname(absolute), { recursive: true })
-        await writeFile(absolute, merged.contents, 'utf8')
+      // Shared files carry their own protection through the delimited-section merge, so
+      // they bypass the lockfile entirely — a human's content there is never inside our
+      // markers, and the merge cannot touch it.
+      if (file.strategy !== 'replace') {
+        const merged = mergeFile(file, existing)
+        if (!options.dryRun && merged.action !== 'unchanged' && merged.action !== 'skipped-existing') {
+          await mkdir(dirname(absolute), { recursive: true })
+          await writeFile(absolute, merged.contents, 'utf8')
+        }
+        reports.push({ path: file.path, action: merged.action })
+        written.push({ file, target: result.target })
+        continue
       }
 
-      reports.push({ path: file.path, action: merged.action })
+      const status = classify(file.path, previous?.files[file.path], existing, file)
+      statuses.push(status)
+
+      const allowed = status.safeToWrite || options.force === true
+
+      if (!allowed) {
+        reports.push({ path: file.path, action: status.status })
+        continue
+      }
+
+      if (status.status === 'unchanged') {
+        reports.push({ path: file.path, action: 'unchanged' })
+        written.push({ file, target: result.target })
+        continue
+      }
+
+      if (!options.dryRun) {
+        await mkdir(dirname(absolute), { recursive: true })
+        await writeFile(absolute, file.contents, 'utf8')
+      }
+      reports.push({ path: file.path, action: status.status === 'new' ? 'created' : 'replaced-section' })
+      written.push({ file, target: result.target })
     }
   }
 
-  return reports
+  if (!options.dryRun && written.length > 0) {
+    const lock = buildLockfile(written, VERSION, previous)
+    await mkdir(dirname(lockPath), { recursive: true })
+    await writeFile(lockPath, serialiseLockfile(lock), 'utf8')
+  }
+
+  return { reports, statuses }
+}
+
+/** Report anything the lockfile refused to overwrite, and why. */
+function reportConflicts(statuses: StatusReport[]): void {
+  const { needsAttention } = summariseStatuses(statuses)
+  if (needsAttention.length === 0) return
+
+  out()
+  out(`  ${symbols.warn} ${needsAttention.length} file(s) left untouched because you have edited them:`)
+  for (const report of needsAttention) {
+    out(`      ${pc.cyan(report.path)}`)
+    out(`      ${pc.dim(report.explanation)}`)
+  }
+  out()
+  out(pc.dim('    Pass --force to take the generated version and discard your edits.'))
 }
 
 function summariseWrites(reports: WriteReport[], dryRun: boolean): void {
@@ -147,7 +214,9 @@ function summariseWrites(reports: WriteReport[], dryRun: boolean): void {
             ? `${count} file(s) ${verb} extended with a new section`
             : action === 'skipped-existing'
               ? `${count} file(s) left alone (already present)`
-              : `${count} file(s) unchanged`
+              : action === 'drifted' || action === 'conflicting'
+                ? `${count} file(s) protected from overwrite`
+                : `${count} file(s) unchanged`
     out(`  ${symbols.ok} ${label}`)
   }
 }
@@ -309,10 +378,11 @@ program
   .option('-t, --target <targets...>', 'targets to install for (default: detected)')
   .option('-c, --category <category>', 'install every skill in a category')
   .option('-n, --dry-run', 'report what would change without writing')
+  .option('-f, --force', 'overwrite files you have edited since they were generated')
   .action(
     async (
       ids: string[],
-      options: { all?: boolean; target?: string[]; category?: string; dryRun?: boolean },
+      options: { all?: boolean; target?: string[]; category?: string; dryRun?: boolean; force?: boolean },
     ) => {
       const root = program.opts().cwd as string
 
@@ -358,8 +428,12 @@ program
       header(`Installing ${selected.length} skill(s) into ${targets.length} target(s)`)
       if (options.dryRun) out(pc.yellow('  Dry run — nothing will be written.\n'))
 
-      const reports = await writeCompiled(selected, targets, root, { dryRun: options.dryRun ?? false })
+      const { reports, statuses } = await writeCompiled(selected, targets, root, {
+        dryRun: options.dryRun ?? false,
+        force: options.force ?? false,
+      })
       summariseWrites(reports, options.dryRun ?? false)
+      reportConflicts(statuses)
 
       header('Context cost')
       out(pc.dim('  What each agent will carry on every request, and what it loads on demand.'))
@@ -440,7 +514,8 @@ program
   .option('-a, --all', 'sync every skill rather than only those already installed')
   .option('-t, --target <targets...>', 'targets to sync (default: detected)')
   .option('-n, --dry-run', 'report what would change without writing')
-  .action(async (options: { all?: boolean; target?: string[]; dryRun?: boolean }) => {
+  .option('-f, --force', 'overwrite files you have edited since they were generated')
+  .action(async (options: { all?: boolean; target?: string[]; dryRun?: boolean; force?: boolean }) => {
     const root = program.opts().cwd as string
     const targets =
       (options.target as AgentTarget[] | undefined) ?? (await detectAgents(root)).map((agent) => agent.target)
@@ -452,8 +527,12 @@ program
     }
 
     header(`Syncing ${targets.length} target(s)`)
-    const reports = await writeCompiled(catalog, targets, root, { dryRun: options.dryRun ?? false })
+    const { reports, statuses } = await writeCompiled(catalog, targets, root, {
+      dryRun: options.dryRun ?? false,
+      force: options.force ?? false,
+    })
     summariseWrites(reports, options.dryRun ?? false)
+    reportConflicts(statuses)
   })
 
 /* --- tokens ------------------------------------------------------------- */
@@ -709,8 +788,11 @@ program
     for (const skill of starter) out(`  ${symbols.arrow} ${skill.name}`)
     out()
 
-    const reports = await writeCompiled(starter, targets, root, { dryRun: options.dryRun ?? false })
+    const { reports, statuses } = await writeCompiled(starter, targets, root, {
+      dryRun: options.dryRun ?? false,
+    })
     summariseWrites(reports, options.dryRun ?? false)
+    reportConflicts(statuses)
 
     if (options.tokens !== false) {
       header('Generating design tokens')
