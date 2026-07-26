@@ -20,7 +20,7 @@ export const interfaceStates: SkillManifest = {
   id: 'interface-states',
   name: 'Interface States',
   description:
-    'Use when building or reviewing any screen that fetches, mutates, or lists data, to design its empty, loading, error, offline, stale, and overflow states.',
+    'Use when building or reviewing any screen that fetches or lists data, to design its empty, loading, error, offline, stale, and overflow states.',
   version: '1.0.0',
   license: 'MIT',
   category: 'ux',
@@ -87,8 +87,8 @@ different primary action.
 
 ## 2. Empty is three screens
 
-Zero rows arises three ways, and conflating them produces copy that is wrong in two of the
-three cases.
+Zero rows arises three ways; conflating them produces copy that is wrong in two cases out
+of three.
 
 **First use.** The user has never had data. This is the only screen guaranteed to be seen
 by every user of the product, and the most frequently skipped. It must say what will appear
@@ -108,7 +108,7 @@ by "archived" answers a question nobody asked. Prove the data is there: "No proj
 
 ## 3. Loading is three screens
 
-**Initial** has no content to protect, so a skeleton owns the final layout.
+**Initial** has no content to protect, so a skeleton owns the layout.
 
 **Refresh** has content, so never remove it. Keep the rows, set \`aria-busy="true"\`, add a
 restrained cue — a slim top progress bar or a small opacity drop. Blanking a screen someone
@@ -135,7 +135,7 @@ a bare spinner does not. Beyond **10s** attention is gone: real progress, a canc
 affordance, and a way to leave and be notified.
 
 Delay any loader by about **300ms** so fast responses never flash, and once shown hold it
-**500ms** so it never vanishes within a frame or two. One delayed keyframe starting at
+**500ms** so it never vanishes within a frame or two — one delayed keyframe starting at
 \`opacity: 0\` does both.
 
 ---
@@ -199,8 +199,8 @@ pending, replay on \`online\`.
 Optimistic updates are honest when failure is near-impossible, the action reversible, and
 rollback visible — starring, renaming, reordering. They are dishonest when the server may
 legitimately refuse: payments, bookings against limited inventory, claiming a username.
-Showing success and revoking it 800ms later is worse than a 300ms spinner, because the user
-has already moved on and must now reconstruct what changed.
+Showing success and revoking it 800ms later is worse than a 300ms spinner: the user has
+already moved on and must now reconstruct what changed.
 
 ---
 

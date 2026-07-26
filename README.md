@@ -98,19 +98,30 @@ each, and self-checks the agent runs against its own output before reporting don
 
 | | |
 |---|---|
-| **Design Judgment** | Diagnose and fix the tells of generated UI: flat hierarchy, uniform density, decorative gradients, untypeset type |
-| **Typographic Systems** | Scales, the inverse relationships of size to leading and tracking, measure, font loading without layout shift |
-| **Colour Systems** | Perceptual ramps, semantic token layering, dark themes that are a design rather than an inversion |
+| **Design Judgment** | The tells of generated UI: flat hierarchy, uniform density, decorative gradients, untypeset type |
+| **UI Generation Workflow** | The meta-skill — the ordered procedure for building any interface |
+| **Design Review** | The seven-pass critique protocol, and how to write a finding that is actionable |
+| **Typographic Systems** | Scales, size-to-leading and size-to-tracking inversions, measure, font loading without shift |
+| **Colour Systems** | Perceptual ramps, semantic token layering, dark themes that are a design not an inversion |
 | **Layout & Composition** | Grid, subgrid, container queries, bento layouts that express rank, deliberate asymmetry |
-| **Surface & Depth** | Coherent light sources, paired contact and ambient shadows, glassmorphism that is worth its GPU cost |
-| **Responsive Architecture** | Intrinsic design, fluid scales that respect user font size, the viewport test matrix |
-| **Interaction Design** | The full state matrix, feedback latency thresholds, why disabled buttons are an anti-pattern |
-| **Accessible Components** | ARIA keyboard contracts, focus management, live regions, the criteria libraries fail most |
-| **Interface Copy** | Microcopy as a design surface, error messages that say what to do next, empty states as onboarding |
+| **Surface & Depth** | Coherent light sources, paired contact and ambient shadows, glass worth its GPU cost |
+| **Responsive Architecture** | Intrinsic design, fluid scales that respect user font size, the viewport matrix |
+| **Interaction Design** | The full state matrix, latency thresholds, why disabled buttons are an anti-pattern |
+| **Interface States** | Empty, loading, error, partial, offline, overflow — the screens nobody designs |
+| **Accessible Components** | ARIA keyboard contracts, focus management, live regions, the criteria libraries fail |
+| **Interface Copy** | Microcopy as a design surface, errors that say what to do next, empty states as onboarding |
+| **Information Architecture** | Navigation that follows the user's task model rather than the org chart |
+| **Motion Design** | The Motion Grammar, interruptibility, composited properties, reduced-motion properly |
+| **Scroll Experiences** | Reveals, pinned sequences, parallax that degrades, why scroll-jacking breaks find-in-page |
+| **Micro-interactions** | Where perceived quality lives — press physics, hover intent, gesture rubber-banding |
+| **Component Architecture** | Compound components, controllable state, server/client boundaries, tree-shaking |
+| **Design Tokens** | The three-tier model, and why skipping the semantic layer costs you a rebrand later |
+| **Theming Systems** | Flash-free switching, forced-colors mode, density, logical properties |
+| **Rendering Performance** | The pixel pipeline, Core Web Vitals, layout thrash, React render cost |
+| **SEO & Metadata** | Structured data, metadata APIs, and what changed for AI crawlers |
 
-Nine skills carrying **175 normative rules** — every one with its mechanism stated — plus
-**57 self-review checks** and **18 deep references** loaded only on demand. More skills are
-planned; see [ROADMAP.md](ROADMAP.md).
+Twenty-one skills carrying **406 normative rules** — every single one with its mechanism
+stated — plus **143 self-review checks** and **42 deep references** loaded only on demand.
 
 ```bash
 vishwakarma list          # browse
@@ -121,18 +132,26 @@ vishwakarma show motion-design   # read one in full
 
 | Package | What it is |
 |---|---|
-| `@vishwakarma/core` | Perceptual colour, modular and fluid scales, the Motion Grammar, the Design Contract checker, the viewport matrix. Pure and dependency-free |
+| `@vishwakarma/core` | Perceptual colour, scales, the Motion Grammar, the Design Contract, the viewport matrix, the variation engine. Pure and dependency-free |
 | `@vishwakarma/tokens` | Three-tier token schema, generated default set, transforms to CSS, Tailwind v4, TypeScript, JSON, Markdown |
-| `@vishwakarma/theme` | Runtime theme engine: flash-free switching, three-state preference, density and forced-colors modes |
-| `@vishwakarma/layout` | Intrinsic layout primitives: stack, cluster, grid, bento, container queries |
-| `@vishwakarma/motion` | Motion primitives with reduced-motion handling built in, and reveals that cannot hide your content |
-| `@vishwakarma/skills` | The skill manifest format, validator, and catalog |
-| `@vishwakarma/adapters` | Compiles one skill into thirteen agent formats |
-| `@vishwakarma/mcp` | The MCP server: thirteen tools, two prompts, two resources |
-| `@vishwakarma/cli` | The installer |
+| `@vishwakarma/tailwind` | Tailwind v4 preset with custom utilities and variants, and coverage warnings for unmapped tokens |
+| `@vishwakarma/theme` | Runtime theme engine: flash-free switching, three-state preference, density, forced-colors |
+| `@vishwakarma/primitives` | Headless ARIA patterns with full keyboard contracts — Dialog, Tabs, Menu, Disclosure — and the focus, scroll-lock and live-region hooks underneath |
+| `@vishwakarma/ui` | 20 styled components on a typed variant system, each with focus ring, target minimum, and non-colour state signalling |
+| `@vishwakarma/layout` | Intrinsic layout primitives: Stack, Cluster, Grid, Bento, Container, FullBleed, Sidebar, Switcher, Cover, Frame, Center |
+| `@vishwakarma/motion` | Motion primitives with reduced-motion inside every hook, and reveals that cannot hide your content |
+| `@vishwakarma/scroll` | Scroll-driven animation first, observers second, never a measuring scroll handler |
+| `@vishwakarma/three` | R3F helpers that probe capability before loading and render on demand |
+| `@vishwakarma/skills` | The skill manifest format, validator, and 21-skill catalog |
+| `@vishwakarma/adapters` | Compiles one skill into thirteen agent formats, with the install lockfile |
+| `@vishwakarma/audit` | Extracts real measurements from source and evaluates them against the contract |
+| `@vishwakarma/lint` | Lint rules for the subset of design rules that are genuinely mechanical |
+| `@vishwakarma/testing` | Matchers whose failure messages state what was found, what was required, and the fix |
+| `@vishwakarma/registry` | Copy-in distribution: schema, topological resolution, import rewriting, content hashing |
+| `@vishwakarma/mcp` | The MCP server: 14 tools, 2 prompts, 2 resources |
+| `@vishwakarma/cli` | The installer, the profiler, and the auditor's front end |
 
-Nine packages, all building and typechecking, with 130 tests over the foundation.
-[ROADMAP.md](ROADMAP.md) lists what is planned next and why it is not here yet.
+Eighteen packages, all building and typechecking, with 215 tests.
 
 ---
 

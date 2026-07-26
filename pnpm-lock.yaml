@@ -132,6 +132,9 @@ importers:
       '@types/react':
         specifier: ^19.1.0
         version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.1.0
+        version: 19.2.3(@types/react@19.2.17)
       react:
         specifier: ^19.1.0
         version: 19.2.8
@@ -204,6 +207,9 @@ importers:
       '@types/react':
         specifier: ^19.1.0
         version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.1.0
+        version: 19.2.3(@types/react@19.2.17)
       react:
         specifier: ^19.1.0
         version: 19.2.8
@@ -230,7 +236,7 @@ importers:
         specifier: ^19.1.0
         version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.3
+        specifier: ^19.1.0
         version: 19.2.3(@types/react@19.2.17)
       react:
         specifier: ^19.1.0
@@ -238,18 +244,6 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.2.8(react@19.2.8)
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.1(postcss@8.5.23)(typescript@5.9.3)(yaml@2.9.0)
-      typescript:
-        specifier: ^5.9.0
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.0
-        version: 3.2.7(@types/node@22.20.1)(jsdom@26.1.0)(yaml@2.9.0)
-
-  packages/prompts:
-    devDependencies:
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(postcss@8.5.23)(typescript@5.9.3)(yaml@2.9.0)
@@ -291,6 +285,9 @@ importers:
       '@types/react':
         specifier: ^19.1.0
         version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.1.0
+        version: 19.2.3(@types/react@19.2.17)
       react:
         specifier: ^19.1.0
         version: 19.2.8
@@ -379,6 +376,9 @@ importers:
       '@types/react':
         specifier: ^19.1.0
         version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.1.0
+        version: 19.2.3(@types/react@19.2.17)
       react:
         specifier: ^19.1.0
         version: 19.2.8
@@ -413,6 +413,9 @@ importers:
       '@types/react':
         specifier: ^19.1.0
         version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.1.0
+        version: 19.2.3(@types/react@19.2.17)
       react:
         specifier: ^19.1.0
         version: 19.2.8
@@ -460,6 +463,9 @@ importers:
       '@types/react':
         specifier: ^19.1.0
         version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.1.0
+        version: 19.2.3(@types/react@19.2.17)
       react:
         specifier: ^19.1.0
         version: 19.2.8

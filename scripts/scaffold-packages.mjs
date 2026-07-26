@@ -203,13 +203,6 @@ const PACKAGES = [
     deps: { zod: V.zod },
   },
   {
-    name: 'prompts',
-    kind: 'node',
-    description: 'Composable prompt library for frontend generation, review, and refactoring.',
-    keywords: ['prompts', 'prompt-engineering', 'ai', 'llm'],
-    deps: {},
-  },
-  {
     name: 'cli',
     kind: 'cli',
     description: 'The Vishwakarma CLI: install skills into any agent, add components, generate themes, and audit output.',
@@ -264,7 +257,14 @@ function packageJson(pkg) {
     dependencies: pkg.deps && Object.keys(pkg.deps).length ? pkg.deps : undefined,
     devDependencies: {
       ...(pkg.devDeps ?? {}),
-      ...(isReact ? { '@types/react': V.reactTypes, react: V.react, 'react-dom': V.reactDom } : {}),
+      ...(isReact
+        ? {
+            '@types/react': V.reactTypes,
+            '@types/react-dom': V.reactTypes,
+            react: V.react,
+            'react-dom': V.reactDom,
+          }
+        : {}),
       tsup: '^8.5.0',
       typescript: '^5.9.0',
       vitest: '^3.2.0',

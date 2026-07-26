@@ -23,6 +23,7 @@ export { motionDesign } from './motion-design.js'
 export { renderingPerformance } from './rendering-performance.js'
 export { responsiveArchitecture } from './responsive-architecture.js'
 export { scrollExperiences } from './scroll-experiences.js'
+export { seoAndMetadata } from './seo-and-metadata.js'
 export { surfaceAndDepth } from './surface-and-depth.js'
 export { themingSystems } from './theming-systems.js'
 export { typographicSystems } from './typographic-systems.js'
@@ -44,6 +45,7 @@ import { motionDesign } from './motion-design.js'
 import { renderingPerformance } from './rendering-performance.js'
 import { responsiveArchitecture } from './responsive-architecture.js'
 import { scrollExperiences } from './scroll-experiences.js'
+import { seoAndMetadata } from './seo-and-metadata.js'
 import { surfaceAndDepth } from './surface-and-depth.js'
 import { themingSystems } from './theming-systems.js'
 import { typographicSystems } from './typographic-systems.js'
@@ -67,6 +69,7 @@ export const catalog: SkillManifest[] = [
   renderingPerformance,
   responsiveArchitecture,
   scrollExperiences,
+  seoAndMetadata,
   surfaceAndDepth,
   themingSystems,
   typographicSystems,
