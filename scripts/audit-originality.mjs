@@ -133,10 +133,77 @@ function lineOf(content, index) {
   return line
 }
 
+/**
+ * Detect a vendored third-party checkout sitting inside the repository.
+ *
+ * This exists because it happened. A research process cloned an external repository into
+ * the working tree, and a `git add -A` swept the whole thing into a commit — complete with
+ * its own LICENSE and README. None of the content rules caught it, because they scan for
+ * suspicious *text* inside files with known extensions, and a foreign `LICENSE` file has no
+ * extension at all.
+ *
+ * The structural signal is unmistakable: a directory that is not a workspace package but
+ * carries a LICENSE, a nested `.git`, or a source tarball is not our code. Checking shape
+ * rather than content catches the whole category.
+ */
+async function findVendoredDirectories(root) {
+  const findings = []
+  const MARKERS = new Set(['LICENSE', 'LICENSE.md', 'LICENCE', 'COPYING', 'NOTICE', '.git'])
+
+  async function scan(dir, depth) {
+    if (depth > 3) return
+    let entries
+    try {
+      entries = await readdir(dir, { withFileTypes: true })
+    } catch {
+      return
+    }
+
+    const rel = relative(root, dir)
+    const isRoot = rel === ''
+    // Workspace packages legitimately carry their own metadata.
+    const isWorkspacePackage = /^(packages|apps|templates|examples)\/[^/]+$/.test(rel)
+
+    for (const entry of entries) {
+      if (SKIP_DIRS.has(entry.name) && entry.name !== '.git') continue
+
+      if (!isRoot && !isWorkspacePackage && MARKERS.has(entry.name)) {
+        findings.push({
+          rule: 'vendored-directory',
+          severity: 'error',
+          file: join(rel, entry.name),
+          line: 1,
+          excerpt: entry.name,
+          message:
+            'A licence, notice, or nested git directory appears outside the repository root and outside a workspace package. This is the signature of a third-party checkout that was committed by accident.',
+        })
+      }
+
+      if (!isRoot && !isWorkspacePackage && /\.(tgz|tar\.gz|zip)$/.test(entry.name)) {
+        findings.push({
+          rule: 'vendored-archive',
+          severity: 'error',
+          file: join(rel, entry.name),
+          line: 1,
+          excerpt: entry.name,
+          message: 'A source archive is committed to the tree. Remove it; dependencies belong in the manifest.',
+        })
+      }
+
+      if (entry.isDirectory() && !SKIP_DIRS.has(entry.name)) {
+        await scan(join(dir, entry.name), depth + 1)
+      }
+    }
+  }
+
+  await scan(root, 0)
+  return findings
+}
+
 async function main() {
   const root = resolve(process.cwd())
   const asJson = process.argv.includes('--json')
-  const findings = []
+  const findings = await findVendoredDirectories(root)
   let scanned = 0
 
   for await (const file of walk(root, root)) {

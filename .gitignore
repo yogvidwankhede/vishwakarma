@@ -48,3 +48,9 @@ lerna-debug.log*
 .cache/
 tmp/
 *.tgz
+
+# Scratch space for inspecting third-party material. Never commit it — see ORIGINALITY.md.
+/vendor/
+/_research/
+*.tgz
+*.tar.gz

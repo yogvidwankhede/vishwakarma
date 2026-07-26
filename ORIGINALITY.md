@@ -76,6 +76,23 @@ company names) are the trademarks of their respective owners and are used only f
 identification and interoperability — for example, to state which agent a generated
 config file targets. Their appearance does not imply endorsement.
 
+## An incident, recorded
+
+During construction, an automated research process cloned an external repository into the
+working tree to read it, and a broad `git add` swept the entire checkout — source, README,
+and licence — into the first commit. It was caught before publication, removed from every
+commit in the history, and the objects were garbage-collected.
+
+None of the content rules had caught it, because they scan for suspicious *text* inside
+files with known extensions, and a foreign `LICENSE` file has neither. The audit now also
+checks *shape*: a licence, notice, nested `.git`, or source archive appearing outside the
+repository root and outside a workspace package fails the build, because that is the
+unmistakable signature of a third-party checkout committed by accident.
+
+This is recorded here rather than quietly fixed for two reasons. A policy that hides its own
+near-misses is not a policy, and the failure mode is worth knowing about — anyone building
+with automated agents will hit it, and the structural check is the fix.
+
 ## Reporting a concern
 
 If you believe any part of this repository reproduces someone else's protected
