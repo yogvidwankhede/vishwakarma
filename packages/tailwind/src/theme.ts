@@ -24,11 +24,11 @@
  * export, a screenshot fixture — that will never be themed.
  */
 
-import { resolveTokens, serialiseCssValue } from '@vishwakarma/tokens'
 import type { TokenSet, TokenValue } from '@vishwakarma/tokens'
-import { commentBlock, divider, note } from './format.js'
+import { resolveTokens, serialiseCssValue } from '@vishwakarma/tokens'
+import { commentBlock, divider, indent, note } from './format.js'
 import { mapTokenPath, NAMESPACE_UTILITIES, type NamespaceOverride } from './namespaces.js'
-import { fallbackRef, runtimeRef, tokenIndex, type NamingOptions } from './refs.js'
+import { fallbackRef, type NamingOptions, runtimeRef, tokenIndex } from './refs.js'
 
 export interface ThemeOptions extends NamingOptions {
   /**
@@ -217,7 +217,12 @@ export function buildThemeBlock(set: TokenSet, options: ThemeOptions = {}): stri
         undefined,
         `  --surface-${level.name}: ${runtimeRef(level.background, options)};`,
       )
-      push('surface', '', undefined, `  --ink-${level.name}: ${fallbackRef(level.ink, 'inherit', options)};`)
+      push(
+        'surface',
+        '',
+        undefined,
+        `  --ink-${level.name}: ${fallbackRef(level.ink, 'inherit', options)};`,
+      )
       push(
         'surface',
         '',
@@ -251,7 +256,9 @@ export function buildThemeBlock(set: TokenSet, options: ThemeOptions = {}): stri
     }
   }
 
-  const keywords = [inline ? 'inline' : null, staticTheme ? 'static' : null].filter(Boolean).join(' ')
+  const keywords = [inline ? 'inline' : null, staticTheme ? 'static' : null]
+    .filter(Boolean)
+    .join(' ')
   const header = keywords ? `@theme ${keywords} {` : '@theme {'
 
   const body: string[] = []
@@ -260,7 +267,7 @@ export function buildThemeBlock(set: TokenSet, options: ThemeOptions = {}): stri
     if (!first) body.push('')
     first = false
     if (group.heading) body.push(`  ${note(group.heading)}`)
-    if (group.detail) body.push(`  ${note(group.detail)}`)
+    if (group.detail) body.push(indent(commentBlock([group.detail])))
     body.push(...group.lines)
   }
 

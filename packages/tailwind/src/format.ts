@@ -88,7 +88,9 @@ export function indent(text: string, depth = 1): string {
 /** Join sections with exactly one blank line between them, and no trailing whitespace. */
 export function joinSections(sections: ReadonlyArray<string | null | undefined>): string {
   return sections
-    .filter((section): section is string => typeof section === 'string' && section.trim().length > 0)
+    .filter(
+      (section): section is string => typeof section === 'string' && section.trim().length > 0,
+    )
     .map((section) => section.replace(/\s+$/, ''))
     .join('\n\n')
 }

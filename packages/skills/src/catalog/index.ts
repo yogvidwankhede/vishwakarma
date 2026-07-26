@@ -11,10 +11,12 @@ export { accessibleComponents } from './accessible-components.js'
 export { colourSystems } from './colour-systems.js'
 export { componentArchitecture } from './component-architecture.js'
 export { designJudgment } from './design-judgment.js'
+export { designReview } from './design-review.js'
 export { designTokens } from './design-tokens.js'
 export { informationArchitecture } from './information-architecture.js'
 export { interactionDesign } from './interaction-design.js'
 export { interfaceCopy } from './interface-copy.js'
+export { interfaceStates } from './interface-states.js'
 export { layoutComposition } from './layout-composition.js'
 export { microInteractions } from './micro-interactions.js'
 export { motionDesign } from './motion-design.js'
@@ -24,15 +26,18 @@ export { scrollExperiences } from './scroll-experiences.js'
 export { surfaceAndDepth } from './surface-and-depth.js'
 export { themingSystems } from './theming-systems.js'
 export { typographicSystems } from './typographic-systems.js'
+export { uiGenerationWorkflow } from './ui-generation-workflow.js'
 
 import { accessibleComponents } from './accessible-components.js'
 import { colourSystems } from './colour-systems.js'
 import { componentArchitecture } from './component-architecture.js'
 import { designJudgment } from './design-judgment.js'
+import { designReview } from './design-review.js'
 import { designTokens } from './design-tokens.js'
 import { informationArchitecture } from './information-architecture.js'
 import { interactionDesign } from './interaction-design.js'
 import { interfaceCopy } from './interface-copy.js'
+import { interfaceStates } from './interface-states.js'
 import { layoutComposition } from './layout-composition.js'
 import { microInteractions } from './micro-interactions.js'
 import { motionDesign } from './motion-design.js'
@@ -42,6 +47,7 @@ import { scrollExperiences } from './scroll-experiences.js'
 import { surfaceAndDepth } from './surface-and-depth.js'
 import { themingSystems } from './theming-systems.js'
 import { typographicSystems } from './typographic-systems.js'
+import { uiGenerationWorkflow } from './ui-generation-workflow.js'
 
 /** Every skill in the catalog, in stable order. */
 export const catalog: SkillManifest[] = [
@@ -49,10 +55,12 @@ export const catalog: SkillManifest[] = [
   colourSystems,
   componentArchitecture,
   designJudgment,
+  designReview,
   designTokens,
   informationArchitecture,
   interactionDesign,
   interfaceCopy,
+  interfaceStates,
   layoutComposition,
   microInteractions,
   motionDesign,
@@ -62,6 +70,7 @@ export const catalog: SkillManifest[] = [
   surfaceAndDepth,
   themingSystems,
   typographicSystems,
+  uiGenerationWorkflow,
 ]
 
 /** Look up a skill by its id. */

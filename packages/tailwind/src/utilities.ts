@@ -21,7 +21,14 @@ import type { NamingOptions } from './refs.js'
 import { systemVariables } from './system.js'
 
 /** The utility families this package defines. */
-export type UtilityName = 'measure' | 'tabular' | 'optical' | 'surface' | 'glass' | 'focus-ring' | 'grid-bleed'
+export type UtilityName =
+  | 'measure'
+  | 'tabular'
+  | 'optical'
+  | 'surface'
+  | 'glass'
+  | 'focus-ring'
+  | 'grid-bleed'
 
 /** Every utility family, in emission order. */
 export const UTILITY_NAMES: readonly UtilityName[] = [

@@ -3,7 +3,7 @@ import type { SkillManifest } from '../manifest.js'
 /**
  * Almost everything written about design tokens is written about the wrong thing.
  *
- * The tooling is not the hard part. Transforming JSON into CSS custom properties is a
+ * The tooling is not the hard part. Transforming JSON into CSS custom properties is an
  * afternoon's work, and a dozen generators already do it. The hard part is that a token is
  * a *name*, names are the only interface the rest of the organisation ever touches, and a
  * badly named token is worse than no token at all — it looks like abstraction while
@@ -84,14 +84,12 @@ because a primitive names a colour and that colour has not changed. **Semantic:*
 \`--color-action: var(--teal-600)\`. **Component tier and every consumer:** untouched. One
 edit, whole product.
 
-The same change against a codebase that writes \`bg-indigo-600\` in JSX gives you a teal
-product with indigo buttons, found by a designer three weeks later — because nothing about
-\`indigo-600\` is *wrong*. It is exactly the colour it claims to be. That is why the failure
-is silent.
+The same change against a codebase writing \`bg-indigo-600\` in JSX gives a teal product with
+indigo buttons, found by a designer three weeks later — because nothing about \`indigo-600\`
+is *wrong*. It is exactly the colour it claims to be. That is why the failure is silent.
 
-Tier sizes are diagnostic: primitives run to a couple of hundred, the semantic tier should be
-small enough to read in one sitting (30 to 80 names, because it is the vocabulary the whole
-team must hold), and the component tier should be nearly empty.
+Tier sizes are diagnostic: a few hundred primitives, 30 to 80 semantic names — the
+vocabulary the whole team must hold — and a component tier that is nearly empty.
 
 ---
 
@@ -105,13 +103,13 @@ Fix an order and never deviate: general to specific.
     color.fg.muted                 radius.control.sm
     color.border.input.focus       duration.exit.fast
 
-Names then sort into families, autocomplete usefully, and make a missing member obvious.
+Names then sort into families, and a missing member becomes an obvious gap.
 
 **Never name a semantic token after its value.** \`--color-text-grey\` is false in dark mode,
 so you either lie or duplicate. The subtler trap is the *half*-semantic name: \`blue-primary\`,
-\`primary-blue\`, \`brand-purple\`. These look like roles but hard-code appearance, and they
-fail exactly when they finally matter — the second brand, the high-contrast theme, the
-rebrand. Value names belong on primitives and nowhere else.
+\`primary-blue\`, \`brand-purple\`. These look like roles but hard-code appearance, and fail
+exactly when they finally matter, at the second brand or the first high-contrast theme. Value
+names belong on primitives and nowhere else.
 
 ---
 
@@ -121,10 +119,10 @@ Colour is the easy tier. Systems drift most in what nobody bothers to tokenise: 
 sizing, radius, border width, shadow, duration, easing, z-index, opacity, typography.
 
 **A scale token must state its own relationship.** \`spacing-medium\` with no defined relation
-to \`spacing-small\` is a synonym for a number with extra steps — nobody can predict what
-comes next, so someone invents \`spacing-medium-large\`. Either use ordinal names over a
-stated generator (base 4, ladder 4/8/12/16/24/32/48/64, so \`space.2\` is 8px) or write the
-ratio into the documentation. The generator is the token; the numbers are output.
+to \`spacing-small\` is a synonym for a number: nobody can predict what comes next, so someone
+invents \`spacing-medium-large\`. Use ordinal names over a stated generator — base 4, ladder
+4/8/12/16/24/32/48/64, so \`space.2\` is 8px. The generator is the token; the numbers are
+output.
 
 **z-index especially.** Unnamed stacking values reach 9999 within a year. Five names —
 \`base\`, \`dropdown\`, \`sticky\`, \`overlay\`, \`toast\` — spaced 100 apart ends it.
@@ -137,17 +135,17 @@ The W3C format defines composite types — \`typography\`, \`shadow\`, \`border\
 \`transition\`, \`gradient\`, \`strokeStyle\` — whose \`$value\` is an object. They model intent
 well and consume badly: CSS cannot read one property out of an object, so a \`typography\`
 token must be exploded into \`font-size\`, \`line-height\` and \`letter-spacing\` by the
-generator anyway; many tools cannot alias a single sub-property; and overriding one field per
-theme means restating the whole object. Author with composites where values genuinely move
-together, but have the pipeline emit the decomposed primitives too.
+generator anyway, many tools cannot alias a single sub-property, and overriding one field per
+theme means restating the whole object. Author composites where values move together, but emit
+the decomposed primitives too.
 
 ---
 
 ## 5. The DTCG format, honestly
 
 The Design Tokens Format Module reached its first stable version, **2025.10**, in October
-2025, alongside Color and Resolver modules. It is a W3C **Community Group** report, not a W3C
-Recommendation: there is no formal standards-track status behind it.
+2025, alongside Color and Resolver modules. It is a W3C **Community Group** report, not a
+Recommendation: no formal standards-track status sits behind it.
 
 The shape: any object with \`$value\` is a token. \`$type\` names the type and is inherited
 from the nearest ancestor group that declares one; \`$description\`, \`$extensions\` and
@@ -156,9 +154,9 @@ written \`"{color.brand.600}"\`, or as a JSON Pointer via \`$ref\`. Colours are 
 \`colorSpace\`, \`components\`, optional \`alpha\` and \`hex\` — not strings, which is what
 lets the format carry Display P3 and OKLCh.
 
-Interoperability is real but partial. Style Dictionary shipped first-class DTCG support in v4
-against an earlier editors' draft, and full 2025.10 support was still landing in v5. So author
-in DTCG, but **pin the draft your toolchain actually implements** and budget for one migration.
+Interoperability is real but partial: Style Dictionary shipped first-class DTCG support in v4
+against an earlier editors' draft, and full 2025.10 support was still landing in v5. Author in
+DTCG, but **pin the draft your toolchain actually implements**.
 
 ---
 
@@ -196,8 +194,8 @@ in component source, and Tailwind arbitrary values (\`p-[13px]\`).
 
 Resolve references at build time and make both failure classes hard errors. An **unresolved**
 alias is worse than a crash: CSS treats \`var(--typo)\` as invalid at computed-value time and
-falls back to the inherited or initial value, so a misspelling renders a transparent border
-rather than throwing.
+falls back to the inherited value, so a misspelling renders a transparent border rather than
+throwing.
 
 A **cycle** hangs a naive resolver. Walk the graph depth-first with three-colour marking —
 unvisited, in-progress, resolved — and on re-entering an in-progress node throw with the whole
@@ -210,7 +208,7 @@ means a missing tier, not a clever one.
 
 A theme is a different *set of values for the same set of names*. The DTCG Resolver module
 formalises this with \`sets\`, \`modifiers\` whose \`contexts\` map a name such as \`light\`
-or \`dark\` to sources, and a \`resolutionOrder\` merging them with later sources winning.
+to sources, and a \`resolutionOrder\` merging them with later sources winning.
 
 The invariant that matters: **every theme defines exactly the same semantic keys.** A name
 present in light and absent in dark is not a smaller theme but a broken one, and it surfaces
@@ -228,14 +226,14 @@ major version.
 
 ## The failures worth naming
 
-- **Hex constants with new names.** One flat tier of \`--brand-blue-1\` to \`--brand-blue-9\`:
-  nothing can be re-themed and no contrast contract can be stated.
+- **Hex constants with new names.** A flat tier of \`--brand-blue-1\` to \`--brand-blue-9\`:
+  nothing can be re-themed, no contrast contract can be stated.
 - **Tokens in three places.** CSS variables, a Tailwind config, and a TS file, each hand-edited.
   They agree on the day they are written and never again.
 - **Component one-offs.** \`--card-header-padding-top\`, used once — a value with a long name.
 - **Undefined scales.** \`size-medium\`, \`size-large\`, \`size-larger\`, \`size-xl-alt\`.
-- **Aliases as the whole system.** Five hops to a hex with no tier boundaries, so nobody can
-  tell which level to edit.`,
+- **Aliases as the whole system.** Five hops to a hex with no tier boundaries, so nobody knows
+  which level to edit.`,
 
     references: [
       {

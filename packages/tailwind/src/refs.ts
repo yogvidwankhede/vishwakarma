@@ -17,8 +17,8 @@
  * exists for every variable a consumer might reasonably not have.
  */
 
-import { toCssVariableName } from '@vishwakarma/tokens'
 import type { TokenSet } from '@vishwakarma/tokens'
+import { toCssVariableName } from '@vishwakarma/tokens'
 
 /** Options shared by every generator in the package. */
 export interface NamingOptions {

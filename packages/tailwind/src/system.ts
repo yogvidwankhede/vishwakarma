@@ -14,9 +14,9 @@
  * name and, three months later, a third.
  */
 
-import { commentBlock, divider, note } from './format.js'
-import { fallbackRef, tokenIndex, type NamingOptions } from './refs.js'
 import type { TokenSet } from '@vishwakarma/tokens'
+import { commentBlock, divider, indent } from './format.js'
+import { fallbackRef, type NamingOptions, tokenIndex } from './refs.js'
 
 /** The custom property names the generated utilities depend on. */
 export interface SystemVariables {
@@ -82,7 +82,9 @@ export function buildSystemBlock(set: TokenSet, options: SystemOptions = {}): st
   const ring = index.has('color.focus.ring')
     ? fallbackRef('color.focus.ring', 'currentColor', options)
     : 'currentColor'
-  const gutter = index.has('space.gutter') ? fallbackRef('space.gutter', '1.5rem', options) : '1.5rem'
+  const gutter = index.has('space.gutter')
+    ? fallbackRef('space.gutter', '1.5rem', options)
+    : '1.5rem'
 
   const defaults: Record<keyof SystemVariables, string> = {
     focusRingWidth: '2px',
@@ -104,16 +106,32 @@ export function buildSystemBlock(set: TokenSet, options: SystemOptions = {}): st
       'Read by the @utility definitions below. Override them on any ancestor to retune a subtree; override them on :root in your own stylesheet to retune the product.',
     ]),
     ':root {',
-    `  ${note('2px, not 1px. A one-pixel outline at a fractional device pixel ratio is resampled into a grey smear that fails the 3:1 contrast requirement it was drawn to satisfy.')}`,
+    indent(
+      commentBlock([
+        '2px, not 1px. A one-pixel outline at a fractional device pixel ratio is resampled into a grey smear, and a smear does not meet the 3:1 contrast it was drawn to provide.',
+      ]),
+    ),
     `  ${vars.focusRingWidth}: ${value('focusRingWidth')};`,
-    `  ${note('The offset is what makes the ring legible on a component whose border happens to be the same colour: the gap shows the page behind, so there is always a light/dark boundary on one side of the ring.')}`,
+    indent(
+      commentBlock([
+        'The offset is what keeps the ring legible on a component whose border happens to be the same colour: the gap shows the page behind, so there is a light/dark boundary on one side of the ring whatever the component is made of.',
+      ]),
+    ),
     `  ${vars.focusRingOffset}: ${value('focusRingOffset')};`,
     `  ${vars.focusRingColor}: ${value('focusRingColor')};`,
     '',
     `  ${vars.glassBlur}: ${value('glassBlur')};`,
-    `  ${note('Saturation is raised because blurring averages colour towards grey; without it a glass panel looks like fog rather than glass.')}`,
+    indent(
+      commentBlock([
+        'Saturation is raised because blurring averages colour towards grey. Without it a glass panel reads as fog rather than glass.',
+      ]),
+    ),
     `  ${vars.glassSaturation}: ${value('glassSaturation')};`,
-    `  ${note('Tint opacity. Below about 60% the text contrast over a glass panel depends entirely on what is behind it, which is not something a design system can guarantee.')}`,
+    indent(
+      commentBlock([
+        'Tint opacity. Below roughly 60% the contrast of text on a glass panel depends entirely on whatever happens to be behind it, which is not something a design system can promise.',
+      ]),
+    ),
     `  ${vars.glassTint}: ${value('glassTint')};`,
     `  ${vars.glassColor}: ${value('glassColor')};`,
     '',

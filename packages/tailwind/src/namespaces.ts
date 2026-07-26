@@ -138,6 +138,16 @@ export const NAMESPACE_RULES: readonly NamespaceRule[] = [
     note: 'Tailwind v4 has no --z-* namespace; z-index utilities take bare values. Reach this one with z-[var(--z-name)], which also keeps the documented stacking order visible in the markup.',
   },
   {
+    // Deliberately last-resort and deliberately a duration: everything left under `motion`
+    // once curves and easings have been claimed is a length of time. A semantic token such
+    // as `motion.enter` would otherwise map to nothing at all, which is the one outcome
+    // worse than mapping to a namespace with no utilities.
+    prefix: 'motion',
+    namespace: null,
+    variable: 'duration',
+    note: 'Tailwind v4 has no --duration-* namespace; duration utilities take bare values. Reach this one with duration-[var(--duration-name)] or bind it to --default-transition-duration.',
+  },
+  {
     prefix: 'opacity',
     namespace: null,
     variable: 'opacity',
@@ -230,7 +240,9 @@ export function mapTokenPath(
       variable: suffix ? `--${prefixName}-${suffix}` : `--${prefixName}`,
       namespace: isPlain ? null : (bestOverride as TailwindNamespace),
       generatesUtilities: !isPlain,
-      ...(isPlain ? { note: 'Mapped by configuration to a namespace Tailwind does not know.' } : {}),
+      ...(isPlain
+        ? { note: 'Mapped by configuration to a namespace Tailwind does not know.' }
+        : {}),
     }
   }
 
