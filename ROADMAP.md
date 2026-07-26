@@ -33,13 +33,6 @@ who relies on it hits it.
 
 ## Longer term
 
-**Templates and starter kits.** Landing, SaaS, dashboard, portfolio, and commerce. These are
-deliberately last: a template built on packages that are still moving would be a liability,
-and a template is only worth shipping if it is genuinely exemplary rather than merely
-present.
-
-**A documentation site.** The Markdown in `docs/` is the source of truth today.
-
 **Visual regression in CI.** Rendering the viewport matrix and diffing is the natural
 extension of the contract idea from values to appearance.
 
@@ -66,18 +59,18 @@ framework-agnostic already. The component layer targets React deliberately, beca
 lowest-common-denominator abstraction across frameworks produces components that are
 idiomatic in none of them.
 
-## Why the gaps exist
+## How this was built
 
-This repository was built in one session with a fixed compute budget, using parallel agents
-for breadth and hand-authoring for the parts where a wrong decision propagates — the colour
-maths, the Motion Grammar, the contract checker, the manifest format, and the merge logic.
+One session with a fixed compute budget, using parallel agents for breadth and
+hand-authoring for the parts where a wrong decision propagates — the colour maths, the
+Motion Grammar, the contract checker, the manifest format, the variation engine, and the
+merge and lockfile logic.
 
-When the budget ran out, roughly two thirds of the planned skills and packages were
-unwritten. The choice was between shipping stubs that claim capability they do not have, or
-removing them and saying so.
+Two rules held throughout, and they are the reason the numbers above can be trusted.
+Nothing ships that does not compile, and nothing is claimed that is not implemented: a
+package specified but never written was removed rather than left as an empty directory
+carrying a promise.
 
-Empty packages were removed. What remains builds, is tested, and does what it says. The
-architecture, the scaffolding generator, and the reference implementations are all in place,
-so the remaining work is genuinely additive rather than foundational — a new package is a
-row in `scripts/scaffold-packages.mjs` and a source directory, and a new skill is one typed
-file plus a regenerated barrel.
+The remaining work is additive rather than foundational. A new package is a row in
+`scripts/scaffold-packages.mjs` plus a source directory; a new skill is one typed file plus
+a regenerated barrel.
