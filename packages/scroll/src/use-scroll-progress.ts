@@ -72,6 +72,9 @@ export function useScrollProgress<T extends HTMLElement = HTMLElement>(
   const resolved = resolveScrollRange(range)
   const rangeKey = JSON.stringify(resolved)
 
+  // The effect keys off the serialised range rather than the object, so a caller passing an
+  // object literal inline does not tear the subscription down on every render.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: rangeKey stands in for resolved, deliberately.
   useEffect(() => {
     if (disabled) return
     const element = ref.current
@@ -102,7 +105,6 @@ export function useScrollProgress<T extends HTMLElement = HTMLElement>(
     })
 
     return unsubscribe
-    // biome-ignore lint/correctness/useExhaustiveDependencies: rangeKey stands in for resolved.
   }, [axis, step, disabled, rangeKey])
 
   return { ref, progress }
