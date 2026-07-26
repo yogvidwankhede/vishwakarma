@@ -54,3 +54,6 @@ tmp/
 /_research/
 *.tgz
 *.tar.gz
+
+# This repo is the toolkit, not a consumer of it — a profile of itself is noise.
+.vishwakarma/

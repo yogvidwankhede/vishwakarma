@@ -53,6 +53,7 @@ import {
   validateTokenSet,
 } from '@vishwakarma/tokens'
 import { detectAgents, detectStack } from './detect.js'
+import { buildProfile, profileArtifacts, summariseProfile } from './profile.js'
 
 const VERSION = '0.1.0'
 
@@ -662,6 +663,48 @@ program
     out()
     out(`  ${errors} error(s), ${warnings} warning(s)`)
     if (errors > 0) process.exitCode = 1
+  })
+
+
+/* --- profile ------------------------------------------------------------ */
+
+program
+  .command('profile')
+  .description('scan the project and write a design profile agents can read')
+  .option('-n, --dry-run', 'report what would be written without writing')
+  .option('--json', 'print the profile to stdout instead of writing files')
+  .action(async (options: { dryRun?: boolean; json?: boolean }) => {
+    const root = program.opts().cwd as string
+
+    const profile = await buildProfile(root)
+
+    if (options.json) {
+      out(JSON.stringify(profile, null, 2))
+      return
+    }
+
+    header('Project profile')
+    out(`  ${summariseProfile(profile)}`)
+
+    const artefacts = profileArtifacts(profile)
+    out()
+    for (const [path, contents] of artefacts) {
+      if (!options.dryRun) {
+        const absolute = resolve(root, path)
+        await mkdir(dirname(absolute), { recursive: true })
+        await writeFile(absolute, contents, 'utf8')
+      }
+      out(`  ${symbols.ok} ${path} ${pc.dim(`(${(contents.length / 1024).toFixed(1)} KB)`)}`)
+    }
+
+    if (profile.notes.length > 0) {
+      header('Notes')
+      for (const note of profile.notes) out(`  ${symbols.warn} ${note}`)
+    }
+
+    out()
+    out(pc.dim('  Both files are deterministic and safe to commit. Committing them means a'))
+    out(pc.dim('  teammate\'s agent starts from the same understanding of the codebase as yours.'))
   })
 
 /* --- doctor ------------------------------------------------------------- */

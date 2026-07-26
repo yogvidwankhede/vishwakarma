@@ -203,15 +203,22 @@ export function Switch({
             focusRing,
           )}
         />
+        {/*
+          Driven from the label with `:has(:checked)` rather than with `peer-checked`. The peer
+          variant compiles to a sibling combinator, and the tick is a *descendant* of the thumb
+          rather than a sibling of the input — so a peer-based rule would compile happily and
+          then never match, which is the failure mode where the switch animates but the tick
+          never appears.
+        */}
         <span
           aria-hidden="true"
           className={cx(
             'pointer-events-none absolute left-0.5 grid size-4 place-items-center rounded-full bg-white shadow-raised',
             'transition-transform duration-quick ease-default motion-reduce:transition-none',
-            'peer-checked:translate-x-5',
+            'group-has-[:checked]:translate-x-5',
           )}
         >
-          <CheckIcon className="size-2.5 text-action-primary-bg opacity-0 peer-checked:opacity-100" />
+          <CheckIcon className="size-2.5 text-action-primary-bg opacity-0 group-has-[:checked]:opacity-100" />
         </span>
       </span>
 
