@@ -76,11 +76,15 @@ const RULES = [
   {
     id: 'attribution-comment',
     severity: 'error',
+    // Anchored on what a real attribution looks like: a proper noun, a URL, a package
+    // specifier, or a quoted name after the phrase. Without that anchor the rule fires on
+    // ordinary technical English such as "derived from the standard relations for a
+    // second-order system", and a guard that cries wolf is a guard someone switches off.
     pattern:
-      /(?:\/\/|\/\*|\*|#|<!--)\s*(?:adapted|derived|forked|copied|taken|borrowed|ported|based)\s+(?:from|on)\s+\S/gi,
+      /(?:\/\/|\/\*|\*|#|<!--)\s*(?:adapted|derived|forked|copied|taken|borrowed|ported|based)\s+(?:from|on)\s+(?:https?:\/\/\S+|@[\w.-]+\/[\w.-]+|[`'"][^`'"]+[`'"]|(?:the\s+)?[A-Z][\w.-]*(?:\s+[A-Z][\w.-]*)*)/g,
     allow: () => false,
     message:
-      'An attribution comment implies derived code. Rewrite the implementation independently, or remove the file.',
+      'An attribution comment names an external source, which implies derived code. Rewrite the implementation independently, or remove the file.',
   },
   {
     id: 'source-url-marker',

@@ -51,6 +51,11 @@ export const MIN_INLINE_SIZE_NOTE =
  *
  * `ref` is a plain prop: React 19 forwards it to function components directly, so
  * `forwardRef` is dead weight and an extra component layer in the tree for nothing.
+ *
+ * A `style` passed in is merged *after* the primitive's own declarations, so the caller
+ * always wins. The opposite order is more defensive but produces the worse failure: a prop
+ * that appears to do nothing, with no indication of why. If someone overrides `display` on
+ * a `Row` and breaks it, at least the cause is in their own code.
  */
 export interface LayoutPrimitiveProps extends HTMLAttributes<HTMLElement> {
   /** Element or component to render. Defaults differ per primitive; each says which. */

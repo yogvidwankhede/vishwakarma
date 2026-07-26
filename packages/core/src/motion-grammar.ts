@@ -391,10 +391,10 @@ export type SpringName = keyof typeof SPRINGS
  * Convert a damping-ratio spring into the stiffness/damping/mass form that physics
  * engines want.
  *
- * Derived from the standard relations for a second-order system: the undamped angular
- * frequency is set so the spring settles in approximately the requested duration, then
- * stiffness is omega squared times mass and damping is twice the ratio times mass times
- * omega.
+ * The conversion follows the standard relations for a second-order system: the undamped
+ * angular frequency is set so the spring settles in approximately the requested duration,
+ * then stiffness is omega squared times mass, and damping is twice the ratio times mass
+ * times omega.
  */
 export function toPhysicalSpring(
   spec: SpringSpec | SpringName,

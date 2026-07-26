@@ -31,7 +31,11 @@ function rootElement(doc?: Document): HTMLElement | null {
  * It is written as an inline style rather than left to a stylesheet so that it survives a
  * stylesheet that has not loaded yet, which is exactly the window the flash lives in.
  */
-export function applyTheme(theme: ResolvedTheme, settings: Pick<ThemeSettings, 'attribute'>, doc?: Document): void {
+export function applyTheme(
+  theme: ResolvedTheme,
+  settings: Pick<ThemeSettings, 'attribute'>,
+  doc?: Document,
+): void {
   const root = rootElement(doc)
   if (!root) return
   root.setAttribute(settings.attribute, theme)
@@ -75,7 +79,9 @@ export function lockTransitions(doc?: Document): () => void {
   const style = target.createElement('style')
   style.setAttribute('data-vk-theme-lock', '')
   style.append(
-    target.createTextNode('*,*::before,*::after{transition-duration:0s !important;transition-delay:0s !important}'),
+    target.createTextNode(
+      '*,*::before,*::after{transition-duration:0s !important;transition-delay:0s !important}',
+    ),
   )
   target.head.appendChild(style)
 

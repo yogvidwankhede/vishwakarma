@@ -74,11 +74,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build the skill compiler
-        run: pnpm --filter @vishwakarma/skills... run build
+      - name: Build the CLI and its dependencies
+        run: pnpm --filter @vishwakarma/cli... run build
 
       - name: Validate every skill against the manifest schema
-        run: pnpm --filter @vishwakarma/skills run validate
+        run: node packages/cli/dist/index.js validate
 
   node-matrix:
     name: node ${{ matrix.node }}

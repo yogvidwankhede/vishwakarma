@@ -46,8 +46,6 @@
   },
   "dependencies": {
     "@vishwakarma/skills": "workspace:*",
-    "@vishwakarma/registry": "workspace:*",
-    "@vishwakarma/audit": "workspace:*",
     "@vishwakarma/core": "workspace:*",
     "@vishwakarma/tokens": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.18.0",

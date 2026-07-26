@@ -1,7 +1,12 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { resolveSettings, type ThemePreference, type ThemeSettings, type ThemeStorageSource } from './settings.js'
+import {
+  resolveSettings,
+  type ThemePreference,
+  type ThemeSettings,
+  type ThemeStorageSource,
+} from './settings.js'
 
 /**
  * The flash-free mechanism.
@@ -46,8 +51,8 @@ import { resolveSettings, type ThemePreference, type ThemeSettings, type ThemeSt
 function toScriptLiteral(value: string): string {
   return JSON.stringify(value)
     .replace(/</g, '\\u003C')
-    .replace(/ /g, '\\u2028')
-    .replace(/ /g, '\\u2029')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
 }
 
 /**
@@ -145,7 +150,9 @@ export function resolvePreparedTheme(
   defaultPreference: ThemePreference = 'system',
 ): { preference: ThemePreference; theme: 'light' | 'dark' } {
   const preference: ThemePreference =
-    storedValue === 'light' || storedValue === 'dark' || storedValue === 'system' ? storedValue : defaultPreference
+    storedValue === 'light' || storedValue === 'dark' || storedValue === 'system'
+      ? storedValue
+      : defaultPreference
   const theme = preference === 'system' ? (systemPrefersDark ? 'dark' : 'light') : preference
   return { preference, theme }
 }

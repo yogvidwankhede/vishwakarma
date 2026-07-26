@@ -7,21 +7,36 @@
 
 import type { SkillManifest } from '../manifest.js'
 
+export { accessibleComponents } from './accessible-components.js'
 export { colourSystems } from './colour-systems.js'
 export { designJudgment } from './design-judgment.js'
+export { interactionDesign } from './interaction-design.js'
+export { interfaceCopy } from './interface-copy.js'
 export { layoutComposition } from './layout-composition.js'
+export { responsiveArchitecture } from './responsive-architecture.js'
+export { surfaceAndDepth } from './surface-and-depth.js'
 export { typographicSystems } from './typographic-systems.js'
 
+import { accessibleComponents } from './accessible-components.js'
 import { colourSystems } from './colour-systems.js'
 import { designJudgment } from './design-judgment.js'
+import { interactionDesign } from './interaction-design.js'
+import { interfaceCopy } from './interface-copy.js'
 import { layoutComposition } from './layout-composition.js'
+import { responsiveArchitecture } from './responsive-architecture.js'
+import { surfaceAndDepth } from './surface-and-depth.js'
 import { typographicSystems } from './typographic-systems.js'
 
 /** Every skill in the catalog, in stable order. */
 export const catalog: SkillManifest[] = [
+  accessibleComponents,
   colourSystems,
   designJudgment,
+  interactionDesign,
+  interfaceCopy,
   layoutComposition,
+  responsiveArchitecture,
+  surfaceAndDepth,
   typographicSystems,
 ]
 

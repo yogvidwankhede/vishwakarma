@@ -158,8 +158,10 @@ export function createCookieStorage(options: CookieStorageOptions = {}): ThemeSt
     },
     write(key, value) {
       if (typeof document === 'undefined') return
-      const secure = options.secure ?? (typeof location !== 'undefined' && location.protocol === 'https:')
+      const secure =
+        options.secure ?? (typeof location !== 'undefined' && location.protocol === 'https:')
       try {
+        // biome-ignore lint/suspicious/noDocumentCookie: the CookieStore API is not available in Safari or in any non-secure context, and this store exists precisely to be readable by a pre-paint script in every browser.
         document.cookie = [
           `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
           `Path=${path}`,
@@ -174,6 +176,7 @@ export function createCookieStorage(options: CookieStorageOptions = {}): ThemeSt
     remove(key) {
       if (typeof document === 'undefined') return
       try {
+        // biome-ignore lint/suspicious/noDocumentCookie: as above.
         document.cookie = `${encodeURIComponent(key)}=; Path=${path}; Max-Age=0`
       } catch {
         // As above.

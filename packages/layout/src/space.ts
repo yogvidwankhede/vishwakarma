@@ -54,8 +54,8 @@ export type SpaceAlias = keyof typeof SPACE_ALIASES
  * A spacing value.
  *
  * The `(string & {})` arm keeps the named steps in editor autocomplete while still
- * permitting a raw CSS length for the cases the scale genuinely cannot express — a value
- * derived from a `calc()`, or one handed down from a custom property. Widening to plain
+ * permitting a raw CSS length for the cases the scale genuinely cannot express — the result
+ * of a `calc()`, or a value handed down through a custom property. Widening to plain
  * `string` would collapse the union and lose the suggestions, which is the difference
  * between a scale people follow and a scale people forget exists.
  */

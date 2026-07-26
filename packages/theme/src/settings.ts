@@ -141,6 +141,9 @@ export function isDensity(value: unknown): value is Density {
 }
 
 /** Collapse a preference and the current system theme into the theme to paint. */
-export function resolveTheme(preference: ThemePreference, systemTheme: ResolvedTheme): ResolvedTheme {
+export function resolveTheme(
+  preference: ThemePreference,
+  systemTheme: ResolvedTheme,
+): ResolvedTheme {
   return preference === 'system' ? systemTheme : preference
 }

@@ -104,18 +104,13 @@ each, and self-checks the agent runs against its own output before reporting don
 | **Layout & Composition** | Grid, subgrid, container queries, bento layouts that express rank, deliberate asymmetry |
 | **Surface & Depth** | Coherent light sources, paired contact and ambient shadows, glassmorphism that is worth its GPU cost |
 | **Responsive Architecture** | Intrinsic design, fluid scales that respect user font size, the viewport test matrix |
-| **Motion Design** | The Motion Grammar, interruptibility, composited properties, reduced-motion done properly |
-| **Scroll Experiences** | Reveals, pinned sequences, parallax that degrades safely, and why scroll-jacking breaks find-in-page |
-| **Micro-interactions** | Where perceived quality actually lives — press physics, hover intent, gesture rubber-banding |
 | **Interaction Design** | The full state matrix, feedback latency thresholds, why disabled buttons are an anti-pattern |
 | **Accessible Components** | ARIA keyboard contracts, focus management, live regions, the criteria libraries fail most |
 | **Interface Copy** | Microcopy as a design surface, error messages that say what to do next, empty states as onboarding |
-| **Information Architecture** | Navigation that follows the user's task model rather than the org chart |
-| **Design Tokens** | The three-tier model, and why skipping the semantic layer costs you a rebrand later |
-| **Theming Systems** | Flash-free switching, forced-colors mode, density modes, logical properties |
-| **Rendering Performance** | The pixel pipeline, Core Web Vitals, layout thrash, React render cost |
-| **UI Generation Workflow** | The meta-skill: the ordered procedure an agent should follow for any interface |
-| **Design Review** | The seven-pass critique protocol, and how to write a finding that is actionable |
+
+Nine skills carrying **175 normative rules** — every one with its mechanism stated — plus
+**57 self-review checks** and **18 deep references** loaded only on demand. More skills are
+planned; see [ROADMAP.md](ROADMAP.md).
 
 ```bash
 vishwakarma list          # browse
@@ -128,23 +123,16 @@ vishwakarma show motion-design   # read one in full
 |---|---|
 | `@vishwakarma/core` | Perceptual colour, modular and fluid scales, the Motion Grammar, the Design Contract checker, the viewport matrix. Pure and dependency-free |
 | `@vishwakarma/tokens` | Three-tier token schema, generated default set, transforms to CSS, Tailwind v4, TypeScript, JSON, Markdown |
-| `@vishwakarma/theme` | Runtime theme engine: flash-free switching, density and contrast modes |
-| `@vishwakarma/tailwind` | Tailwind v4 preset generated from your tokens |
-| `@vishwakarma/primitives` | Headless, accessibility-first React primitives |
-| `@vishwakarma/ui` | Styled React 19 component library |
-| `@vishwakarma/motion` | Motion primitives with reduced-motion handling built in |
-| `@vishwakarma/scroll` | Scroll experiences that degrade safely |
-| `@vishwakarma/layout` | Intrinsic layouts, bento grids, container-query components |
-| `@vishwakarma/three` | React Three Fiber helpers with performance budgets |
+| `@vishwakarma/theme` | Runtime theme engine: flash-free switching, three-state preference, density and forced-colors modes |
+| `@vishwakarma/layout` | Intrinsic layout primitives: stack, cluster, grid, bento, container queries |
+| `@vishwakarma/motion` | Motion primitives with reduced-motion handling built in, and reveals that cannot hide your content |
 | `@vishwakarma/skills` | The skill manifest format, validator, and catalog |
 | `@vishwakarma/adapters` | Compiles one skill into thirteen agent formats |
-| `@vishwakarma/mcp` | The MCP server |
+| `@vishwakarma/mcp` | The MCP server: thirteen tools, two prompts, two resources |
 | `@vishwakarma/cli` | The installer |
-| `@vishwakarma/audit` | Auditors that evaluate output against a Design Contract |
-| `@vishwakarma/registry` | Copy-in component registry |
-| `@vishwakarma/testing` | Accessibility, motion, and contract test utilities |
-| `@vishwakarma/lint` | Lint rules enforcing design-system adherence |
-| `@vishwakarma/prompts` | Composable prompt library |
+
+Nine packages, all building and typechecking, with 130 tests over the foundation.
+[ROADMAP.md](ROADMAP.md) lists what is planned next and why it is not here yet.
 
 ---
 
@@ -221,14 +209,12 @@ into a different-looking colour.
 
 ## Documentation
 
-- [Getting started](docs/getting-started.md)
-- [Architecture](docs/architecture.md)
-- [The Skill Manifest format](docs/skill-manifest.md)
-- [The Design Contract](docs/design-contract.md)
-- [The Motion Grammar](docs/motion-grammar.md)
-- [Agent integration guide](docs/agents.md)
-- [Prompt engineering guide](docs/prompt-engineering.md)
-- [Authoring skills](docs/authoring-skills.md)
+- [Getting started](docs/getting-started.md) — install, wire up tokens, everyday commands
+- [Architecture](docs/architecture.md) — how it fits together and why
+- [Agent integration](docs/agents.md) — per-agent file locations and what each target loses
+- [Authoring skills](docs/authoring-skills.md) — write your own
+- [Roadmap](ROADMAP.md) — what is planned and what is deliberately not
+- [Originality policy](ORIGINALITY.md)
 - [Contributing](CONTRIBUTING.md)
 
 ---
