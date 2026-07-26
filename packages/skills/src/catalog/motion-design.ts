@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -21,7 +24,7 @@ export const motionDesign: SkillManifest = {
   description:
     'Use when adding, tuning, or reviewing any animation, transition, gesture, or scroll effect in an interface.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'motion',
   tags: ['motion', 'animation', 'transition', 'easing', 'spring', 'gesture', 'performance'],
 

@@ -60,6 +60,9 @@ jobs:
       - name: Audit originality markers
         run: node scripts/audit-originality.mjs
 
+      - name: Verify every source file carries a licence header
+        run: node scripts/apply-license-headers.mjs --check
+
   skills:
     name: validate skill manifests
     runs-on: ubuntu-latest

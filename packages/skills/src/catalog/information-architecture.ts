@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -21,7 +24,7 @@ export const informationArchitecture: SkillManifest = {
   description:
     'Use when structuring navigation, grouping content, naming sections, designing a dashboard, or when users cannot find things they know exist.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'ux',
   tags: ['information-architecture', 'navigation', 'findability', 'hierarchy', 'taxonomy', 'dashboards', 'search'],
 

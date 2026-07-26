@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Generates the per-package manifest, tsconfig, and build config for every workspace
  * package from one declarative table.
@@ -231,7 +234,7 @@ function packageJson(pkg) {
     name: `@vishwakarma/${pkg.name}`,
     version: '0.1.0',
     description: pkg.description,
-    license: 'MIT',
+    license: 'Apache-2.0',
     type: 'module',
     sideEffects: false,
     keywords: ['vishwakarma', ...(pkg.keywords ?? [])],
@@ -361,7 +364,7 @@ reference is under \`docs/packages/${pkg.name}\`.
 
 ## Licence
 
-MIT — see [LICENSE](${REPO_URL}/blob/main/LICENSE).
+Apache-2.0 — see [LICENSE](${REPO_URL}/blob/main/LICENSE).
 `
 }
 

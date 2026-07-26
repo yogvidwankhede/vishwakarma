@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * The one place that knows how to reach three, react-three-fiber and drei.
  *

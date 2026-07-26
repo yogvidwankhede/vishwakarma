@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -22,7 +25,7 @@ export const uiGenerationWorkflow: SkillManifest = {
   description:
     'Use when asked to build any page, screen, component, dashboard, or app UI, to follow the ordered procedure from brief to critique to report.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'workflow',
   tags: ['workflow', 'process', 'procedure', 'planning', 'critique', 'meta'],
 

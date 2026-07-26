@@ -2,7 +2,7 @@
   "name": "@vishwakarma/testing",
   "version": "0.1.0",
   "description": "Test utilities for accessibility, motion, contract conformance, and viewport sweeps.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Device capability probing, kept deliberately free of React and of three.
  *

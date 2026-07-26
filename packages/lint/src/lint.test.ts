@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import { describe, expect, it } from 'vitest'
 import { findColourLiterals, nearestToken, parseColourLiteral, stripUrls } from './colour.js'
 import { configs, plugin } from './configs.js'

@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -20,7 +23,7 @@ export const colourSystems: SkillManifest = {
   description:
     'Use when defining a palette, building colour ramps or theme tokens, adding a dark theme, or auditing contrast in an interface.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'ui',
   tags: ['colour', 'palette', 'oklch', 'tokens', 'dark-mode', 'contrast', 'theming'],
 

@@ -1,4 +1,6 @@
 'use client'
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
 
 import { Children, createContext, isValidElement, useContext, type ReactNode } from 'react'
 import { toLength, type LayoutPrimitiveProps, type Length } from './primitive.js'

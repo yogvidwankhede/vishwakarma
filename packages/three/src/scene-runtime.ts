@@ -1,4 +1,6 @@
 'use client'
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
 
 import { createContext, useContext } from 'react'
 import { budgetFor, type SceneBudget } from './budgets.js'

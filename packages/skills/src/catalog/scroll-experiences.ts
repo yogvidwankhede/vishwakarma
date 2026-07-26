@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -21,7 +24,7 @@ export const scrollExperiences: SkillManifest = {
   description:
     'Use when building reveal-on-scroll, parallax, sticky or pinned sections, horizontal scroll, scroll-snap, or scrollytelling.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'motion',
   tags: ['scroll', 'parallax', 'sticky', 'intersection-observer', 'scrollytelling', 'performance'],
 

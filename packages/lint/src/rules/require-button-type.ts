@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * `require-button-type` — a button without a type submits the form it happens to be inside.
  *

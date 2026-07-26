@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -22,7 +25,7 @@ export const interactionDesign: SkillManifest = {
   description:
     'Use when building or reviewing interactive elements, forms, async actions, or destructive operations — states, feedback, errors, recovery.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'ux',
   tags: ['interaction', 'states', 'forms', 'validation', 'feedback', 'errors', 'loading'],
 

@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * `no-positive-tabindex` — a positive tabindex reorders the whole page, not just this element.
  *

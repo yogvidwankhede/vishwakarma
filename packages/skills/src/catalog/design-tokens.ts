@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -21,7 +24,7 @@ export const designTokens: SkillManifest = {
   description:
     'Use when creating, naming, restructuring, or generating design tokens, or when wiring a token source into CSS, Tailwind, or TypeScript.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'foundation',
   tags: ['tokens', 'design-system', 'dtcg', 'naming', 'build-pipeline', 'theming', 'style-dictionary'],
 

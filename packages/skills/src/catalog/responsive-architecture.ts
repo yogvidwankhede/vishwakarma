@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -19,7 +22,7 @@ export const responsiveArchitecture: SkillManifest = {
   description:
     'Use when a layout must adapt across screen sizes — breakpoints, container queries, fluid type, touch targets, zoom, or mobile overflow bugs.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'layout',
   tags: ['responsive', 'breakpoints', 'container-queries', 'fluid', 'viewport', 'zoom', 'touch'],
 

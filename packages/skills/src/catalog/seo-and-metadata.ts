@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -18,7 +21,7 @@ export const seoAndMetadata: SkillManifest = {
   description:
     'Use when adding page metadata, structured data, sitemaps, canonicals or hreflang, or when a page is not indexed, previewed or cited correctly.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'performance',
   tags: ['seo', 'metadata', 'structured-data', 'json-ld', 'open-graph', 'crawling', 'nextjs'],
 

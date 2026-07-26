@@ -2,7 +2,7 @@
   "name": "@vishwakarma/primitives",
   "version": "0.1.0",
   "description": "Headless, accessibility-first React primitives implementing the ARIA authoring patterns.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

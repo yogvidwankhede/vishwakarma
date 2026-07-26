@@ -120,6 +120,22 @@ AI-assisted engineering and gatekeeping on it would be incoherent. You are still
 responsible for it being original and correct, exactly as you would be for code you typed
 by hand.
 
+## Licensing of contributions
+
+Vishwakarma is licensed under Apache-2.0, and contributions come in under the same terms:
+**by opening a pull request, you agree that your contribution is licensed to the project and
+its users under Apache-2.0, and you confirm it is your own original work that you have the
+right to submit.** No separate paperwork is required — this inbound-equals-outbound rule is
+the norm for Apache projects and keeps the whole codebase under one clean licence.
+
+New source files should carry the standard header (run `node scripts/apply-license-headers.mjs`
+and it is added for you):
+
+```ts
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+```
+
 ## Pull requests
 
 Keep them focused. One concern per pull request; a change that touches nine packages is

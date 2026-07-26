@@ -2,7 +2,7 @@
   "name": "@vishwakarma/theme",
   "version": "0.1.0",
   "description": "Runtime theme engine: flash-free theme switching, density and contrast modes, multi-brand support.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

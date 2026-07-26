@@ -2,7 +2,7 @@
   "name": "@vishwakarma/registry",
   "version": "0.1.0",
   "description": "Component registry: schema, resolution, and dependency graph for copy-in source distribution.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

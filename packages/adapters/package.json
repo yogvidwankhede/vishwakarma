@@ -2,7 +2,7 @@
   "name": "@vishwakarma/adapters",
   "version": "0.1.0",
   "description": "Compiles Vishwakarma skills to every agent’s native format: Claude Code, Cursor, Windsurf, Codex, Gemini CLI and more.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

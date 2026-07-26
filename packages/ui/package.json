@@ -2,7 +2,7 @@
   "name": "@vishwakarma/ui",
   "version": "0.1.0",
   "description": "Styled React 19 component library built on Vishwakarma primitives and tokens.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

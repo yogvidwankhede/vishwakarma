@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import { accessibleComponents } from './catalog/accessible-components.js'
 import { validateManifest, estimateTokens, skillCost } from './manifest.js'
 const issues = validateManifest(accessibleComponents)

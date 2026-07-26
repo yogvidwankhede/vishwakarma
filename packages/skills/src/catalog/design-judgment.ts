@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -21,7 +24,7 @@ export const designJudgment: SkillManifest = {
   description:
     'Use when building or reviewing any user interface, to apply real design judgment and avoid the recognisable tells of generated UI.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'ux',
   tags: ['design', 'taste', 'critique', 'hierarchy', 'quality'],
 

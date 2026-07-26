@@ -20,7 +20,7 @@ export const cardDesign: SkillManifest = {
   name: 'Card Design',
   description: 'Use when building cards, tiles, or any repeated content container.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'ui',
 
   activation: {

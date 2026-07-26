@@ -2,7 +2,7 @@
   "name": "@vishwakarma/motion",
   "version": "0.1.0",
   "description": "Motion primitives implementing the Vishwakarma Motion Grammar, with reduced-motion built in.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

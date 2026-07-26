@@ -2,7 +2,7 @@
   "name": "@vishwakarma/skills",
   "version": "0.1.0",
   "description": "The Vishwakarma skill catalog and the VSM manifest format, schema, and validator.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

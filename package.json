@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "The AI frontend engineering ecosystem. Skills, design intelligence, motion, and components that any coding agent can install.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "packageManager": "pnpm@10.15.0",
   "engines": {
@@ -26,7 +26,9 @@
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm install --lockfile-only",
     "release": "turbo run build --filter=./packages/* && changeset publish",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "license:headers": "node scripts/apply-license-headers.mjs",
+    "license:check": "node scripts/apply-license-headers.mjs --check"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.0",

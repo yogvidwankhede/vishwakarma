@@ -1,4 +1,6 @@
 'use client'
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
 
 import type { CSSProperties, ElementType, ReactNode, Ref } from 'react'
 import { SCROLL_RANGES, type ScrollRange } from './geometry.js'

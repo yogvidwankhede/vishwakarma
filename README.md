@@ -1,24 +1,26 @@
 <div align="center">
 
-# 🕉️ Vishwakarma
+<a href="#-why-this-exists">
+  <img src="assets/banner.png" alt="Vishwakarma — Design intelligence for AI coding agents" width="100%" />
+</a>
 
-### Design intelligence for AI coding agents
+<h1></h1>
 
-**Teach any coding agent to build interfaces that look *designed* — not *generated* — and give it the tools to prove it.**
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-22c55e.svg?style=for-the-badge)](LICENSE)
+[![Packages](https://img.shields.io/badge/packages-18-3d5afe.svg?style=for-the-badge)](#-the-packages)
+[![Skills](https://img.shields.io/badge/skills-21-8b5cf6.svg?style=for-the-badge)](#-the-skill-catalog)
+[![Rules](https://img.shields.io/badge/rules-406-ec4899.svg?style=for-the-badge)](#-the-skill-catalog)
+[![Tests](https://img.shields.io/badge/tests-215%20passing-22c55e.svg?style=for-the-badge)](#)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
-[![Packages](https://img.shields.io/badge/packages-18-3d5afe.svg)](#-the-packages)
-[![Skills](https://img.shields.io/badge/skills-21-8b5cf6.svg)](#-the-skill-catalog)
-[![Rules](https://img.shields.io/badge/rules-406-ec4899.svg)](#-the-skill-catalog)
-[![Tests](https://img.shields.io/badge/tests-215%20passing-22c55e.svg)](#)
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6.svg)](#)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-3d5afe.svg)](CONTRIBUTING.md)
+**Teach any coding agent to build interfaces that look _designed_ — not _generated_ — and give it the tools to prove it.**
 
 Works with **Claude Code · Cursor · Windsurf · Cline · Roo Code · Codex · Gemini CLI · Copilot · Continue · Zed · Aider** — and any MCP client.
 
 ```bash
 npx vishwakarma init
 ```
+
+<sub>Open source · Apache-2.0 · TypeScript · Zero telemetry</sub>
 
 </div>
 
@@ -319,11 +321,15 @@ Violations show up as **inline annotations** on the pull request. Errors fail th
 
 ---
 
-## ⚖️ Original work, and proud of it
+## ⚖️ Licence, ownership & original work
 
-Every line of code, every skill, every token was **written from scratch** for this project. It was *informed* by studying prior art — reading about what other projects do well and *why* — then designing our own solutions. A principle isn't copyrightable; an expression of it is. We took the former and wrote the latter ourselves.
+Vishwakarma is **open source under the [Apache License 2.0](LICENSE)** — use it, build on it, ship it commercially. All it asks is that you keep the copyright and licence notices, and note any changes you make. Apache-2.0 also gives you an explicit patent grant, which plain MIT does not.
 
-CI enforces it: a dependency with a non-permissive licence fails the build, and a source file carrying a foreign copyright header fails the build. See [ORIGINALITY.md](ORIGINALITY.md) for the full policy — including an incident we caught, fixed, and documented rather than hid.
+Every line of code, every skill, every token was **written from scratch** for this project — informed by studying prior art, then designing our own solutions. A principle isn't copyrightable; an expression of it is. We took the former and wrote the latter ourselves. Every source file carries a copyright + `SPDX` header, so each file stays self-identifying even if it's lifted out of context.
+
+> **"Vishwakarma" is a trademark of the project owner.** The code is yours to fork and build on; the *name* is not. That's the standard split — Apache protects the code, the trademark protects the identity. See [ORIGINALITY.md](ORIGINALITY.md) for the full policy.
+
+CI enforces originality: a dependency with a non-permissive licence fails the build, and a source file carrying a *foreign* copyright header fails the build.
 
 **Zero telemetry. Zero network calls at runtime. No paid tier for any published feature.**
 
@@ -345,6 +351,6 @@ CI enforces it: a dependency with a non-permissive licence fails the build, and 
 
 [Get started](docs/getting-started.md) · [Browse the skills](#-the-skill-catalog) · [Read the architecture](docs/architecture.md) · [Contribute](CONTRIBUTING.md)
 
-**MIT Licensed** · Made with care for people who care how things look *and* work.
+**Apache-2.0 Licensed** · Made with care for people who care how things look *and* work.
 
 </div>

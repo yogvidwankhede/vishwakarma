@@ -2,7 +2,7 @@
   "name": "@vishwakarma/audit",
   "version": "0.1.0",
   "description": "Static and runtime auditors that evaluate generated UI against a Design Contract.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

@@ -51,30 +51,57 @@ architecture, the relevant architecture document says so by name.
 - We did not copy design assets, icons, illustrations, fonts, or brand marks.
 - We did not vendor code from proprietary or source-available projects.
 
-## Dependency licensing
+## Licensing
 
-Vishwakarma is MIT licensed. Every runtime dependency and every optional peer dependency
-is under a permissive license (MIT, Apache-2.0, BSD, or ISC) that is compatible with MIT
-and imposes no copyleft obligation on users of this library.
+Vishwakarma is licensed under the Apache License, Version 2.0. In plain terms: anyone may
+use, modify, and distribute this software — including commercially — provided they keep the
+copyright and license notices and state any changes they make. Apache-2.0 additionally
+grants users an explicit patent license and, importantly, does *not* grant any right to the
+Vishwakarma name or branding (see Trademarks below).
 
-We do not take a runtime dependency on any package whose license restricts commercial
-use, requires a paid tier for any published feature, or requires attribution beyond the
-standard MIT notice.
+Copyright in this work belongs to Yogvid Wankhede and the project's contributors. Copyright
+arises automatically on creation; the LICENSE file states the terms under which it is
+shared, and the NOTICE file records the attribution that any redistribution must carry.
 
-Dependency licenses are checked in CI. A pull request that introduces a dependency with
-an unrecognised or non-permissive license fails the build.
+Every source file additionally carries a short copyright and `SPDX-License-Identifier`
+header, so that an individual file remains self-identifying about its origin and terms even
+if it is copied out of this repository in isolation.
+
+Every runtime dependency and every optional peer dependency is under a permissive license
+(MIT, Apache-2.0, BSD, or ISC) that is compatible with Apache-2.0 and imposes no copyleft
+obligation on users of this library. We do not take a runtime dependency on any package
+whose license restricts commercial use, requires a paid tier for any published feature, or
+imposes an attribution burden beyond a standard notice. Dependency licenses are checked in
+CI, and a pull request that introduces an unrecognised or non-permissive license fails the
+build.
+
+## Contributions
+
+Contributions are accepted under the project's license: by submitting a contribution, you
+agree that it is licensed to the project and its users under Apache-2.0, and you affirm that
+it is your own original work and that you have the right to contribute it. This
+inbound-equals-outbound arrangement keeps the whole codebase under one clear license, which
+is what allows the project to be relied upon and, if the maintainers ever choose, formally
+registered or offered under an additional commercial license.
 
 ## Trademarks
 
-"Vishwakarma" is used here as the name of a software project. The word is drawn from the
-figure of the divine architect and craftsman in Indian tradition, chosen for its meaning
-— design, making, craft — and used with respect. The project is secular, is not
-affiliated with any religious institution, and makes no religious claim.
+**"Vishwakarma" is a trademark of Yogvid Wankhede.** The name is used here as the identity
+of a software project. The Apache License granted over the *code* deliberately grants no
+rights to the *name*: anyone is free to fork, adapt, and build on the software, but they may
+not present their fork under the Vishwakarma name or use its branding in a way that implies
+endorsement or origin. This is the standard and intended separation — copyright protects the
+code, the trademark protects the identity — and it is asserted here as a common-law mark;
+formal registration is a further step the owner may take.
 
-Any third-party names appearing in this repository (framework names, library names,
-company names) are the trademarks of their respective owners and are used only for
-identification and interoperability — for example, to state which agent a generated
-config file targets. Their appearance does not imply endorsement.
+The word is drawn from the figure of the divine architect and craftsman in Indian tradition,
+chosen for its meaning — design, making, craft — and used with respect. The project is
+secular, is not affiliated with any religious institution, and makes no religious claim.
+
+Any third-party names appearing in this repository (framework names, library names, company
+names) are the trademarks of their respective owners and are used only for identification
+and interoperability — for example, to state which agent a generated config file targets.
+Their appearance does not imply endorsement.
 
 ## An incident, recorded
 

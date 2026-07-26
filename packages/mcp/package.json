@@ -2,7 +2,7 @@
   "name": "@vishwakarma/mcp",
   "version": "0.1.0",
   "description": "Model Context Protocol server exposing Vishwakarma skills, tokens, components, and audits to any MCP client.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -21,7 +24,7 @@ export const layoutComposition: SkillManifest = {
   description:
     'Use when structuring a page or component, choosing between flow, flex and grid, or fixing overflow, stacking, alignment, or layout shift.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'layout',
   tags: ['grid', 'flexbox', 'container-queries', 'composition', 'overflow', 'z-index', 'bento'],
 

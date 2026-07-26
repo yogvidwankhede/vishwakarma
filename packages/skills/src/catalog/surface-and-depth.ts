@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -20,7 +23,7 @@ export const surfaceAndDepth: SkillManifest = {
   description:
     'Use when applying shadows, elevation, glass, gradients, or corner radii, or when an interface looks flat, cheap, or physically incoherent.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'ui',
   tags: ['elevation', 'shadow', 'glassmorphism', 'gradient', 'border-radius', 'depth', 'surface'],
 

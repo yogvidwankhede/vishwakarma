@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import { describe, expect, it } from 'vitest'
 import { planBentoSpans } from './bento.js'
 import { SPACE_ALIASES, SPACE_STEPS, resolveSpace, spaceVar } from './space.js'

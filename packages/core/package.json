@@ -2,7 +2,7 @@
   "name": "@vishwakarma/core",
   "version": "0.1.0",
   "description": "Design intelligence primitives: perceptual colour, modular scales, the Motion Grammar, and the Design Contract checker.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

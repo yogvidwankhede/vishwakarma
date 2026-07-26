@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -22,7 +25,7 @@ export const themingSystems: SkillManifest = {
   description:
     'Use when building design tokens, adding dark mode or multi-brand theming, wiring a theme switcher, or supporting forced-colors, density, or RTL.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'foundation',
   tags: [
     'theming',

@@ -2,7 +2,7 @@
   "name": "@vishwakarma/layout",
   "version": "0.1.0",
   "description": "Composition primitives: intrinsic layouts, bento grids, container-query components, and full-bleed sections.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

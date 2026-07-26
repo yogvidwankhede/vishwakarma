@@ -2,7 +2,7 @@
   "name": "@vishwakarma/tailwind",
   "version": "0.1.0",
   "description": "Tailwind CSS v4 preset generated from Vishwakarma design tokens.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

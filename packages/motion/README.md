@@ -15,4 +15,4 @@ reference is under `docs/packages/motion`.
 
 ## Licence
 
-MIT — see [LICENSE](https://github.com/yogvidwankhede/vishwakarma/blob/main/LICENSE).
+Apache-2.0 — see [LICENSE](https://github.com/yogvidwankhede/vishwakarma/blob/main/LICENSE).

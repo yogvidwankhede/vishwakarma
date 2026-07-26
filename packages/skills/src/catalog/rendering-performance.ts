@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -17,7 +20,7 @@ export const renderingPerformance: SkillManifest = {
   description:
     'Use when a page feels slow or janky, when optimising Core Web Vitals, or when writing code that renders, animates, or re-renders frequently.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'performance',
   tags: ['performance', 'core-web-vitals', 'lcp', 'inp', 'cls', 'react', 'rendering', 'jank'],
 

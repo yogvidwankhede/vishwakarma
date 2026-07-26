@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -20,7 +23,7 @@ export const interfaceCopy: SkillManifest = {
   description:
     'Use when writing or reviewing any user-facing words — button labels, errors, empty states, dialogs, tooltips, form hints, or accessible names.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'content',
   tags: ['microcopy', 'ux-writing', 'content-design', 'errors', 'empty-states', 'i18n', 'a11y'],
 

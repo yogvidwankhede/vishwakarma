@@ -1,4 +1,6 @@
 'use client'
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
 
 import { type CssOptions, type TokenSet, toCss } from '@vishwakarma/tokens'
 import { type ReactNode, useMemo } from 'react'

@@ -2,7 +2,7 @@
   "name": "@vishwakarma/tokens",
   "version": "0.1.0",
   "description": "Design token schema, the default token set, and transforms to CSS, Tailwind, and TypeScript.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
   "keywords": [

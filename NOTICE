@@ -1,0 +1,26 @@
+Vishwakarma
+Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+
+This product is licensed under the Apache License, Version 2.0 (the "License").
+You may obtain a copy of the License in the accompanying LICENSE file, or at
+http://www.apache.org/licenses/LICENSE-2.0.
+
+Every part of this work — source code, documentation, skill instructions, design
+tokens, and the "Vishwakarma" name and branding — is original work created for
+this project. It was informed by studying prior art in the field, but nothing in
+it is copied, transcribed, or mechanically derived from another project's source,
+documentation, or design. See ORIGINALITY.md for the full policy.
+
+"Vishwakarma" is a trademark of Yogvid Wankhede. The Apache License granted over
+the software does not grant any right to use this name or associated branding,
+except as required for reasonable and customary use in describing the origin of
+the work (see Section 6 of the License).
+
+Third-party names that appear in this work (framework names, library names,
+company names, and the names of the AI coding agents this toolkit generates
+configuration for) are the trademarks of their respective owners and are used
+only for identification and interoperability. Their appearance does not imply
+any endorsement.
+
+If you redistribute this work or a derivative of it, the Apache License requires
+you to retain this NOTICE file and the attribution it contains.

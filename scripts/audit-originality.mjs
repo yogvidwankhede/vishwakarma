@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Originality guard.
  *
@@ -31,11 +34,13 @@ const SKIP_DIRS = new Set([
 /** Files that legitimately discuss provenance and must be exempt from the scan. */
 const EXEMPT_FILES = new Set([
   'LICENSE',
+  'NOTICE',
   'ORIGINALITY.md',
   'CODE_OF_CONDUCT.md',
   'NOTICE',
   'scripts/audit-originality.mjs',
   'scripts/audit-licenses.mjs',
+  'scripts/apply-license-headers.mjs',
 ])
 
 const SCANNED_EXTENSIONS = new Set([

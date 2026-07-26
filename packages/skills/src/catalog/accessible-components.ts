@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -20,7 +23,7 @@ export const accessibleComponents: SkillManifest = {
   description:
     'Use when building or fixing an interactive component — dialog, menu, tabs, combobox, tooltip — or handling focus, ARIA, or keyboard support.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'accessibility',
   tags: ['accessibility', 'a11y', 'aria', 'keyboard', 'focus', 'wcag', 'screen-reader'],
 

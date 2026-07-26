@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -20,7 +23,7 @@ export const typographicSystems: SkillManifest = {
   description:
     'Use when choosing typefaces, building a type scale, setting line-height, tracking, or measure, or loading webfonts without layout shift.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'ui',
   tags: ['typography', 'type-scale', 'fonts', 'readability', 'cls', 'variable-fonts'],
 

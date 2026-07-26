@@ -1,3 +1,6 @@
+// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { SkillManifest } from '../manifest.js'
 
 /**
@@ -25,7 +28,7 @@ export const microInteractions: SkillManifest = {
   description:
     'Use when building presses, toggles, hovers, drags, swipes, toasts, or loading states — any small feedback behaviour that must feel responsive.',
   version: '1.0.0',
-  license: 'MIT',
+  license: 'Apache-2.0',
   category: 'motion',
   tags: ['micro-interaction', 'feedback', 'gesture', 'haptics', 'press', 'hover', 'toast'],
 
