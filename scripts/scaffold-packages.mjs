@@ -221,7 +221,7 @@ const PACKAGES = [
   },
 ]
 
-const REPO_URL = 'https://github.com/vishwakarma-dev/vishwakarma'
+const REPO_URL = 'https://github.com/yogvidwankhede/vishwakarma'
 
 function packageJson(pkg) {
   const isReact = pkg.kind === 'react'

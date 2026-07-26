@@ -10,9 +10,9 @@ pnpm add @vishwakarma/cli
 
 ## Documentation
 
-Full documentation lives at [the Vishwakarma docs](https://github.com/vishwakarma-dev/vishwakarma#readme). This package's
+Full documentation lives at [the Vishwakarma docs](https://github.com/yogvidwankhede/vishwakarma#readme). This package's
 reference is under `docs/packages/cli`.
 
 ## Licence
 
-MIT — see [LICENSE](https://github.com/vishwakarma-dev/vishwakarma/blob/main/LICENSE).
+MIT — see [LICENSE](https://github.com/yogvidwankhede/vishwakarma/blob/main/LICENSE).
