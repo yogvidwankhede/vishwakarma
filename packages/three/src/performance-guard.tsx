@@ -1,8 +1,8 @@
 'use client'
 
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { type QualityTier, degradeQuality } from './capability.js'
 import { budgetFor } from './budgets.js'
+import { degradeQuality, type QualityTier } from './capability.js'
 import { SceneQualityContext, type SceneQualityValue } from './scene-runtime.js'
 
 /**

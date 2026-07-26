@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import {
+  assessDeviceCapability,
   type CapabilityOptions,
   type DeviceCapability,
   type QualityTier,
   UNPROBED_CAPABILITY,
-  assessDeviceCapability,
 } from './capability.js'
 
 /**

@@ -11,6 +11,8 @@ export { accessibleComponents } from './accessible-components.js'
 export { colourSystems } from './colour-systems.js'
 export { componentArchitecture } from './component-architecture.js'
 export { designJudgment } from './design-judgment.js'
+export { designTokens } from './design-tokens.js'
+export { informationArchitecture } from './information-architecture.js'
 export { interactionDesign } from './interaction-design.js'
 export { interfaceCopy } from './interface-copy.js'
 export { layoutComposition } from './layout-composition.js'
@@ -27,6 +29,8 @@ import { accessibleComponents } from './accessible-components.js'
 import { colourSystems } from './colour-systems.js'
 import { componentArchitecture } from './component-architecture.js'
 import { designJudgment } from './design-judgment.js'
+import { designTokens } from './design-tokens.js'
+import { informationArchitecture } from './information-architecture.js'
 import { interactionDesign } from './interaction-design.js'
 import { interfaceCopy } from './interface-copy.js'
 import { layoutComposition } from './layout-composition.js'
@@ -45,6 +49,8 @@ export const catalog: SkillManifest[] = [
   colourSystems,
   componentArchitecture,
   designJudgment,
+  designTokens,
+  informationArchitecture,
   interactionDesign,
   interfaceCopy,
   layoutComposition,

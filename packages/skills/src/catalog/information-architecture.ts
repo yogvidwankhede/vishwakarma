@@ -116,9 +116,8 @@ visual design, and ask people to find things; success rate and first-click accur
 structure from styling. **Card sorting** to generate groups — but treat it as input, not
 verdict: participants sort by surface similarity and agree only at the extremes.
 
-Reject invented category words. "Solutions", "Resources", "Workspace", "Insights" and "Hub"
-carry no scent because they mean whatever the writer wanted. If a label needs a tooltip, it is
-not a label.
+Reject invented category words. "Solutions", "Resources", "Workspace" and "Hub" carry no scent
+because they mean whatever the writer wanted. If a label needs a tooltip, it is not a label.
 
 ---
 
@@ -171,18 +170,18 @@ Wrap regions in landmarks — \`<header>\`, \`<nav>\`, \`<main>\` (exactly one),
 a landmark list reads "navigation, navigation, navigation".
 
 Scannability follows from the same outline. Front-load headings: readers fixate the first two
-words, so "Refund policy for annual plans" beats "What you need to know about refunds". Chunk
-prose under headings rather than running it long. Mark up the *current* nav item with
-\`aria-current="page"\`, not with colour alone.
+words, so "Refund policy: annual plans" beats "What you need to know about refunds". Chunk
+prose under headings rather than running it long, and mark the *current* nav item with
+\`aria-current="page"\`, not colour alone.
 
 ---
 
 ## 7. Search, filters, facets, URLs
 
-Search is navigation for people who already know the name. It is a complement to structure,
-never a repair for it — a user who cannot guess your labels also cannot guess your keywords.
-Above roughly 30 destinations, add a command palette; it collapses depth to one keystroke for
-the experienced without flattening anything for the novice.
+Search is navigation for people who already know the name: a complement to structure, never a
+repair for it, since a user who cannot guess your labels cannot guess your keywords. Above
+~30 destinations add a command palette; it collapses depth to one keystroke for the
+experienced without flattening anything for the novice.
 
 **Filters narrow a known set; facets describe it.** A facet shows its result count and derives
 from the data, so a facet with zero matches is disabled or absent — never a dead option. A
@@ -192,15 +191,15 @@ nearest non-empty query.
 **URLs are IA made durable.** Every distinct view needs its own address, hierarchical and
 readable — \`/projects/atlas/settings/members\`, not \`/app#tab=3\`. A view you cannot link
 to cannot be bookmarked, shared, or reported in a bug. When a label changes, redirect the old
-path permanently; changing structure without redirects destroys accumulated navigation
-knowledge held outside your product.
+path permanently: restructuring without redirects destroys the navigation knowledge held
+outside your product.
 
 ---
 
 ## The failure modes
 
-- **Navigation mirroring the org chart.** Users do not know your teams. A section per
-  department guarantees that every cross-team task crosses navigation.
+- **Navigation mirroring the org chart.** Users do not know your teams; a section per
+  department guarantees every cross-team task crosses navigation.
 - **"Miscellaneous" or "Other".** A category defined by what it is not has no scent, and it
   grows monotonically because everything ambiguous lands there.
 - **Hamburger menus on desktop.** Hiding all navigation behind one control on a viewport with
@@ -209,8 +208,8 @@ knowledge held outside your product.
   two-level site they add a row and no information. They are not history.
 - **Tabs for non-peers.** Tabs claim their contents are alternatives at the same level. Using
   them for sequential steps hides progress and breaks the back button.
-- **Headings chosen by size.** \`<h4>\` selected because it looked right destroys the outline
-  for every user who navigates by structure rather than by eye.`,
+- **Headings chosen by size.** An \`<h4>\` picked because it looked right destroys the outline
+  for everyone navigating by structure.`,
 
     references: [
       {

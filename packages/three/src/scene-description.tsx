@@ -71,7 +71,7 @@ export interface AccessibleSceneProps {
   children: ReactNode
   /**
    * A short name for the scene, used as its accessible name. Describe what it *is*, not
-   * that it is 3D — "Herman Miller Aeron chair, front three-quarter view", not "3D model".
+   * that it is 3D — "office chair, front three-quarter view", not "3D model".
    */
   label: string
   /**

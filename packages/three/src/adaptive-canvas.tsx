@@ -1,15 +1,11 @@
 'use client'
 
-import { type CSSProperties, type ReactNode, Suspense, lazy, useCallback, useRef } from 'react'
-import type { QualityTier } from './capability.js'
+import { type CSSProperties, lazy, type ReactNode, Suspense, useCallback, useRef } from 'react'
 import { budgetFor } from './budgets.js'
-import {
-  type CanvasLikeProps,
-  type RootStateLike,
-  loadCanvasComponent,
-} from './optional-peers.js'
-import { RenderHandleContext, createRenderHandle, useSceneQuality } from './scene-runtime.js'
+import type { QualityTier } from './capability.js'
+import { type CanvasLikeProps, loadCanvasComponent, type RootStateLike } from './optional-peers.js'
 import { SceneBoundary } from './scene-boundary.js'
+import { createRenderHandle, RenderHandleContext, useSceneQuality } from './scene-runtime.js'
 
 /**
  * A canvas with defaults chosen for a web page rather than for a demo.

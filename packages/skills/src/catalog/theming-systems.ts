@@ -20,7 +20,7 @@ export const themingSystems: SkillManifest = {
   id: 'theming-systems',
   name: 'Theming Systems',
   description:
-    'Use when building design tokens, adding dark mode or multi-brand theming, wiring a theme switcher, or supporting high-contrast, density, or RTL modes.',
+    'Use when building design tokens, adding dark mode or multi-brand theming, wiring a theme switcher, or supporting forced-colors, density, or RTL.',
   version: '1.0.0',
   license: 'MIT',
   category: 'foundation',
@@ -77,145 +77,147 @@ export const themingSystems: SkillManifest = {
     summary:
       'Build themes as layered tokens resolved through CSS custom properties, switch them before first paint, and treat dark, forced-colors, density and RTL as separate design problems rather than as inversions of the default.',
 
-    body: `# Motion Design
+    body: `# Theming Systems
 
-Motion is the only channel that can express *change*: where something came from, what caused
-it, whether it is still the same object. Static design says what things are; motion says what
-just happened. Anything animated that says nothing is a delay you imposed.
+A theme is not a palette. It is a **mapping from role to value**, plus the machinery that
+swaps one mapping for another without the user seeing the seam. Get the mapping wrong and
+adding a theme means editing components. Get the machinery wrong and every cold load shows
+the wrong theme for 200ms.
 
-So the question is never "how long" but **"what does this tell the user that the start and
-end frames do not?"** Only four answers count: **origin and destination** (a dialog scaling
-from its trigger *is* that button expanded; one appearing dead-centre forces a re-parse),
-**causality** (motion on the frame the user acts binds effect to cause; past ~100ms the two
-read as separate events), **continuity** (moving elements through a reorder preserves object
-identity, cutting destroys it), and **feedback** (input received, or refused). Fail all four
-and delete it — that test alone removes most motion in generated interfaces.
+## 1. Three layers
 
-## 1. Motion Grammar
+\`\`\`css
+--grey-50: oklch(0.97 0.004 260);   /* primitive: what it is. Theme-invariant. */
+--brand-600: oklch(0.58 0.16 255);
+--surface: var(--grey-50);          /* semantic:  what it means. One set per theme. */
+--accent: var(--brand-600);
+--btn-primary-bg: var(--accent);    /* component: where it is used. The override seam. */
+\`\`\`
 
-Eight intents, each with its own parameters.
+Primitives are a vocabulary and never appear in a component. The semantic layer *is* the
+theme — the only layer a theme file rewrites, and the only level at which a contract like
+"\`--fg\` clears 4.5:1 on \`--surface\` in every theme" is statable.
 
-| Intent | Duration | Curve | Property |
-|---|---|---|---|
-| **enter** | 200-300ms | decelerate | opacity + translate |
-| **exit** | 120-180ms | accelerate | opacity + translate |
-| **transform** | 250-350ms | ease-in-out | transform |
-| **respond** | 60-120ms | ease-out | scale/opacity |
-| **attract** | 500ms, max 3 cycles | ease-in-out | transform |
-| **occupy** | looping | linear | transform |
-| **affirm** | 300-400ms | overshoot | scale |
-| **reject** | 350ms, 2 cycles | decaying | translateX 6px |
+The component layer earns its keep for one reason: **it is the only place a one-off can live
+without a hardcoded value or a polluted global vocabulary.** When the pricing page's primary
+button must use the success hue, without it you either hardcode \`#1f8a4c\` or add
+\`--accent-alt\` globally — a global name for a local problem.
+Create component tokens when a second consumer or an override appears, not before, and alias
+semantic tokens from them, never primitives. A flat set of renamed hex values is the
+primitive layer with the other two missing, and will not survive dark mode.
 
-**occupy alone may loop forever**, and only while an operation is outstanding.
+## 2. How custom properties resolve, and the trap
 
-## 2. Easing is a physical story
+Custom properties are inherited and substituted at computed-value time, so a \`var()\` resolves
+against the element that *declares* it, not the one that *uses* it:
 
-A curve is an acceleration profile, and acceleration implies a cause. **Entrances
-decelerate** — \`cubic-bezier(0.16, 1, 0.3, 1)\`: the element arrives carrying momentum and
-settles where the user must read it. **Exits accelerate** — \`cubic-bezier(0.4, 0, 1, 1)\`:
-it is departing, so there is nothing to read. **On-screen transforms use both**,
-\`cubic-bezier(0.4, 0, 0.2, 1)\`. **Never \`linear\`** outside loops and gesture-tracked
-motion: zero then infinite acceleration matches no physical event.
+\`\`\`css
+:root { --accent: var(--brand-600); --btn-bg: var(--accent); }
+[data-brand="acme"] { --accent: var(--acme-600); }   /* button does not change */
+\`\`\`
 
-The commonest motion bug in shipped UI is **an entrance curve on an exit** — a modal easing
-gently out as it closes. The user has already decided; making them watch a leisurely
-departure is making them wait, and it is why interfaces feel sluggish when nothing is slow.
-Run exits at **60-70%** of the matching entrance.
+\`--btn-bg\` computed on \`:root\`, where \`--accent\` was still the default, and the subtree
+inherits that already-substituted value. **A token that must vary per subtree has to be
+referenced below the override point, not resolved above it** — declare component tokens on
+the component's own selector, \`.btn { background: var(--btn-bg, var(--accent)) }\`, or
+redeclare every derived token in the block that overrides its input.
 
-## 3. Duration comes from perception
+Two further mechanics. A \`var()\` with no value invalidates the *whole declaration* at
+computed-value time, so the property resolves to \`unset\` — for \`color\`, inherited rather than
+ignored, which can hand an element a foreground identical to its background. And an
+\`@property\` registration with \`inherits: false\` can never be a theme token.
 
-Below **~100ms** a change reads as instantaneous and binds causally to its trigger: the
-budget for press and hover. At **200-300ms** the eye can track an object and learn its path
-— enters and transforms. Past **~400ms** motion stops being information and becomes a wait.
+## 3. Switching without a flash
 
-**Duration scales sublinearly with distance**, since perceived speed is judged from angular
-velocity: use roughly the square root of distance, clamped to 150-400ms.
+Resolution order is fixed: **explicit stored choice, then system preference, then product
+default.** Anything else means a user who chose light gets dark at sunset.
 
-## 4. Springs: damping ratio, not stiffness
+It must run in a **parser-blocking inline \`<script>\` in \`<head>\`, above the stylesheets.**
+Not \`defer\`, not \`type="module"\`, not external, not a framework effect — those all execute
+after first paint, so the correction is a repaint of a page the user has already seen. Inline
+specifically, because an external synchronous script blocks the parser for a network round
+trip, trading the flash for a blank screen. Under a strict CSP give it a nonce or hash rather
+than moving it. Exact script in the flash-free reference.
 
-Mass, stiffness and damping are unreasonable to tune directly because they are coupled:
-raising stiffness makes motion both faster *and* bouncier, so every fix to speed breaks
-feel. Reparameterise. Natural frequency **ω₀ = √(k/m)** sets how long it takes; damping ratio
-**ζ = c / (2√(km))** sets how far it overshoots. They are orthogonal, which is the only
-reason a human can tune them, and modern spring APIs expose exactly this pair as *duration*
-and *bounce* = 1 − ζ.
+## 4. \`color-scheme\` is not optional
 
-**ζ = 1** is critically damped: fastest arrival, zero overshoot, correct for anything
-carrying text. **ζ ≈ 0.75** gives one small overshoot; **ζ < 0.5** oscillates visibly and
-delays legibility. The real advantage is not bounce — a spring carries state, so it
-re-targets mid-flight without discontinuity.
+\`\`\`css
+:root { color-scheme: light dark; }
+[data-theme="dark"] { color-scheme: dark; }
+\`\`\`
 
-## 5. Stagger, with compression
+It controls what CSS cannot reach: the canvas background before your stylesheet arrives,
+scrollbars, the default rendering of \`<select>\`, date and colour pickers, checkboxes,
+spellcheck underlines, and the used values of the system colour keywords. Without it a dark
+page gets light scrollbars and a blinding native date picker, and \`light-dark()\` does not
+resolve. Update it when the user overrides the system, and add
+\`<meta name="color-scheme" content="light dark">\` so the canvas is right before CSS arrives.
 
-40-60ms of offset reads a group as ordered, but a fixed per-item delay on a variable-length
-list is a trap: 30 items at 50ms leaves the last arriving 1.5s after the first. **Fix the
-total, not the step** — \`delay = min(50ms, 300ms / count)\` — and past eight items, stagger
-the first few and land the rest together.
+## 5. Three states, never a boolean
 
-## 6. Interruptibility is what "broken" means
+A boolean \`isDark\` collapses "the user chose light" and "the user has not chosen" into one
+bit, so the first touch of a toggle opts that user out of their system preference
+permanently. Store \`'light' | 'dark' | null\`, null meaning follow the system, and expose a
+three-option control: System, Light, Dark. In system mode, re-resolve on \`change\` from
+\`matchMedia('(prefers-color-scheme: dark)')\`, gating on the mode inside the listener so it
+never has to be re-subscribed.
 
-**A re-triggered animation must continue from the element's current position and velocity,
-never restart from its declared start value.** A dropdown 70% open when clicked again closes
-from 70%. Restarting jumps the element to a position it never occupied, and discontinuous
-position breaks object permanence: the viewer registers a *different object* rather than the
-same one moving. That is the perception users call glitchy.
+## 6. Multi-brand and runtime injection
 
-CSS transitions handle position for free — the computed value at interruption becomes the
-new start — but keyframes and imperative animations do not. Read the computed transform
-before cancelling, scale the remaining duration to the remaining distance, or use a spring
-integrator retaining \`(position, velocity)\`.
+Brand and theme are orthogonal: a brand swaps the **primitive** layer, a theme swaps the
+**semantic** layer. Compose them as independent root attributes,
+\`[data-brand="acme"][data-theme="dark"]\`, not one file per combination — that set grows as
+brands times themes and diverges wherever nobody looks.
 
-## 7. Gesture motion tracks input 1:1
+For runtime tenant themes, write primitives into a **single stylesheet** — one \`<style>\`, or
+a \`CSSStyleSheet\` in \`adoptedStyleSheets\` — not inline custom properties across many nodes,
+which sit atop the cascade and destroy the override seam. Validate every injected value: it
+lands in a declaration context, so an unvalidated one is a stylesheet injection.
 
-While the pointer is down the element follows it exactly — no easing, no smoothing, because
-the hand is the timing function and interpolation reads as the surface detaching from the
-touch. Easing applies **only on release**, with exit velocity as the settling animation's
-initial velocity. Decide the outcome by projecting where that velocity would carry the
-element rather than by displacement: a flick covering 15% of the distance was a completed
-gesture. Boundary resistance must be progressive, not a clamp.
+## 7. Dark is a design, not a transform
 
-## 8. Animate only what the compositor can animate
+Elevation reverses — higher surfaces become *lighter*, because a shadow has nothing left to
+darken into. Accent chroma drops 25-40% as lightness rises, because saturated colour on
+near-black glows. Both extremes are wrong: L 0.18 darkest surface, L 0.94 brightest
+foreground. And foreground-on-accent often flips white to dark once the accent lightens —
+the missed check.
 
-Rendering runs style → layout → paint → composite. \`transform\`, \`opacity\`, \`filter\`,
-\`backdrop-filter\` and the individual \`translate\`/\`rotate\`/\`scale\` properties are handled
-on the compositor thread, so they survive a busy main thread.
+## 8. Forced colours is a different problem
 
-**Layout-triggering — never animate:** \`width\`, \`height\`, \`top\`, \`right\`, \`bottom\`,
-\`left\`, \`margin\`, \`padding\`, \`border-width\`, \`font-size\`, \`line-height\`, \`gap\`,
-\`flex-basis\`, \`grid-template-*\`. Each forces layout every frame, for the element and
-everything positioned relative to it. \`box-shadow\` and \`border-radius\` only repaint, but
-over a large area that is costly too.
+\`@media (forced-colors: active)\` means the user agent has replaced your colours with a small
+user-chosen palette: author backgrounds are overridden, \`box-shadow\` is dropped, background
+images may be removed. **Everything expressed only through background colour or elevation
+disappears** — selected rows, active tabs, status chips, card boundaries, shadow-based focus
+rings. The interface does not get more contrast; it gets more ambiguous.
 
-Substitute. Height-to-auto: animate \`grid-template-rows: 0fr → 1fr\` on a grid wrapper with
-\`min-height: 0\` and \`overflow: hidden\` on the child (\`interpolate-size: allow-keywords\`
-with \`calc-size()\` is native but not yet Baseline). Width: \`scaleX()\` with an inverse
-\`scaleX()\` on children, or \`clip-path: inset()\`. Position: \`translate\`. Shadow:
-cross-fade a pseudo-element.
+Re-express state in what survives — borders, outlines, underlines — and use the system
+keywords \`Canvas\`, \`CanvasText\`, \`ButtonFace\`, \`ButtonText\`, \`ButtonBorder\`, \`Field\`,
+\`Highlight\`, \`HighlightText\`, \`LinkText\`, \`GrayText\` and \`AccentColor\`, which resolve to the
+user's own palette. Reserve \`forced-color-adjust: none\` for elements whose colour *is* the
+content — swatches, chart series, brand marks — and own their contrast yourself.
+\`prefers-contrast: more\` is a separate signal asking you to raise your own contrast; it does
+not imply forced colours.
 
-**FLIP** animates a layout change without animating layout. Record
-\`getBoundingClientRect()\`, apply the change, measure again, apply a transform mapping the
-new rect onto the old so the element appears not to have moved, then animate it to identity.
-Layout runs once; every frame after is a compositor transform. Use \`transform-origin: 0 0\`
-and counter-scale text children.
+## 9. Density and direction are theme axes too
 
-## 9. Reduced motion: remove spatial, keep signal
+Density is a scale factor over spacing and size tokens, not a second component library:
+\`--density: 1 | 0.85 | 1.15\`, with \`--control-h: calc(2.5rem * var(--density))\`. It works
+only if nothing hardcodes padding or height, and compact must not push targets below 24 by 24
+CSS pixels (WCAG 2.2 SC 2.5.8) or type below 12px.
 
-\`prefers-reduced-motion: reduce\` reports a medical condition: large-field motion produces
-genuine nausea and dizziness in people with vestibular disorders. **Remove** translation over
-distance, parallax, scale and zoom, rotation, and autoplaying or looping motion; **keep**
-opacity cross-fades, colour transitions, and local movement under 20px.
+Direction is the same shape. Use logical properties throughout — \`margin-inline-start\`,
+\`padding-block\`, \`inset-inline-end\`, \`border-start-start-radius\`, \`text-align: start\` — so
+\`dir="rtl"\` on the root is the whole change. Directional icons (back, next) mirror;
+representational ones (a clock, a check, a logo) do not.
 
-Zeroing every duration is the wrong reduction and makes the interface *harder* to follow:
-these users still need a change-of-state cue, and without the fade elements teleport with no
-sign anything happened. Substitute a 100-150ms opacity change.
+## The failures, named
 
-## 10. \`will-change\` discipline
-
-\`will-change\` promotes an element to its own compositor layer at roughly width × height × 4
-bytes of GPU memory, held for as long as the declaration applies, so declaring it broadly
-exhausts that memory and degrades compositing everywhere. Add it just before an animation and
-remove it after; since browsers already promote running compositor animations, the correct
-amount is usually none.`,
+- **Theme flash.** Preference read in an effect or async store. Fatal on every cold load.
+- **Hardcoded colours.** One \`#fff\` defeats the whole system, silently.
+- **\`filter: invert(1)\` dark mode.** Rotates every hue 180 degrees; wrecks photos and logos.
+- **Ignoring forced colours.** A careful palette becomes an unreadable flat grid.
+- **Transitioning the switch.** Hundreds of concurrent colour transitions read as a wash.
+- **Assuming symmetry.** Contrast passing in light rarely passes in dark unchecked.`,
 
     references: [
       {
@@ -225,24 +227,22 @@ amount is usually none.`,
           'What is the exact inline script, storage schema, and switcher wiring that resolves a theme before first paint, and why does each part have to be that way?',
         content: `# Flash-free theme switching, end to end
 
-The flash of wrong theme (FOWT) has one cause: the browser painted before the application
-knew which theme to use. Every fix is a variation on "know earlier".
+The flash of wrong theme has one cause: the browser painted before the application knew which
+theme to use. Every fix is a variation on "know earlier".
 
 ## The resolution order
 
 1. An explicit stored choice, if one exists and is valid.
 2. \`prefers-color-scheme\`, if no explicit choice exists.
-3. The product default, if the media query is unsupported.
+3. The product default, if that media query is unsupported.
 
-Store the *mode*, not the resolved theme. Three values: \`"light"\`, \`"dark"\`, and absent
-(meaning "follow the system"). Storing a resolved boolean loses the ability to keep following
-the OS, and storing \`"system"\` explicitly is equivalent to absent — pick one and be
-consistent, because a stale \`"auto"\` string from an old version must fall through to the
-system branch rather than being treated as invalid and forced to light.
+Store the *mode*, not the resolved theme: \`"light"\`, \`"dark"\`, or absent meaning "follow
+the system". A stored boolean cannot keep following the OS, and any stale or unrecognised
+value must fall through to system rather than be forced to light.
 
 ## The script
 
-Place this as the first element inside \`<head>\`, above every stylesheet link.
+Place this first inside \`<head>\`, above every stylesheet link.
 
     <script>
       (function () {
@@ -262,57 +262,48 @@ Place this as the first element inside \`<head>\`, above every stylesheet link.
 
 Line by line, because every line is load-bearing.
 
-**\`document.documentElement\` is available**, and \`document.body\` is not. The script runs
-during head parsing; the body element does not exist yet. Writing to \`<html>\` is the only
-option, and it is also the right one, since the theme attribute needs to be an ancestor of
+**\`document.documentElement\`** is used because \`document.body\` does not exist yet — the
+script runs during head parsing — and because the theme attribute must be an ancestor of
 everything.
 
-**The \`try/catch\` around \`localStorage\`** is not defensive padding. Access throws — not
-returns null — in Safari private browsing under some configurations, and in any third-party
-iframe where storage access is blocked. An uncaught throw here aborts the script, leaves the
-attribute unset, and produces the exact flash you are preventing, on precisely the browsers
-least likely to be in your test matrix.
+**The \`try/catch\` around \`localStorage\`** is not padding. Access *throws*, rather than
+returning null, in some private-browsing configurations and in any third-party iframe where
+storage access is blocked. An uncaught throw aborts the script and leaves the attribute
+unset, producing the exact flash you are preventing, on the browsers least likely to be in
+your test matrix.
 
-**The validation of \`stored\`** guards against a value written by an older release or by a
-user editing storage. Anything unrecognised falls through to system, which is always a safe
-answer.
+**Validating \`stored\`** makes a value from an older release, or from a user editing
+storage, fall through to system, which is always safe.
 
 **Both attributes are written.** \`data-theme\` is what CSS selects on; \`data-theme-mode\`
-is what the switcher UI reads so it can show System, Light, or Dark selected correctly.
-Deriving the mode back out of the resolved theme is impossible.
+is what the switcher reads to show System, Light, or Dark as selected. The mode is not
+recoverable from the resolved theme.
 
-**\`root.style.colorScheme\`** is set inline, at the same moment, so native widgets and the
-canvas match immediately rather than after the stylesheet parses. This is the one case where
-an inline style is correct.
+**\`root.style.colorScheme\`** is set inline at the same moment, so native widgets and the
+canvas match before the stylesheet parses — the one case where an inline style is correct.
 
 ## Why inline, and why blocking
 
-Scripts marked \`defer\` or \`type="module"\` are deferred to after document parsing.
-\`async\` scripts run whenever they arrive. A framework effect runs after hydration. All of
-these are after first paint, so all of them produce a visible repaint.
+\`defer\` and \`type="module"\` run after document parsing; \`async\` runs whenever it
+arrives; a framework effect runs after hydration. All are after first paint, so all produce a
+visible repaint. An *external* synchronous script does block the parser, but adds a network
+round trip before anything renders — a blank screen instead of a flash, and a request on the
+critical path for roughly 400 bytes of logic.
 
-An *external* synchronous script also blocks the parser, but adds a network round trip before
-anything can render — trading a flash for a blank screen, and adding a request to the
-critical path for roughly 400 bytes of logic. Inline is the only option that costs nothing
-and runs early enough.
-
-Under Content-Security-Policy, do not relax the policy to accommodate this. Emit a per-request
-nonce (\`<script nonce="{value}">\`) or add the script's SHA-256 hash to \`script-src\`.
+Under CSP, do not relax the policy for this: emit a per-request nonce
+(\`<script nonce="{value}">\`) or add the script's SHA-256 hash to \`script-src\`.
 
 ## Server rendering
 
-The server cannot know the user's system preference; \`prefers-color-scheme\` is a client
-capability, and \`Sec-CH-Prefers-Color-Scheme\` is a client hint that is absent on the first
-request. So render theme-neutral markup and let the inline script decide. Two consequences:
+The server cannot know the system preference: \`prefers-color-scheme\` is a client
+capability and \`Sec-CH-Prefers-Color-Scheme\` is absent on the first request. Render
+theme-neutral markup and let the inline script decide. Do not read the theme during render to
+choose markup — components must be identical across themes and differ only in resolved token
+values, or hydration mismatches. Where one must branch on theme in JavaScript, initialise
+from \`document.documentElement.dataset.theme\` in a layout effect.
 
-- Do not read the theme during render to choose markup. Components must be identical in both
-  themes and differ only in resolved token values, or you will hydrate a mismatch.
-- If a component genuinely must branch on theme in JavaScript, initialise its state from
-  \`document.documentElement.dataset.theme\` in a layout effect, not from a default.
-
-For authenticated products you may also persist the mode in a cookie, which *is* available on
-the first request, and render \`data-theme\` server-side. Keep the inline script anyway: the
-cookie cannot answer the system-preference branch.
+Authenticated products may also persist the mode in a cookie, which *is* available on the
+first request. Keep the inline script anyway: a cookie cannot answer the system branch.
 
 ## The switcher
 
@@ -329,9 +320,9 @@ cookie cannot answer the system-preference branch.
       else localStorage.setItem('theme-mode', mode)
     }
 
-Expose it as a radio group or segmented control with three options, labelled and exposed to
-assistive technology as a group. A single icon button that cycles through three states gives
-no indication of what the next press will do.
+Expose it as a radio group or segmented control of three labelled options, grouped for
+assistive technology. An icon button cycling three states gives no indication of what the
+next press does.
 
 ## Following the system live
 
@@ -342,16 +333,14 @@ no indication of what the next press will do.
       document.documentElement.style.colorScheme = event.matches ? 'dark' : 'light'
     })
 
-Keep the listener attached at all times and gate on the mode inside it, so switching back to
-system mode does not require re-subscribing.
+Gate on the mode inside the listener rather than subscribing and unsubscribing.
 
 ## The switch itself
 
-Do not put \`transition: background-color 300ms\` on \`*\`. Hundreds of elements transitioning
-simultaneously composite unevenly, the page appears to melt rather than switch, and any
-element that enters during the transition arrives mid-fade.
-
-If a smooth switch is wanted, use a view transition, which snapshots and cross-fades once:
+Do not put \`transition: background-color 300ms\` on \`*\`. Hundreds of simultaneous
+transitions composite unevenly, the page melts rather than switches, and anything mounting
+mid-transition arrives part-way through its fade. For a smooth switch use a view transition,
+which snapshots and cross-fades once:
 
     if (document.startViewTransition) {
       document.startViewTransition(() => setMode(next))
@@ -359,17 +348,15 @@ If a smooth switch is wanted, use a view transition, which snapshots and cross-f
       setMode(next)
     }
 
-Gate it behind \`prefers-reduced-motion\` and always keep the direct call as the fallback
-path, since the API is not universally available.
+Gate it behind \`prefers-reduced-motion\`, and keep the direct call as the fallback path.
 
 ## Things that still flash
 
-- **Iframes.** A same-origin iframe does not inherit the parent's attribute. Pass the theme
-  in the URL or via \`postMessage\`, and set \`color-scheme\` inside the frame document.
-- **The canvas before CSS.** Add \`<meta name="color-scheme" content="light dark">\` so the
-  browser paints the correct background even before the stylesheet arrives.
-- **Images and \`<canvas>\`.** Anything drawn from JavaScript reads tokens at draw time; it
-  must be redrawn on theme change, not just restyled.
+- **Iframes.** A frame does not inherit the parent's attribute. Pass the theme in the URL or
+  via \`postMessage\`, and set \`color-scheme\` inside the frame document.
+- **The canvas before CSS.** Add \`<meta name="color-scheme" content="light dark">\`.
+- **\`<canvas>\` and generated SVG.** These read tokens at draw time and must be redrawn on
+  theme change, not restyled.
 - **Bfcache restores.** A page restored from the back/forward cache does not re-run the
   script. Re-resolve on \`pageshow\` when \`event.persisted\` is true.`,
       },

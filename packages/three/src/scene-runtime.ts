@@ -1,8 +1,8 @@
 'use client'
 
 import { createContext, useContext } from 'react'
-import { type QualityTier, degradeQuality } from './capability.js'
-import { type SceneBudget, budgetFor } from './budgets.js'
+import { budgetFor, type SceneBudget } from './budgets.js'
+import { degradeQuality, type QualityTier } from './capability.js'
 
 /**
  * The small amount of state that has to be shared between the canvas, the guard and

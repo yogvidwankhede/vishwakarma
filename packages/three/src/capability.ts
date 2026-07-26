@@ -286,7 +286,12 @@ export interface CapabilityOptions {
  * know and shipping a canvas on a guess is how 3D ends up on the critical rendering path.
  */
 export function assessDeviceCapability(options: CapabilityOptions = {}): DeviceCapability {
-  const { maxQuality = 'high', minQuality: floor = 'low', reducedMotionBlocks = false, saveDataBlocks = true } = options
+  const {
+    maxQuality = 'high',
+    minQuality: floor = 'low',
+    reducedMotionBlocks = false,
+    saveDataBlocks = true,
+  } = options
 
   if (typeof window === 'undefined') return UNPROBED_CAPABILITY
 
@@ -350,7 +355,12 @@ export function recommendQuality(
   >,
   options: CapabilityOptions = {},
 ): QualityTier {
-  const { maxQuality = 'high', minQuality: floor = 'low', reducedMotionBlocks = false, saveDataBlocks = true } = options
+  const {
+    maxQuality = 'high',
+    minQuality: floor = 'low',
+    reducedMotionBlocks = false,
+    saveDataBlocks = true,
+  } = options
 
   if (capability.webgl === 'none') return 'none'
   if (capability.gpu === 'software') return 'none'

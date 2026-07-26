@@ -60,9 +60,7 @@ export interface OnDemandRenderControls {
   connected: boolean
 }
 
-export function useOnDemandRender(
-  options: UseOnDemandRenderOptions = {},
-): OnDemandRenderControls {
+export function useOnDemandRender(options: UseOnDemandRenderOptions = {}): OnDemandRenderControls {
   const { on = NO_DEPS, frames = 1 } = options
   const handle = useRenderHandle()
   const running = useRef<Set<() => void>>(new Set())
@@ -119,7 +117,11 @@ export function useOnDemandRender(
     }
   }, [])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `on` is the caller's dependency list by design; its contents are exactly what should retrigger this.
+  // Spreading the caller's list into the dependency array is intentional, and is the reason
+  // its length must stay constant: React compares dependency arrays positionally, and an
+  // array that changes length between renders makes the comparison meaningless — the effect
+  // then either never fires or fires every render, and which one you get depends on the
+  // order the lengths happened to change in.
   useEffect(() => {
     requestRender()
   }, [requestRender, ...on])
