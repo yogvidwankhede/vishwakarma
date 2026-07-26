@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import type { CSSProperties, ElementType, ReactNode } from 'react'
+import { useState } from 'react'
 
 /**
  * Hide content from the screen while leaving it in the accessibility tree.

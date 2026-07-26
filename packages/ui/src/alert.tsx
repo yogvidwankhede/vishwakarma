@@ -3,7 +3,7 @@
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { Button } from './button.js'
 import { CloseIcon, DangerIcon, InfoIcon, SuccessIcon, WarningIcon } from './icons.js'
-import { cx, variants } from './variants.js'
+import { variants } from './variants.js'
 
 /**
  * A message about the state of the page.

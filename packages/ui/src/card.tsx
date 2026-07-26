@@ -106,11 +106,7 @@ function CardHeader({ bleed = false, className, children, ...rest }: CardSection
   return (
     <div
       {...rest}
-      className={cx(
-        'flex flex-col gap-1',
-        bleed ? 'p-0' : 'px-6 pt-5 pb-3',
-        className,
-      )}
+      className={cx('flex flex-col gap-1', bleed ? 'p-0' : 'px-6 pt-5 pb-3', className)}
     >
       {children}
     </div>

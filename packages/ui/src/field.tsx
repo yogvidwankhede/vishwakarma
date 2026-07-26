@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useId, type ReactNode } from 'react'
+import { createContext, type ReactNode, useContext, useId } from 'react'
 import { DangerIcon } from './icons.js'
 import { cx } from './variants.js'
 
@@ -146,10 +146,7 @@ export function Field({
       <div className={cx('flex flex-col gap-1.5', className)}>
         <label
           htmlFor={controlId}
-          className={cx(
-            'text-sm font-medium text-text-primary',
-            labelHidden && 'sr-only',
-          )}
+          className={cx('text-sm font-medium text-text-primary', labelHidden && 'sr-only')}
         >
           {label}
           {required ? (

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type ComponentPropsWithRef, type ReactNode } from 'react'
+import { type ComponentPropsWithRef, type ReactNode, useState } from 'react'
 import { cx, variants } from './variants.js'
 
 /**
@@ -119,13 +119,20 @@ export function Avatar({
   className,
   ...rest
 }: AvatarProps): ReactNode {
-  const [failed, setFailed] = useState(false)
+  // The failure flag is keyed on the URL and reset *during* render rather than in an effect.
+  //
+  // Without a reset at all, one broken image poisons the component for every subsequent
+  // person rendered into the same position by a virtualised list. With an effect, the reset
+  // lands one commit late, so the new person's avatar shows the previous person's fallback
+  // for a frame. Adjusting state during render is the documented React pattern for exactly
+  // this — React re-runs the component immediately, before anything is painted.
+  const [failure, setFailure] = useState<{ src: string | undefined; failed: boolean }>({
+    src,
+    failed: false,
+  })
+  if (failure.src !== src) setFailure({ src, failed: false })
 
-  // Reset when the URL changes. Without this, one failed image poisons the component for
-  // every subsequent person rendered into the same position by a virtualised list.
-  useEffect(() => {
-    setFailed(false)
-  }, [src])
+  const failed = failure.failed && failure.src === src
 
   const tone = TONES[toneIndexFor(name)] ?? TONES[TONES.length - 1]
   const initials = initialsFor(name)
@@ -149,7 +156,7 @@ export function Avatar({
           alt=""
           loading="lazy"
           decoding="async"
-          onError={() => setFailed(true)}
+          onError={() => setFailure({ src, failed: true })}
           className="absolute inset-0 size-full object-cover"
         />
       ) : null}

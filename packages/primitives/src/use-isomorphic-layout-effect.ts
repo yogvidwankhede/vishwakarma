@@ -15,4 +15,5 @@ import { useEffect, useLayoutEffect } from 'react'
  * unhelpful: the effect is deliberately client-only, and there is nothing to fix. Swapping
  * the implementation silences it without changing client behaviour at all.
  */
-export const useIsomorphicLayoutEffect = typeof document === 'undefined' ? useEffect : useLayoutEffect
+export const useIsomorphicLayoutEffect =
+  typeof document === 'undefined' ? useEffect : useLayoutEffect

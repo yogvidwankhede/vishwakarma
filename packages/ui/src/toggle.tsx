@@ -1,6 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useId, useRef, type ComponentPropsWithRef, type ReactNode } from 'react'
+import {
+  type ComponentPropsWithRef,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+} from 'react'
 import { CheckIcon, DashIcon } from './icons.js'
 import { focusRing } from './styles.js'
 import { cx } from './variants.js'
@@ -24,7 +31,8 @@ import { cx } from './variants.js'
  */
 
 /** Shared props for the two toggles. */
-interface ToggleCommonProps extends Omit<ComponentPropsWithRef<'input'>, 'type' | 'size' | 'children'> {
+interface ToggleCommonProps
+  extends Omit<ComponentPropsWithRef<'input'>, 'type' | 'size' | 'children'> {
   /** The visible label. Clicking it toggles the control, because it is a real `<label>`. */
   label: ReactNode
   /** Secondary text beneath the label, wired with `aria-describedby`. */
@@ -190,6 +198,7 @@ export function Switch({
           {...rest}
           id={inputId}
           type="checkbox"
+          // biome-ignore lint/a11y/useAriaPropsForRole: the checked state of a native checkbox is already mapped into the accessibility tree, and `role="switch"` only relabels it. An explicit aria-checked would have to be kept in step with the DOM by hand, and would go stale the moment the switch is used uncontrolled.
           role="switch"
           checked={checked}
           defaultChecked={defaultChecked}

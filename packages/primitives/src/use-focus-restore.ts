@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef } from 'react'
 import type { RefObject } from 'react'
+import { useRef } from 'react'
 import { isFocusable } from './tabbable.js'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'
 
@@ -76,9 +76,9 @@ export function useFocusRestore(active: boolean, options: FocusRestoreOptions = 
       // still answers to `focus()`, and still does nothing — so the naive version appears to
       // work in every case except the one that matters.
       const candidate =
-        target && target.isConnected && isFocusable(target) ? target : (fallback?.current ?? null)
+        target?.isConnected && isFocusable(target) ? target : (fallback?.current ?? null)
 
-      if (!candidate || !candidate.isConnected) return
+      if (!candidate?.isConnected) return
 
       candidate.focus({ preventScroll: !scroll })
     }

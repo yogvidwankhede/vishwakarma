@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
+import { useEffect, useRef } from 'react'
 import { useEventCallback } from './use-event-callback.js'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'
 

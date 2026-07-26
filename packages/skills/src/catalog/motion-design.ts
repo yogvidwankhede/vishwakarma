@@ -68,240 +68,143 @@ export const motionDesign: SkillManifest = {
 
     body: `# Motion Design
 
-Motion in an interface is not decoration that happens over time. It is the only channel
-that can express *change* — where something came from, what caused it, whether it is the
-same object it was a moment ago. Static design says what things are; motion says what
-just happened. Anything animated that says nothing is a delay you have imposed on the user.
+Motion is the only channel that can express *change*: where something came from, what caused
+it, whether it is still the same object. Static design says what things are; motion says what
+just happened. Anything animated that says nothing is a delay you imposed.
 
-So the first question about any animation is not "how long" but **"what does this tell
-the user that the static frames do not?"** There are exactly four legitimate answers.
+So the question is never "how long" but **"what does this tell the user that the start and
+end frames do not?"** Only four answers count: **origin and destination** (a dialog scaling
+from its trigger *is* that button expanded; one appearing dead-centre forces a re-parse),
+**causality** (motion on the frame the user acts binds effect to cause; past ~100ms the two
+read as separate events), **continuity** (moving elements through a reorder preserves object
+identity, cutting destroys it), and **feedback** (input received, or refused). Fail all four
+and delete it — that test alone removes most motion in generated interfaces.
 
-**Origin and destination.** A dialog scaling up from the button that opened it says the
-dialog *is* that button, expanded. Appearing dead-centre with no spatial history forces
-the user to re-parse the screen.
+## 1. Motion Grammar
 
-**Causality.** Motion that begins on the frame the user acts binds effect to cause. Delay
-it past roughly 100ms and the two events are perceived separately, so the interface feels
-like it decided rather than responded.
+Eight intents, each with its own parameters.
 
-**Continuity.** When a list reorders or a card promotes to a detail view, moving the
-elements preserves object identity. Cutting destroys it, and the user must rebuild the
-whole model.
+| Intent | Duration | Curve | Property |
+|---|---|---|---|
+| **enter** | 200-300ms | decelerate | opacity + translate |
+| **exit** | 120-180ms | accelerate | opacity + translate |
+| **transform** | 250-350ms | ease-in-out | transform |
+| **respond** | 60-120ms | ease-out | scale/opacity |
+| **attract** | 500ms, max 3 cycles | ease-in-out | transform |
+| **occupy** | looping | linear | transform |
+| **affirm** | 300-400ms | overshoot | scale |
+| **reject** | 350ms, 2 cycles | decaying | translateX 6px |
 
-**Feedback.** Confirming that input was received, or that it was received and refused.
-
-Fail all four and delete the animation. This single test removes most motion in most
-generated interfaces.
-
----
-
-## 1. The Motion Grammar: intent determines parameters
-
-Eight intents cover nearly everything. Each fixes its own timing, curve, and property.
-
-| Intent | Job | Duration | Curve | Property |
-|---|---|---|---|---|
-| **enter** | an object arrives | 200-300ms | decelerate | opacity + translate/scale |
-| **exit** | an object leaves | 120-180ms | accelerate | opacity + translate/scale |
-| **transform** | an object changes on screen | 250-350ms | ease-in-out | transform |
-| **respond** | acknowledge input | 60-120ms | ease-out | scale/opacity |
-| **attract** | draw attention | 400-600ms, ≤3 cycles | ease-in-out | transform |
-| **occupy** | fill wait time | looping, indefinite | linear | transform |
-| **affirm** | success | 300-400ms | overshoot | scale |
-| **reject** | refusal | 300-400ms, 2 oscillations | decaying | translateX ~6px |
-
-Note that **occupy is the only intent permitted to loop forever**, and only while a real
-operation is outstanding. An infinite animation with nothing pending is a distraction the
-user cannot dismiss.
-
----
+**occupy alone may loop forever**, and only while an operation is outstanding.
 
 ## 2. Easing is a physical story
 
-A curve describes acceleration, and acceleration implies a cause. Objects in the physical
-world do not start and stop instantly; they are pushed, and they are resisted.
+A curve is an acceleration profile, and acceleration implies a cause. **Entrances
+decelerate** — \`cubic-bezier(0.16, 1, 0.3, 1)\`: the element arrives carrying momentum and
+settles where the user must read it. **Exits accelerate** — \`cubic-bezier(0.4, 0, 1, 1)\`:
+it is departing, so there is nothing to read. **On-screen transforms use both**,
+\`cubic-bezier(0.4, 0, 0.2, 1)\`. **Never \`linear\`** outside loops and gesture-tracked
+motion: zero then infinite acceleration matches no physical event.
 
-**Entrances decelerate.** \`cubic-bezier(0.16, 1, 0.3, 1)\` — most distance covered early,
-settling gently. The element arrives with existing momentum, then comes to rest where the
-user must read it.
+The commonest motion bug in shipped UI is **an entrance curve on an exit** — a modal easing
+gently out as it closes. The user has already decided; making them watch a leisurely
+departure is making them wait, and it is why interfaces feel sluggish when nothing is slow.
+Run exits at **60-70%** of the matching entrance.
 
-**Exits accelerate.** \`cubic-bezier(0.4, 0, 1, 1)\` — slow start, fast finish, leaving
-frame at speed. The element is departing; there is nothing to read.
+## 3. Duration comes from perception
 
-**On-screen transforms use both**, \`cubic-bezier(0.4, 0, 0.2, 1)\`, because the object
-starts at rest, moves, and stops at rest, all in view.
+Below **~100ms** a change reads as instantaneous and binds causally to its trigger: the
+budget for press and hover. At **200-300ms** the eye can track an object and learn its path
+— enters and transforms. Past **~400ms** motion stops being information and becomes a wait.
 
-**Never use \`linear\`** except for continuous loops (spinners, marquees) and for
-gesture-tracked motion, where the input, not the curve, is the clock. Linear motion of a
-discrete object reads as mechanical because nothing in the world moves that way.
+**Duration scales sublinearly with distance**, since perceived speed is judged from angular
+velocity: use roughly the square root of distance, clamped to 150-400ms.
 
-The single commonest motion bug in shipped UI is **an entrance curve on an exit**: a modal
-that eases out slowly as it closes. The user has already decided. Making them watch a
-leisurely departure is making them wait, and it is the reason a UI feels sluggish even
-when nothing is slow.
+## 4. Springs: damping ratio, not stiffness
 
-Exits should run at roughly **60-70% of the matching entrance duration**.
+Mass, stiffness and damping are unreasonable to tune directly because they are coupled:
+raising stiffness makes motion both faster *and* bouncier, so every fix to speed breaks
+feel. Reparameterise. Natural frequency **ω₀ = √(k/m)** sets how long it takes; damping ratio
+**ζ = c / (2√(km))** sets how far it overshoots. They are orthogonal, which is the only
+reason a human can tune them, and modern spring APIs expose exactly this pair as *duration*
+and *bounce* = 1 − ζ.
 
----
-
-## 3. Duration comes from perception, not preference
-
-Three thresholds do the work. Below **~100ms** a change is perceived as instantaneous and
-causally bound to its trigger; this is the budget for press and hover feedback. Around
-**200-300ms** the eye can track a moving object and learn its path — the useful band for
-enters and transforms. Past **~400ms** the animation stops being information and becomes a
-wait, and beyond that users report the interface as slow regardless of actual latency.
-
-**Duration scales sublinearly with distance.** A sheet crossing the full viewport should
-not take five times as long as a dropdown opening 80px. Perceived speed is judged from
-angular velocity, so constant-velocity mapping makes short moves feel sticky and long ones
-unbearable. Scale roughly with the square root of distance and clamp hard: 150ms floor,
-400ms ceiling for anything the user is waiting on.
-
-Larger elements may take slightly longer than small ones at the same distance, because a
-large surface moving fast produces more optical flow and reads as violent.
-
----
-
-## 4. Springs: specify damping ratio, not stiffness
-
-A spring is defined by mass *m*, stiffness *k*, damping *c*. Tuning those three directly
-is unreasonable, because they are coupled: raising stiffness makes the motion both faster
-*and* bouncier, so every attempt to fix speed breaks feel and vice versa.
-
-Reparameterise. Natural frequency **ω₀ = √(k/m)** controls how long it takes; damping
-ratio **ζ = c / (2√(km))** controls how much it overshoots. These are independent, which
-is what makes them tunable. Modern spring APIs expose exactly this pair as
-*duration/response* and *bounce*, where bounce = 1 − ζ.
-
-- **ζ = 1** — critically damped: fastest possible arrival with zero overshoot. Correct
-  for anything carrying text the user will read.
-- **ζ ≈ 0.7-0.8** — a single small overshoot. The default for playful UI.
-- **ζ < 0.5** — visible oscillation. Reserve for \`affirm\`; it delays legibility.
-- **ζ > 1** — overdamped and sluggish. Almost never wanted.
-
-Springs' real advantage is not the bounce. It is that a spring carries *state*, so it can
-be re-targeted mid-flight without discontinuity.
-
----
+**ζ = 1** is critically damped: fastest arrival, zero overshoot, correct for anything
+carrying text. **ζ ≈ 0.75** gives one small overshoot; **ζ < 0.5** oscillates visibly and
+delays legibility. The real advantage is not bounce — a spring carries state, so it
+re-targets mid-flight without discontinuity.
 
 ## 5. Stagger, with compression
 
-Staggering a group implies the items are related and ordered. A 40-60ms offset is enough
-to read as a sequence.
-
-The failure is applying a fixed delay to a variable-length list: 30 items × 50ms means the
-last item arrives 1.5 seconds after the first. **Fix the total, not the step:**
-\`delay = min(50ms, 300ms / count)\`. Beyond about 8 items, stagger only the first few and
-have the remainder arrive together — nobody perceives item 19 as distinct from item 20.
-
-Never stagger elements the user might interact with immediately.
-
----
+40-60ms of offset reads a group as ordered, but a fixed per-item delay on a variable-length
+list is a trap: 30 items at 50ms leaves the last arriving 1.5s after the first. **Fix the
+total, not the step** — \`delay = min(50ms, 300ms / count)\` — and past eight items, stagger
+the first few and land the rest together.
 
 ## 6. Interruptibility is what "broken" means
 
-**An animation that is re-triggered mid-flight must continue from its current position
-and velocity, never restart from its declared start value.** A dropdown that is 70% open
-when the user clicks again must close from 70%, not snap to 100% and then close.
+**A re-triggered animation must continue from the element's current position and velocity,
+never restart from its declared start value.** A dropdown 70% open when clicked again closes
+from 70%. Restarting jumps the element to a position it never occupied, and discontinuous
+position breaks object permanence: the viewer registers a *different object* rather than the
+same one moving. That is the perception users call glitchy.
 
-This is not a polish issue. Restarting is the specific behaviour users describe as
-"glitchy" or "broken", because it violates object permanence: the element teleports, and
-the interface stops being a place with things in it.
-
-With CSS transitions this is free — the computed value at interruption is the new start.
-With keyframes and imperative animation it is not: cancelling and replaying loses both
-position and velocity. Read the current computed transform before restarting, or use a
-spring integrator that retains \`(position, velocity)\` across target changes.
-
----
+CSS transitions handle position for free — the computed value at interruption becomes the
+new start — but keyframes and imperative animations do not. Read the computed transform
+before cancelling, scale the remaining duration to the remaining distance, or use a spring
+integrator retaining \`(position, velocity)\`.
 
 ## 7. Gesture motion tracks input 1:1
 
-While a finger or pointer is down, the element must follow it exactly — no easing, no
-smoothing, no lag. The user's hand is the timing function, and any interpolation reads as
-the surface being stuck to something.
-
-Easing applies **only on release**, where the gesture's exit velocity becomes the initial
-velocity of the settling animation. A flick that ends fast should continue fast; decide
-the destination by projecting where the current velocity would carry the element, not by
-where the finger happened to lift.
-
-Resistance past a boundary should be progressive rather than a hard stop: apply a
-diminishing fraction of the overscroll so the surface feels elastic and still communicates
-that the edge exists.
-
----
+While the pointer is down the element follows it exactly — no easing, no smoothing, because
+the hand is the timing function and interpolation reads as the surface detaching from the
+touch. Easing applies **only on release**, with exit velocity as the settling animation's
+initial velocity. Decide the outcome by projecting where that velocity would carry the
+element rather than by displacement: a flick covering 15% of the distance was a completed
+gesture. Boundary resistance must be progressive, not a clamp.
 
 ## 8. Animate only what the compositor can animate
 
-Rendering runs style → layout → paint → composite. \`transform\`, \`opacity\`, \`filter\`
-and \`backdrop-filter\` (plus the individual \`translate\`, \`rotate\`, \`scale\`
-properties) can be handled on the compositor thread, so they survive a busy main thread.
+Rendering runs style → layout → paint → composite. \`transform\`, \`opacity\`, \`filter\`,
+\`backdrop-filter\` and the individual \`translate\`/\`rotate\`/\`scale\` properties are handled
+on the compositor thread, so they survive a busy main thread.
 
-**Layout-triggering** — never animate: \`width\`, \`height\`, \`top\`, \`right\`,
-\`bottom\`, \`left\`, \`margin\`, \`padding\`, \`border-width\`, \`font-size\`,
-\`line-height\`, \`gap\`, \`flex-basis\`, \`grid-template-*\`. Each forces layout on every
-frame, for the element *and* its dependents.
+**Layout-triggering — never animate:** \`width\`, \`height\`, \`top\`, \`right\`, \`bottom\`,
+\`left\`, \`margin\`, \`padding\`, \`border-width\`, \`font-size\`, \`line-height\`, \`gap\`,
+\`flex-basis\`, \`grid-template-*\`. Each forces layout every frame, for the element and
+everything positioned relative to it. \`box-shadow\` and \`border-radius\` only repaint, but
+over a large area that is costly too.
 
-**Paint-triggering** — acceptable at small scale, avoid over large areas:
-\`background-color\`, \`color\`, \`box-shadow\`, \`border-radius\`, \`outline\`.
+Substitute. Height-to-auto: animate \`grid-template-rows: 0fr → 1fr\` on a grid wrapper with
+\`min-height: 0\` and \`overflow: hidden\` on the child (\`interpolate-size: allow-keywords\`
+with \`calc-size()\` is native but not yet Baseline). Width: \`scaleX()\` with an inverse
+\`scaleX()\` on children, or \`clip-path: inset()\`. Position: \`translate\`. Shadow:
+cross-fade a pseudo-element.
 
-Concrete substitutions:
+**FLIP** animates a layout change without animating layout. Record
+\`getBoundingClientRect()\`, apply the change, measure again, apply a transform mapping the
+new rect onto the old so the element appears not to have moved, then animate it to identity.
+Layout runs once; every frame after is a compositor transform. Use \`transform-origin: 0 0\`
+and counter-scale text children.
 
-- **Height to auto** — put the content in a grid wrapper and animate
-  \`grid-template-rows: 0fr → 1fr\` with \`min-height: 0\` and \`overflow: hidden\` on the
-  child. (\`interpolate-size: allow-keywords\` with \`calc-size()\` does this natively but
-  is not yet Baseline.)
-- **Width** — \`transform: scaleX()\` with an inverse \`scaleX()\` on children, or
-  \`clip-path: inset()\`.
-- **Position** — \`translate\`, always.
-- **Shadow** — cross-fade the \`opacity\` of a pseudo-element carrying the larger shadow.
+## 9. Reduced motion: remove spatial, keep signal
 
----
+\`prefers-reduced-motion: reduce\` reports a medical condition: large-field motion produces
+genuine nausea and dizziness in people with vestibular disorders. **Remove** translation over
+distance, parallax, scale and zoom, rotation, and autoplaying or looping motion; **keep**
+opacity cross-fades, colour transitions, and local movement under 20px.
 
-## 9. FLIP: animate layout without animating layout
+Zeroing every duration is the wrong reduction and makes the interface *harder* to follow:
+these users still need a change-of-state cue, and without the fade elements teleport with no
+sign anything happened. Substitute a 100-150ms opacity change.
 
-To move an element whose new position is determined by layout, invert the problem.
+## 10. \`will-change\` discipline
 
-**First** — record \`getBoundingClientRect()\` before the change. **Last** — apply the
-change and record the rect again. **Invert** — apply a transform that maps the new rect
-back onto the old one, so the element *appears* not to have moved. **Play** — animate that
-transform to identity.
-
-Layout runs exactly once; the animation is pure transform. Set \`transform-origin: 0 0\`
-so translate and scale compose predictably, and counter-scale text children, which
-otherwise stretch.
-
----
-
-## 10. Reduced motion: remove the spatial, keep the signal
-
-\`prefers-reduced-motion: reduce\` is a report of a medical condition. Vestibular
-disorders make large-field motion produce genuine nausea and dizziness.
-
-**Remove:** translation across significant distance, parallax, scale and zoom, rotation
-and spin, autoplaying video and looping background motion, and any transition covering a
-large fraction of the viewport.
-
-**Keep:** opacity cross-fades, colour transitions, and small (<20px) local movements.
-
-Zeroing every animation to \`0s\` is the wrong reduction, and it makes the interface
-*harder* to follow. A change-of-state cue is exactly what a user with reduced motion
-preferences still needs; take away the fade too and elements teleport with no indication
-that anything happened. Replace spatial motion with a 100-150ms opacity change.
-
----
-
-## 11. \`will-change\` discipline
-
-\`will-change\` promotes an element to its own compositor layer, costing roughly
-width × height × 4 bytes of GPU memory. Applied broadly in a stylesheet it exhausts that
-memory and makes everything slower — the exact opposite of the intent.
-
-Add it immediately before the animation starts and remove it on completion. Browsers
-already promote elements with running compositor animations, so in most cases the correct
-amount of \`will-change\` is none.`,
+\`will-change\` promotes an element to its own compositor layer at roughly width × height × 4
+bytes of GPU memory, held for as long as the declaration applies, so declaring it broadly
+exhausts that memory and degrades compositing everywhere. Add it just before an animation and
+remove it after; since browsers already promote running compositor animations, the correct
+amount is usually none.`,
 
     references: [
       {
@@ -337,9 +240,9 @@ which is *where it lives when closed*.
 \`translateY(-4px)→0\`. Exit 100ms. These are short because the menu appears adjacent to
 the pointer and the user is already looking at it — there is no distance to explain.
 
-**Tooltip.** Enter 120ms after a 400-600ms hover intent delay; exit 80ms with no delay on
-pointer-out but a ~100ms grace period if the pointer is travelling toward the tooltip.
-Animate opacity plus a 4px translate away from the anchor.
+**Tooltip.** Enter 120ms after a 400-600ms hover-intent delay; exit 80ms, with a ~100ms
+grace period if the pointer is travelling toward the tooltip. Animate opacity plus a 4px
+translate away from the anchor.
 
 **Toast / snackbar.** Enter 250ms decelerate, translating in from the edge it is docked
 to. Hold for 4-6s, or indefinitely if it carries an action. Exit 150ms accelerate. When
@@ -362,9 +265,9 @@ should exit first (150ms), then the survivors move; running both at once produce
 crossing through each other. New items fade and scale in *after* the reflow completes.
 
 **Shared element / hero transition.** 350-400ms. The element's transform is the primary
-motion; everything else cross-fades under it. This is the strongest continuity cue
-available and it is worth the extra 100ms, because the whole point is that the user
-tracks one object across a context change.
+motion; everything else cross-fades under it. This is the strongest continuity cue there is
+and it is worth the extra 100ms, since the point is that the user tracks one object across
+a context change.
 
 ## Respond
 
@@ -388,7 +291,7 @@ between 1 and 1.04, never more. Anything that pulses indefinitely becomes invisi
 within about fifteen seconds and irritating well before that.
 
 **New-item highlight.** A background tint fading out over 1.5s linear. Slow is correct
-here: this is peripheral information, and fast motion in the periphery reads as an alert.
+here: this is peripheral, and fast motion in the periphery reads as an alert.
 
 ## Occupy
 
@@ -434,8 +337,8 @@ compositor and visibly lag the content they are attached to.`,
         content: `# Interruptible and gesture-driven animation
 
 The difference between UI that feels alive and UI that feels broken is almost entirely
-here. A user who interacts with an element during its animation is a normal case, not an
-edge case, and the interface's response to it is the single strongest signal of quality.
+here. A user who interacts with an element mid-animation is a normal case, not an edge
+case, and the response to it is the strongest single signal of quality.
 
 ## Why restarting is the defect
 
@@ -444,9 +347,9 @@ that declaration from the start value. If the element is currently 70% of the wa
 an entrance and you play the exit, the element jumps to 100% and then leaves.
 
 The jump is a teleport. Object permanence is one of the earliest perceptual capabilities
-humans develop, and an interface object that discontinuously changes position is
-registered as *a different object*. That is why the sensation is not "slightly wrong" but
-"broken": the mental model of a screen containing persistent things has been falsified.
+humans develop, and an object that discontinuously changes position registers as *a
+different object*. That is why the sensation is not "slightly wrong" but "broken": the
+model of a screen containing persistent things has been falsified.
 
 Correct behaviour has two requirements, and most implementations satisfy only the first:
 
@@ -457,11 +360,10 @@ Correct behaviour has two requirements, and most implementations satisfy only th
 
 ## Duration-based interruption
 
-CSS transitions handle case 1 automatically: the computed value at the moment of
-interruption becomes the new start value. This is the main reason to prefer transitions
-over keyframes for state changes. They do not handle case 2 — the new transition begins
-at velocity zero — which is acceptable for short durations and visible above roughly
-300ms.
+CSS transitions handle case 1 automatically: the computed value at interruption becomes the
+new start value, which is the main reason to prefer transitions over keyframes for state
+changes. They do not handle case 2 — the new transition begins at velocity zero — which is
+acceptable below roughly 300ms and visible above it.
 
 Imperative animations need explicit handling. The pattern:
 
@@ -477,10 +379,9 @@ reverts to the underlying value. And the remaining duration should be scaled by 
 the element still has to travel: replaying a full 250ms for the last 30% of the distance
 produces motion that is visibly, uncannily slow.
 
-An alternative that preserves both position and velocity for free is to keep the animation
-running and reverse it via \`animation.playbackRate = -1\`, which is exact for symmetric
-cases but wrong wherever the exit differs from the reversed entrance — which, per the
-faster-exit rule, is most of the time.
+Keeping the animation running and reversing it via \`animation.playbackRate = -1\` preserves
+both, but is only correct where the exit is the reversed entrance — which, per the
+faster-exit rule, it usually is not.
 
 ## Springs are interruptible by construction
 
@@ -492,33 +393,32 @@ A spring is integrated per frame from state, not sampled from a curve:
     position += velocity * dt
 
 Nothing in this loop refers to a start value or an elapsed time. Changing \`target\`
-mid-flight is therefore not an interruption at all — the integrator simply continues with
-the position and velocity it already has, and the resulting motion is C¹-continuous by
-construction. This is the strongest practical argument for springs in interactive UI, and
-it has nothing to do with bounce.
+mid-flight is therefore not an interruption at all — the integrator continues with the
+position and velocity it already has, and the motion is C¹-continuous by construction. This
+is the strongest argument for springs in interactive UI, and it has nothing to do with
+bounce.
 
-Use a fixed timestep (typically 1/120s) with an accumulator rather than integrating raw
-frame deltas, or the motion changes character when the frame rate drops. Terminate when
-\`|position − target| < 0.01\` **and** \`|velocity| < 0.01\`, not on position alone, or
-the spring settles while still moving and produces a visible clip.
+Use a fixed timestep (typically 1/120s) with an accumulator rather than raw frame deltas, or
+the motion changes character when the frame rate drops. Terminate when
+\`|position − target| < 0.01\` **and** \`|velocity| < 0.01\`, not on position alone, or the
+spring settles while still moving and visibly clips.
 
 ## Gestures: tracking
 
 While the pointer is down, the transform is a pure function of pointer displacement. No
-easing, no smoothing, no interpolation toward the target — the finger is the clock, and
-any lag is perceived as the surface being detached from the touch, which is far more
-noticeable than any amount of jitter.
+easing, no smoothing, no interpolation toward the target — the finger is the clock, and any
+lag reads as the surface being detached from the touch, which is far more noticeable than
+jitter.
 
 Mechanics that prevent the common defects:
 
 - Use Pointer Events and call \`setPointerCapture\` on \`pointerdown\`, so the gesture
-  survives the pointer leaving the element and you still receive \`pointerup\`.
+  survives the pointer leaving the element and \`pointerup\` still arrives.
 - Set \`touch-action\` to declare the axis you are handling (\`pan-y\` for a horizontal
   swipe). Without it the browser's own scrolling competes with yours, and because
   scrolling runs on the compositor it wins.
-- Apply displacement through \`transform\`, never through layout properties.
-- Establish a small activation threshold (roughly 8-10px) before committing to the
-  gesture, so a tap with slight movement is not swallowed.
+- Use an activation threshold of roughly 8-10px before committing, so a tap with slight
+  movement is not swallowed.
 
 ## Boundary resistance
 
@@ -528,35 +428,34 @@ standard formulation:
     offset = (1 - 1 / (overscroll * c / dimension + 1)) * dimension    // c ≈ 0.55
 
 The offset approaches \`dimension\` asymptotically, so the surface never quite stops
-responding but clearly resists. A hard clamp is worse than either extreme: the surface
-appears to have frozen, which is indistinguishable from a bug.
+responding but clearly resists. A hard clamp is worse: the surface appears frozen, which is
+indistinguishable from a bug.
 
 ## Release: velocity and projection
 
-On \`pointerup\`, compute velocity from the last 50-100ms of samples, not from the final
-two events — the last two are dominated by the deceleration of lifting a finger and
-routinely report near-zero for what the user experienced as a fast flick.
+On \`pointerup\`, compute velocity from the last 50-100ms of samples, not the final two
+events — the last two are dominated by the deceleration of lifting a finger and routinely
+report near-zero for what the user experienced as a fast flick.
 
 Then decide the destination by **projection**, not by position:
 
     projected = position + velocity * projectionFactor   // ≈ 0.1-0.2s of travel
 
-Commit if the projected endpoint crosses the halfway point, otherwise return. A quick
-flick that covers only 15% of the distance should still commit, because the user's
-*intent* was expressed in the velocity. Deciding on displacement alone is the reason some
-swipe-to-dismiss implementations feel like they require a shove.
+Commit if the projected endpoint crosses halfway, otherwise return. A quick flick covering
+only 15% of the distance should still commit, because the intent was expressed in the
+velocity. Deciding on displacement alone is why some swipe-to-dismiss implementations feel
+like they need a shove.
 
 Feed the measured velocity into the settling animation as its initial velocity — trivial
 with a spring integrator, since it is already a state variable. The element then continues
-at the speed the hand gave it, which is what makes the transition from direct manipulation
-to system-driven motion imperceptible.
+at the speed the hand gave it, which makes the handover from direct manipulation to
+system-driven motion imperceptible.
 
 ## Reduced motion still applies
 
-Gesture tracking itself is direct manipulation and is exempt: the user is moving the
-element. The *settling* animation is system-driven motion and should be shortened, and
-any accompanying spatial effect — parallax on the underlying layer, a scaling backdrop —
-must be removed under \`prefers-reduced-motion: reduce\`.`,
+Gesture tracking is direct manipulation and is exempt. The *settling* animation is
+system-driven: shorten it, and remove any accompanying parallax or scaling backdrop under
+\`prefers-reduced-motion: reduce\`.`,
       },
     ],
   },

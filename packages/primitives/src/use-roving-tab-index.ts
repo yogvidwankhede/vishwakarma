@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent, RefObject } from 'react'
+import { useCallback, useMemo } from 'react'
 import { focusElement } from './tabbable.js'
 import { useEventCallback } from './use-event-callback.js'
 

@@ -136,7 +136,7 @@ Nine packages, all building and typechecking, with 130 tests over the foundation
 
 ---
 
-## Six ideas that are new here
+## Nine ideas that are new here
 
 **1. The Design Contract.** A design system expressed as machine-checkable constraints
 rather than a document. It says nothing about what a page should contain — only what the
@@ -166,6 +166,28 @@ A skill that says "use the spacing scale" *and* ships the checker is categorical
 useful than one that only asks nicely. Models are much better at recognising a violation
 than at avoiding it, so the self-review pass catches a surprising share of errors for almost
 no cost.
+
+
+**7. Deterministic variation.** Asked for a landing page, a model returns its modal answer
+every time. It is defensible, and it is identical across ten runs — which is precisely what
+makes generated work legible as generated. Telling it to "be creative" fails because that is
+an adjective; raising temperature trades sameness for incoherence. So the choice moves out of
+the sampler and into the input: a pre-vetted set of options, selected by hashing the brief.
+Every outcome is defensible, the same brief always resolves the same way — so results stay
+reproducible and reviewable — and different briefs diverge. 720 combinations across five axes.
+
+**8. An install lockfile that knows what you edited.** Generated files are replaced on sync,
+so someone who tightens a rule for their codebase loses it the next time they add an
+unrelated skill. Recording a hash of what we wrote separates four situations a naive
+implementation collapses into one: unchanged, updated, *drifted* (you edited it, we have
+nothing new), and *conflicting* (both moved). Only the last two interrupt you — a tool that
+asks about every file trains people to click yes without reading.
+
+**9. A project profile.** Generic advice is worth much less than advice that knows your
+codebase. `vishwakarma profile` records the tokens you already define, the components you
+already have, and how your dark theme is scoped, then writes it as Markdown an agent reads
+before writing a line. Deterministic and safe to commit, so a teammate's agent starts from
+the same understanding as yours.
 
 ---
 

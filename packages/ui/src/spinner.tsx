@@ -1,7 +1,7 @@
 'use client'
 
-import type { CSSProperties, ReactNode } from 'react'
 import { useReducedMotion } from '@vishwakarma/motion'
+import type { CSSProperties, ReactNode } from 'react'
 import { cx } from './variants.js'
 
 /**

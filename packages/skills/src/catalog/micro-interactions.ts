@@ -23,7 +23,7 @@ export const microInteractions: SkillManifest = {
   id: 'micro-interactions',
   name: 'Micro-interactions',
   description:
-    'Use when building button presses, toggles, hovers, drags, swipes, toasts, loading states, or any small feedback behaviour that should feel responsive.',
+    'Use when building presses, toggles, hovers, drags, swipes, toasts, or loading states — any small feedback behaviour that must feel responsive.',
   version: '1.0.0',
   license: 'MIT',
   category: 'motion',
@@ -70,42 +70,40 @@ export const microInteractions: SkillManifest = {
 
 A micro-interaction is the smallest complete unit of interface behaviour: one trigger, one
 rule set, one piece of feedback, one loop. Pressing a button. Copying a token. Dragging a
-row. Each is individually beneath notice, and collectively they are the entire sensation of
-a product being well or badly built — the thing users report as "it feels solid" and cannot
-decompose any further. Nobody says "the press attack was 90ms". They say the cheap one
-feels cheap.
-
-They are also the cheapest quality available anywhere in an interface. A correct press
-state is four lines. Getting it wrong costs nothing in review and everything in feel.
+row. Each is individually beneath notice; collectively they are the entire sensation of a
+product being well or badly built — what users report as "it feels solid" and cannot
+decompose further. Nobody says "the press attack was 90ms". They say the cheap one feels
+cheap. This is also the cheapest quality available: a correct press state is four lines, and
+getting it wrong costs nothing in review and everything in feel.
 
 ---
 
 ## 1. Anatomy
 
-Four parts, and naming them tells you which one is broken.
+Four parts; naming them tells you which is broken.
 
 **Trigger** — what starts it, and on which event. Press feedback belongs on
-\`pointerdown\`. \`click\` fires on *release*, so a control that reacts only to \`click\`
-is inert for the entire duration of the press — precisely the window in which the user is
-asking "did that register?".
+\`pointerdown\`: \`click\` fires on *release*, so a control bound to it is inert for the
+whole duration of the press — precisely the window in which the user asks "did that
+register?".
 
 **Rules** — what may happen, and above all what happens on interruption. Most
-micro-interactions are written for the clean sequence and disintegrate on
-\`pointercancel\`, on a second press mid-flight, or on unmount.
+micro-interactions are written for the clean sequence and disintegrate on \`pointercancel\`,
+on a second press mid-flight, or on unmount.
 
-**Feedback** — the visual, textual, or tactile report. It must be proportional: a routine
-action earns a routine acknowledgement.
+**Feedback** — the visual, textual, or tactile report, proportional to the event: a routine
+action earns a routine acknowledgement, never a celebration.
 
 **Loops and modes** — what the hundredth repetition feels like, and what changes when the
-control is busy, disabled, or already active. Something charming once and grating forty
-times has no loop rule.
+control is busy, disabled, or already active. Charming once and grating forty times means
+no loop rule.
 
 ---
 
 ## 2. Restraint: feedback reports an outcome, it never gates one
 
-**Any animation that a state change waits on is a bug.** The animation exists to tell the
-user the system heard them; if it also delays the system, it has inverted its own purpose.
+**Any animation a state change waits on is a bug.** It exists to tell the user the system
+heard them; delaying the system inverts that purpose.
 
 \`\`\`ts
 await ripple.finished   // bug: every save is now 300ms late
@@ -115,131 +113,116 @@ void save()             // correct: commit, then animate the consequence
 ripple.play()
 \`\`\`
 
-The rule governs exits equally. A dialog runs its 150ms fade *while* the mutation flies. A
-deleted row animates out of a list whose data already excludes it. And if a user can outrun
-the animation by pressing twice, the second press must land on the new state rather than be
-swallowed by the first one's transition.
+The rule governs exits equally: a deleted row animates out of a list whose data already
+excludes it. And if a user can outrun the animation by pressing twice, the second press must
+land on the new state rather than be swallowed by the first one's transition.
 
 ---
 
 ## 3. Press physics
 
-**Scale to 0.97, not 0.9.** A press should read as the surface yielding, not as the object
-shrinking. On a 44px control, \`scale(0.97)\` moves each edge inward by about 0.66px —
-below the threshold at which you consciously see displacement, above the threshold at which
-you feel it. At \`scale(0.9)\` a 320px-wide button pulls its edges in by 16px; the label
-visibly resamples, the button appears to retreat from the page, and neighbouring controls
-appear to move apart. Larger surfaces need *less* scale, not more: use 0.98 above ~200px,
-0.96 below ~32px, because the perceived cue is edge displacement in pixels, not ratio.
+**Scale to 0.97, not 0.9.** A press reads as the surface yielding, not the object shrinking. On a 44px control \`scale(0.97)\` moves each edge in by 0.66px — below the
+threshold at which you see displacement, above the one at which you feel it. At 0.9 a 320px
+button pulls its edges in by 16px: the label resamples and the button appears to retreat
+from the page. The cue is edge displacement in pixels, not ratio, so larger surfaces need
+*less* — 0.98 above ~200px, 0.96 below ~32px.
 
-**Set \`transform-origin\` to the anchor, not the default centre.** A menu growing from its
-trigger uses that corner. A list row that spans the container scales about \`center\` and
-breaks alignment with the rows above and below it — prefer a background or brightness shift
-there instead. A default \`transform-origin: 50% 50%\` on an edge-anchored element is the
-most common cause of a press that "looks wrong" without anyone being able to say why.
+**Set \`transform-origin\` to the anchor.** A menu growing from its trigger uses that
+corner; a full-width row scaled about \`center\` breaks alignment with its neighbours, so
+shift its background instead. The default \`50% 50%\` on an edge-anchored element is the
+commonest cause of a press that "looks wrong" for no nameable reason.
 
-**Asymmetric timing.** Attack fast, release slower: roughly 80-100ms in with
-\`ease-out\`, 150-200ms back with \`ease-out\`. The press must be visible even on a 40ms
-tap, so enforce a minimum visible hold — start the release only after \`max(pointerup,
-attack complete)\`.
+**Asymmetric timing.** Attack fast, release slower: 80-100ms in, 150-200ms back, both
+\`ease-out\`. A tap can be shorter than the attack, so release only at
+\`max(pointerup, attack complete)\`.
 
-**Always release on \`pointercancel\`.** A press state removed only on \`pointerup\` stays
-stuck when the user starts scrolling from the button, when the browser takes the gesture, or
-when a system alert steals the pointer. Use \`setPointerCapture\` plus a single cleanup path
-for \`pointerup\`, \`pointercancel\`, and \`lostpointercapture\`.
+**Always release on \`pointercancel\`.** A state cleared only on \`pointerup\` sticks when
+the browser claims the gesture for scrolling or a system alert steals the pointer. Use one
+cleanup path for \`pointerup\`, \`pointercancel\` and \`lostpointercapture\`.
 
-**Ripples travel badly.** A ripple is coherent where every surface has one and the touch
-point is meaningful. Ported into a cursor-driven interface it asserts that *where* you
-clicked matters when it does not, and its 300-600ms expansion routinely outlives the press —
-the classic result is a ripple still growing on a screen that has already navigated. If you
-keep it, gate its exit on release and cancellation, never on a timer.
+**Ripples travel badly.** Ported out of a platform where every surface has one, a ripple
+asserts that *where* you clicked matters when it does not, and its 300-600ms expansion
+routinely outlives the press — still growing on a screen that has already navigated. Gate
+its exit on release and cancellation, never on a timer.
 
 ---
 
 ## 4. Intent: distinguishing a movement from a decision
 
-**Hover delays must be asymmetric.** Opening on the first pixel of hover produces menus
-that flicker open as the pointer crosses them en route to somewhere else; closing on the
-first pixel of exit produces menus that vanish while the user is diagonally reaching for
-them. Open after ~100ms of sustained hover, close after ~300ms, and cancel the close
-immediately if the pointer re-enters either the trigger or the panel. Once one item in a
-menu bar is open, drop the open delay to zero for its siblings: the user has already
-committed to the mode.
+**Hover delays must be asymmetric.** Opening on the first pixel produces menus that flicker
+open as the pointer crosses them en route elsewhere; closing on the first pixel of exit
+produces menus that vanish while the user is diagonally reaching for them. Open after ~100ms
+of sustained hover, close after ~300ms, and cancel the close if the pointer re-enters either.
+Once one item in a menu bar is open, drop the open delay to zero for its siblings: the mode
+is already committed.
 
-**Drags need an activation threshold.** Begin dragging only after ~6-8px of pointer travel,
-or after a ~200ms hold on touch. Without it every tap is a one-pixel drag and every attempt
-to scroll a sortable list picks up a row. Apply \`touch-action: none\` to the handle alone;
-applying it to the list kills scrolling entirely.
+**Drags need an activation threshold.** Start only after ~6-8px of travel, or a ~200ms hold
+on touch; without it every tap is a one-pixel drag and any attempt to scroll a sortable list
+picks up a row. Scope \`touch-action: none\` to the handle alone.
 
-**Hover is not universal.** Gate hover-only affordances behind
-\`@media (hover: hover) and (pointer: fine)\`. Touch browsers emulate \`:hover\` on tap and
+**Hover is not universal.** Gate hover affordances behind
+\`@media (hover: hover) and (pointer: fine)\`: touch browsers emulate \`:hover\` on tap and
 leave it applied until the next tap elsewhere, so an ungated hover style becomes a stuck
-state that looks like a selection bug.
+state indistinguishable from a selection bug.
 
 ---
 
 ## 5. State-change feedback
 
-Prefer feedback that *draws the transition* over feedback that decorates it. A checkbox tick
-animated with \`stroke-dashoffset\` from its path length to 0 over ~150ms shows the mark
-being made; a tick that fades in shows nothing. A switch moves its thumb with a slight
-overshoot while the track colour crossfades over the same window, because the two are one
-event.
+Prefer feedback that *draws the transition* over feedback that decorates it. A tick animated
+with \`stroke-dashoffset\` from its path length to 0 over ~150ms shows the mark being made;
+a tick that fades in shows nothing. A switch thumb overshoots slightly while the
+track colour crossfades over the same window, because the two are one event.
 
 A floating label must animate with \`transform: translateY() scale()\` and
 \`transform-origin: left center\`, never \`font-size\` and \`top\` — those force layout every
-frame and jitter the baseline. Focus rings should not transition at all: a fading ring reads
-as lag to the keyboard user who most depends on it.
+frame and jitter the baseline. Focus rings, conversely, should not transition at all: a
+fading ring reads as lag to the keyboard user who most depends on it.
 
-Validation must not move the layout. Reserve the error slot with \`min-height\` and animate
-only opacity plus a 4px rise; a message that inserts itself pushes the submit button out
-from under a cursor already travelling towards it. And confirmations must be announced, not
-merely drawn — a copy button that swaps to a tick for 1.5s tells a sighted user everything
-and a screen-reader user nothing, so pair the swap with a polite live region and never
-resize the button while the pointer is still on it.
+Validation must not move the layout: reserve the error slot with \`min-height\` and animate
+only opacity and a 4px rise, or the message pushes the submit button out from under a cursor
+already travelling toward it. And confirmations must be announced, not merely drawn: a tick
+swapped into a copy button tells a sighted user everything and a screen-reader user nothing.
 
 ---
 
 ## 6. Quantity, duration, and loading
 
-Rolling numbers require \`font-variant-numeric: tabular-nums\`, or the container resizes on
-every frame and the digits shear. Roll only changed digits, cap the run at ~600ms, and never
-roll a value the user is about to act on. A count badge changing 3 to 4 wants a 1.0 → 1.12 →
-1.0 pulse over ~200ms, which says "this changed" without demanding a read.
+Rolling numbers need \`font-variant-numeric: tabular-nums\`, or the container resizes every
+frame and the digits shear. Roll only changed digits, cap the run at ~600ms, and never
+roll a value the user is about to act on. A count badge going 3 to 4 wants a 1.0 → 1.12 → 1.0
+pulse over ~200ms: "this changed", without demanding a read.
 
-Progress must be monotonic. A determinate bar that goes backwards destroys trust more
-thoroughly than no bar at all; if an estimate worsens, hold the value and slow the rate.
-Indeterminate is an admission of ignorance, so use it only where you genuinely have none.
+Progress must be monotonic: a bar that retreats destroys trust more thoroughly than no bar
+at all, so when the estimate worsens, hold the value and slow the rate.
 
-**A static skeleton is usually better than a shimmering one.** A shimmer is an infinite
-animation whose cycle almost never aligns with the load: when data arrives in 200ms the user
-sees a flash of moving light, which reads as a defect. It also animates constantly for the
-entire wait, on the lowest-powered devices, at the exact moment the main thread is busiest.
-A calm skeleton at the exact dimensions of the incoming content, revealed only after ~200ms
-of waiting, is better on every axis.
+**A static skeleton usually beats a shimmering one.** A shimmer is an infinite animation
+whose cycle almost never aligns with the load, so data arriving in 200ms produces a flash of
+moving light that reads as a defect — and it animates for the whole wait, on the weakest
+devices, at the moment the main thread is busiest. A calm skeleton at the exact dimensions of
+the incoming content, revealed only after ~200ms, is better on every axis.
 
 ---
 
 ## 7. Haptics
 
-One haptic per committed state change, at the moment of commit — never on hover, never on
-every tick of a drag. \`navigator.vibrate()\` needs sticky user activation, is silently
-ignored on silent or do-not-disturb, and is absent from Safari, so on iOS the web has no
-supported programmatic path at all. Treat haptics as an enhancement that most of your users
-will not receive, and never as a channel that carries information alone.
+One haptic per committed state change, latched — never on hover, never on every tick of a
+drag. \`navigator.vibrate()\` requires sticky user activation, is ignored under silent and
+do-not-disturb, and is absent from Safari, so iOS has no supported programmatic path at all.
+Haptics enhance; they never carry information alone.
 
 ---
 
 ## 8. Failure modes
 
-- **Animation blocking input.** A transitioning overlay that keeps \`pointer-events: auto\`
-  eats the first click; add \`pointer-events: none\` for the duration of any exit.
-- **Celebration on routine actions.** Confetti is a diminishing asset. Reserve it for a
-  genuine first or a genuine milestone; on a daily task it becomes an obstacle.
-- **Bursts replaying on mount.** Animating from a boolean prop rather than from a user
-  event means every like on the page fires when the user navigates back.
-- **Motion as the only signal.** Anything expressed by movement must survive
-  \`prefers-reduced-motion: reduce\`, which means the state change stays and the travel goes.`,
+- **Animation blocking input.** An exiting overlay that keeps \`pointer-events: auto\` eats
+  the first click aimed past it, which is perceived as a dropped input.
+- **Celebration on routine actions.** Confetti is a depleting asset: reserve it for a
+  genuine first, because on a daily task it is an obstacle.
+- **Bursts replaying on mount.** Animating from a boolean prop rather than a user event
+  fires every like on the page when the user navigates back.
+- **Motion as the only signal.** Under \`prefers-reduced-motion\` the state change stays and
+  the travel goes.`,
 
     references: [
       {
@@ -250,32 +233,31 @@ will not receive, and never as a channel that carries information alone.
         content: `# Micro-interaction catalogue with parameters
 
 Each entry gives the trigger, the feedback, working parameters, and the failure mode that
-appears when the parameters are wrong. Values are starting points calibrated for a
-pointer-and-touch web interface; adjust for brand character, not for novelty.
+appears when they are wrong. Values are starting points for a pointer-and-touch web
+interface; adjust for brand character, not for novelty.
 
 ## Button press
 
 Trigger \`pointerdown\`. Feedback \`transform: scale(0.97)\` plus a small darkening.
-Attack 80-100ms \`ease-out\`; release 150-200ms \`ease-out\`. Minimum visible hold 90ms.
-Release on \`pointerup\`, \`pointercancel\`, and \`lostpointercapture\`.
-**Fails as:** stuck pressed state after a scroll begun on the button; press invisible on a
-fast tap; text blurring because the scale is below 0.94.
+Attack 80-100ms \`ease-out\`; release 150-200ms \`ease-out\`; minimum visible hold 90ms.
+Release on \`pointerup\`, \`pointercancel\` and \`lostpointercapture\`.
+**Fails as:** a stuck pressed state after a scroll begun on the button; a press invisible on
+a fast tap; text blurring below scale 0.94.
 
 ## Toggle / switch
 
-Trigger \`click\` or \`change\`. Thumb translates the track width minus padding, with a
-spring around stiffness 400 / damping 30, or 200ms \`cubic-bezier(0.2, 0, 0, 1.2)\`.
-Track colour crossfades over the same window. Optimistically move the thumb, then reconcile.
-**Fails as:** thumb waiting on a server round-trip, which makes a control whose entire
-purpose is immediacy feel broken.
+Trigger \`click\` or \`change\`. The thumb translates the track width minus padding with a
+spring near stiffness 400 / damping 30, or 200ms \`cubic-bezier(0.2, 0, 0, 1.2)\`, while
+the track colour crossfades. Move it optimistically, then reconcile.
+**Fails as:** a thumb waiting on a server round-trip, making a control whose whole purpose
+is immediacy feel broken.
 
 ## Checkbox tick
 
-Draw the tick with \`stroke-dasharray\` set to the path length and
-\`stroke-dashoffset\` animating from that length to 0 over 140-180ms \`ease-out\`, starting
-~40ms after the box fill so the two do not compete. Unchecking should not reverse the draw —
-fade the tick over 100ms instead, because un-drawing looks like an undo of the drawing rather
-than a change of state.
+Set \`stroke-dasharray\` to the path length and animate \`stroke-dashoffset\` from that
+length to 0 over 140-180ms \`ease-out\`, starting ~40ms after the box fill so the two do not
+compete. Unchecking should not reverse the draw — fade the tick over 100ms, since un-drawing
+reads as undoing the drawing rather than as a change of state.
 **Fails as:** a tick that fades in, which conveys arrival but not action.
 
 ## Ripple
@@ -283,100 +265,93 @@ than a change of state.
 Trigger \`pointerdown\` at the pointer coordinates. A circle scales from 0 to a radius
 covering the furthest corner over 300-500ms while fading to ~0.12 alpha; the fade-out begins
 at \`max(pointerup, 220ms)\` and runs 200ms.
-**Fails as:** a ripple whose lifetime is a fixed timer, so it continues expanding after the
-element has been replaced or the route has changed. Outside a platform where every surface
-ripples, the effect also implies that the touch point carries meaning when it does not — a
-uniform state layer is usually the better port.
+**Fails as:** a ripple on a fixed-timer lifetime, still expanding after the element has been
+replaced or the route has changed. A uniform state layer ports better.
 
 ## Input focus and floating label
 
-Focus ring appears with no transition. Border colour transitions 120ms. Label moves with
-\`transform: translateY(-1.1em) scale(0.82)\` and
-\`transform-origin: left center\` over 150ms \`ease-out\`.
-**Fails as:** animating \`font-size\` and \`top\`, which triggers layout each frame and
-makes the label baseline visibly wobble; or transitioning the focus ring, which reads as
-input lag.
+Focus ring appears with no transition; border colour transitions over 120ms; the label moves
+with \`transform: translateY(-1.1em) scale(0.82)\` and \`transform-origin: left center\`
+over 150ms \`ease-out\`.
+**Fails as:** animating \`font-size\` and \`top\`, which forces layout each frame and
+wobbles the baseline; or transitioning the focus ring, which reads as input lag.
 
 ## Validation state
 
-Reserve the message slot with \`min-height\`. On error, animate opacity 0→1 and
-\`translateY(4px→0)\` over 120ms; on recovery, fade out over 80ms. Move focus only on
+Reserve the message slot with \`min-height\`. On error animate opacity 0→1 and
+\`translateY(4px→0)\` over 120ms; on recovery fade out over 80ms. Move focus only on
 submit, never on blur.
-**Fails as:** an inserted message that pushes the submit button downwards while the pointer
-travels toward it, producing a misclick on whatever moved into its place.
+**Fails as:** an inserted message pushing the submit button down while the pointer travels
+toward it, producing a misclick on whatever took its place.
 
 ## Copy to clipboard
 
 \`navigator.clipboard.writeText()\`, then crossfade the icon to a tick over 120ms, hold
-1200-2000ms, revert over 120ms. Announce "Copied" through a polite live region. Keep the
+1200-2000ms, revert over 120ms. Announce "Copied" through a polite live region, and keep the
 button's box size fixed.
 **Fails as:** a purely visual confirmation, invisible to assistive technology; or a label
-change from "Copy" to "Copied" that resizes the button under the cursor.
+change from "Copy" to "Copied" resizing the button under the cursor.
 
 ## Like / favourite
 
-Animate on the user-driven transition only. Icon scales 1 → 1.25 → 1.0 over 320ms with a
-spring; an optional particle burst of 6-8 elements travelling 12-20px, fading over 400ms.
+Animate on the user-driven transition only. The icon scales 1 → 1.25 → 1.0 over 320ms with a
+spring, plus an optional burst of 6-8 particles travelling 12-20px and fading over 400ms.
 Un-liking is a plain 150ms fade with no burst, because the burst celebrates an addition.
-**Fails as:** replaying on mount, so a back-navigation or a list re-render sets off every
-like on screen at once.
+**Fails as:** replaying on mount, so a back-navigation sets off every like on screen.
 
 ## Drag handle and lift
 
-Activate after 6-8px of movement or a 200ms hold. Lift over 150ms:
-\`scale(1.02)\`, elevation up one level, opacity ~0.95 on the source slot. The dragged item
-tracks the pointer 1:1 with no easing — any smoothing here reads as lag, because the finger
-is the ground truth.
-**Fails as:** \`touch-action: none\` on the container instead of the handle, which disables
+Activate after 6-8px of movement or a 200ms hold. Lift over 150ms: \`scale(1.02)\`,
+elevation up one level, opacity ~0.95 on the source slot. The dragged item tracks the pointer
+1:1 with no easing — smoothing reads as lag, since the finger is ground truth.
+**Fails as:** \`touch-action: none\` on the container rather than the handle, killing
 scrolling for the whole list.
 
 ## Sortable list reflow
 
 Displaced siblings translate with FLIP: measure, reorder, invert, play. 200-250ms
-\`ease-out\`, staggered by no more than 15ms. Commit the DOM reorder on drop, not
-continuously during the drag.
-**Fails as:** animating \`top\` or \`margin\` on every sibling, which produces jank
+\`ease-out\`, staggered by at most 15ms. Commit the DOM reorder on drop, not during the
+drag.
+**Fails as:** animating \`top\` or \`margin\` on every sibling, producing jank
 proportional to list length.
 
 ## Toast entry and stacking
 
 Enter with \`translateY(8px→0)\` and opacity over 200ms; exit over 150ms. Cap the stack at
-three visible, and translate the existing toasts with a spring as a new one arrives. Pause
-the dismissal timer on hover and on focus within, and resume with the remaining time.
-Minimum lifetime 5s, extended for longer text.
-**Fails as:** an unpausable timer, which makes a message with a link inside it impossible to
-use, and fails WCAG 2.2 SC 2.2.1.
+three visible and translate existing toasts with a spring as a new one arrives. Pause the
+dismissal timer on hover and on focus within, resuming with the remaining time. Minimum
+lifetime 5s.
+**Fails as:** an unpausable timer, making a message containing a link impossible to use and
+failing WCAG 2.2 SC 2.2.1.
 
 ## Skeleton
 
-Match the final content's box dimensions exactly. Show only after ~200ms of waiting, and
-once shown keep it for at least ~300ms to avoid a flash. Prefer a static tinted block. If a
+Match the final content's box dimensions exactly. Show only after ~200ms of waiting, and once
+shown keep it for at least ~300ms to avoid a flash. Prefer a static tinted block; if a
 shimmer is required, translate a pseudo-element rather than animating
-\`background-position\`, and stop it entirely under \`prefers-reduced-motion\`.
-**Fails as:** a shimmer cycle interrupted by fast data, appearing as a flicker; or skeleton
-dimensions that differ from the content, producing layout shift at the moment of arrival.
+\`background-position\`, and stop it under \`prefers-reduced-motion\`.
+**Fails as:** a shimmer cut short by fast data, seen as a flicker; or skeleton dimensions
+unequal to the content, producing layout shift on arrival.
 
 ## Progress
 
 Determinate values are monotonic; interpolate toward each new value over ~300ms rather than
-jumping. Transition from indeterminate to determinate as soon as a real figure exists, and
-never back. Cap the visual at 99% until completion is confirmed.
-**Fails as:** a bar that retreats when an estimate worsens, which reads as the system losing
-work.
+jumping. Move from indeterminate to determinate as soon as a real figure exists, never back.
+Cap the visual at 99% until completion is confirmed.
+**Fails as:** a bar that retreats when an estimate worsens, read as the system losing work.
 
 ## Number roll-up
 
-\`font-variant-numeric: tabular-nums\`. Roll only the digits that changed, 400-600ms
-\`ease-out\`, digits staggered by 20-30ms from least significant. Skip the roll entirely for
-changes under 5% and for any figure the user is about to act on.
+\`font-variant-numeric: tabular-nums\`. Roll only changed digits, 400-600ms \`ease-out\`,
+staggered 20-30ms from the least significant. Skip the roll for changes under 5% and for any
+figure the user is about to act on.
 **Fails as:** proportional figures, so the layout jitters horizontally for the whole run.
 
 ## Count badge
 
 Scale 1.0 → 1.12 → 1.0 over 200ms on increment. Do not attach a live region to a passive
 badge, or every background change interrupts the user's reading.
-**Fails as:** a spin or bounce that draws the eye away from the task for a number nobody
-needed immediately.`,
+**Fails as:** a spin or bounce pulling the eye off the task for a number nobody needed yet.`,
       },
       {
         id: 'gesture-physics',

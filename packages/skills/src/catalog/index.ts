@@ -9,40 +9,52 @@ import type { SkillManifest } from '../manifest.js'
 
 export { accessibleComponents } from './accessible-components.js'
 export { colourSystems } from './colour-systems.js'
+export { componentArchitecture } from './component-architecture.js'
 export { designJudgment } from './design-judgment.js'
 export { interactionDesign } from './interaction-design.js'
 export { interfaceCopy } from './interface-copy.js'
 export { layoutComposition } from './layout-composition.js'
+export { microInteractions } from './micro-interactions.js'
 export { motionDesign } from './motion-design.js'
+export { renderingPerformance } from './rendering-performance.js'
 export { responsiveArchitecture } from './responsive-architecture.js'
 export { scrollExperiences } from './scroll-experiences.js'
 export { surfaceAndDepth } from './surface-and-depth.js'
+export { themingSystems } from './theming-systems.js'
 export { typographicSystems } from './typographic-systems.js'
 
 import { accessibleComponents } from './accessible-components.js'
 import { colourSystems } from './colour-systems.js'
+import { componentArchitecture } from './component-architecture.js'
 import { designJudgment } from './design-judgment.js'
 import { interactionDesign } from './interaction-design.js'
 import { interfaceCopy } from './interface-copy.js'
 import { layoutComposition } from './layout-composition.js'
+import { microInteractions } from './micro-interactions.js'
 import { motionDesign } from './motion-design.js'
+import { renderingPerformance } from './rendering-performance.js'
 import { responsiveArchitecture } from './responsive-architecture.js'
 import { scrollExperiences } from './scroll-experiences.js'
 import { surfaceAndDepth } from './surface-and-depth.js'
+import { themingSystems } from './theming-systems.js'
 import { typographicSystems } from './typographic-systems.js'
 
 /** Every skill in the catalog, in stable order. */
 export const catalog: SkillManifest[] = [
   accessibleComponents,
   colourSystems,
+  componentArchitecture,
   designJudgment,
   interactionDesign,
   interfaceCopy,
   layoutComposition,
+  microInteractions,
   motionDesign,
+  renderingPerformance,
   responsiveArchitecture,
   scrollExperiences,
   surfaceAndDepth,
+  themingSystems,
   typographicSystems,
 ]
 

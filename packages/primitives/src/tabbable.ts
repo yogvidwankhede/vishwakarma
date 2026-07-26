@@ -79,7 +79,7 @@ export function isHidden(element: HTMLElement): boolean {
   while (node) {
     if (node instanceof HTMLDetailsElement && !node.open) {
       const summary = node.querySelector(':scope > summary')
-      if (!summary || !summary.contains(element)) return true
+      if (!summary?.contains(element)) return true
     }
     node = node.parentElement
   }
@@ -187,7 +187,7 @@ export function getFocusable(container: HTMLElement): HTMLElement[] {
  * called: a node can be removed between the decision and the call.
  */
 export function focusElement(element: HTMLElement | null | undefined): boolean {
-  if (!element || !element.isConnected) return false
+  if (!element?.isConnected) return false
   element.focus({ preventScroll: true })
   return element.ownerDocument.activeElement === element
 }
