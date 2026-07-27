@@ -1,0 +1,23 @@
+{
+  "name": "vishwakarma",
+  "displayName": "Vishwakarma",
+  "description": "Design intelligence for AI coding agents: 21 frontend engineering skills covering design judgment, colour systems, motion, accessibility, layout, theming, performance, and a verified UI generation workflow.",
+  "author": {
+    "name": "Yogvid Wankhede",
+    "url": "https://github.com/yogvidwankhede"
+  },
+  "homepage": "https://github.com/yogvidwankhede/vishwakarma",
+  "repository": "https://github.com/yogvidwankhede/vishwakarma",
+  "license": "Apache-2.0",
+  "keywords": [
+    "frontend",
+    "design",
+    "ui",
+    "ux",
+    "accessibility",
+    "motion",
+    "react",
+    "tailwind",
+    "design-tokens"
+  ]
+}

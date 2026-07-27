@@ -1,0 +1,16 @@
+{
+  "name": "vishwakarma",
+  "owner": {
+    "name": "Yogvid Wankhede",
+    "url": "https://github.com/yogvidwankhede"
+  },
+  "plugins": [
+    {
+      "name": "vishwakarma",
+      "source": "./",
+      "description": "The complete Vishwakarma skill catalog: 21 frontend engineering skills that teach an agent to build interfaces that look designed, not generated — with evidence-carrying rules and self-review verification built in.",
+      "category": "development",
+      "tags": ["frontend", "design", "ui", "accessibility", "motion"]
+    }
+  ]
+}

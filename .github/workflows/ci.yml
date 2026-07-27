@@ -83,6 +83,9 @@ jobs:
       - name: Validate every skill against the manifest schema
         run: node packages/cli/dist/index.js validate
 
+      - name: Verify the committed Claude Code plugin matches the catalog
+        run: node scripts/build-plugin.mjs --check
+
   node-matrix:
     name: node ${{ matrix.node }}
     runs-on: ubuntu-latest

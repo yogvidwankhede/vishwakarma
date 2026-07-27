@@ -7,6 +7,9 @@ reporting done.
 This guide covers writing one that actually changes agent behaviour, which is a narrower
 target than writing one that reads well.
 
+Commands below assume the CLI is on your path — see [Getting started](getting-started.md#install)
+for the one-line alias (the packages are not yet on npm).
+
 ## The shape
 
 Skills live in `packages/skills/src/catalog/` as typed TypeScript modules.
@@ -43,7 +46,7 @@ Then regenerate the barrel:
 ```bash
 node scripts/generate-catalog.mjs
 pnpm --filter @vishwakarma/skills exec tsc --noEmit
-npx vishwakarma validate
+vishwakarma validate
 ```
 
 The barrel is generated rather than hand-maintained, because a forgotten export produces a
@@ -248,13 +251,13 @@ installed alone with dangling references.
 Validation catches structural problems:
 
 ```bash
-npx vishwakarma validate
+vishwakarma validate
 ```
 
 Compilation catches translation problems:
 
 ```bash
-npx vishwakarma add card-design --target claude-code cursor codex --dry-run
+vishwakarma add card-design --target claude-code cursor codex --dry-run
 ```
 
 Read the generated files. A skill that reads well in source and badly compiled — because its

@@ -38,6 +38,13 @@ export interface AdapterContext {
   scope?: 'project' | 'user'
   /** Marker used to delimit our section inside a shared file. */
   sectionMarker?: string
+  /**
+   * Absolute path to a locally built MCP server entry point. When set, the MCP target
+   * registers `node <path>` instead of an npx fetch — which is the difference between a
+   * server that starts and one that fails on machines where the package is not
+   * installed from a registry.
+   */
+  mcpServerPath?: string
 }
 
 export interface Adapter {
@@ -96,12 +103,14 @@ export const claudeCodeAdapter: Adapter = {
     for (const skill of skills) {
       const override = skill.overrides?.['claude-code']
 
+      // Claude Code's documented frontmatter vocabulary is name, description,
+      // allowed-tools, and a handful of invocation controls. It tolerates unknown keys
+      // today, but `claude plugin validate` flags them as warnings — so we emit exactly
+      // the documented set and keep licence/version in the manifest where they belong.
       const frontmatter = toFrontmatter({
         name: skill.id,
         description: override?.description ?? skill.description,
         ...(skill.tools?.length ? { 'allowed-tools': skill.tools } : {}),
-        ...(skill.license ? { license: skill.license } : {}),
-        version: skill.version,
       })
 
       files.push({
@@ -421,13 +430,15 @@ export const mcpAdapter: Adapter = {
     'Registers the Vishwakarma MCP server rather than emitting instruction files. Skills, tokens, and audits are then fetched on demand, so nothing occupies context until it is needed.',
   emit(_skills, context = {}) {
     const path = context.root ? `${context.root}/.mcp.json` : '.mcp.json'
+    // Prefer a locally resolved server. An `npx -y` registry fetch is only correct once
+    // the package is actually published; pointing at a build on disk works today, on
+    // this machine, with no network. The CLI resolves the path and passes it in.
+    const server = context.mcpServerPath
+      ? { command: 'node', args: [context.mcpServerPath], env: {} }
+      : { command: 'npx', args: ['-y', '@vishwakarma/mcp'], env: {} }
     const config = {
       mcpServers: {
-        vishwakarma: {
-          command: 'npx',
-          args: ['-y', '@vishwakarma/mcp'],
-          env: {},
-        },
+        vishwakarma: server,
       },
     }
     return [

@@ -10,14 +10,15 @@
 [![Packages](https://img.shields.io/badge/packages-18-3d5afe.svg?style=for-the-badge)](#-the-packages)
 [![Skills](https://img.shields.io/badge/skills-21-8b5cf6.svg?style=for-the-badge)](#-the-skill-catalog)
 [![Rules](https://img.shields.io/badge/rules-406-ec4899.svg?style=for-the-badge)](#-the-skill-catalog)
-[![Tests](https://img.shields.io/badge/tests-215%20passing-22c55e.svg?style=for-the-badge)](#)
+[![Tests](https://img.shields.io/badge/tests-217%20passing-22c55e.svg?style=for-the-badge)](#)
 
 **Teach any coding agent to build interfaces that look _designed_ — not _generated_ — and give it the tools to prove it.**
 
 Works with **Claude Code · Cursor · Windsurf · Cline · Roo Code · Codex · Gemini CLI · Copilot · Continue · Zed · Aider** — and any MCP client.
 
-```bash
-npx vishwakarma init
+```text
+/plugin marketplace add yogvidwankhede/vishwakarma
+/plugin install vishwakarma@vishwakarma
 ```
 
 <sub>Open source · Apache-2.0 · TypeScript · Zero telemetry</sub>
@@ -78,19 +79,44 @@ The **Design Contract** turns "this could be better" into a test that passes or 
 
 ## 🚀 Quick start
 
+### Claude Code — two commands, no build
+
+The repository ships as a ready-made **Claude Code plugin**. Inside Claude Code:
+
+```text
+/plugin marketplace add yogvidwankhede/vishwakarma
+/plugin install vishwakarma@vishwakarma
+```
+
+All 21 skills load with progressive disclosure — descriptions always visible, full guidance and references only when relevant. Nothing to clone, nothing to compile.
+
+### Every other agent — the CLI
+
+The CLI installs skills natively into **13 agent formats**. The packages aren't on npm yet (it's on the [roadmap](ROADMAP.md)), so run it from a checkout:
+
+```bash
+git clone https://github.com/yogvidwankhede/vishwakarma.git
+cd vishwakarma
+pnpm install && pnpm build
+```
+
+Then, from your own project directory:
+
 ```bash
 # Detect your agents, install a starter skill set, and generate design tokens
-npx vishwakarma init
+node /path/to/vishwakarma/packages/cli/dist/index.js init
 
 # Browse everything on offer
-npx vishwakarma list
+node /path/to/vishwakarma/packages/cli/dist/index.js list
 
 # Install specific skills into specific agents
-npx vishwakarma add design-judgment motion-design --target claude-code cursor
+node /path/to/vishwakarma/packages/cli/dist/index.js add design-judgment motion-design --target claude-code cursor
 
-# Give agents live, on-demand tools with zero standing context cost
-npx vishwakarma add --target mcp
+# Register the MCP server — live tools with zero standing context cost
+node /path/to/vishwakarma/packages/cli/dist/index.js add --target mcp
 ```
+
+> **Tip:** inside the checkout, `pnpm vk <command>` is a shorthand for the same CLI. Once the packages are published, every command above becomes `npx vishwakarma <command>`.
 
 `init` **reads your repo** to work out which agents and frameworks you use — so the first interaction is a *confirmation*, not a questionnaire.
 
@@ -264,7 +290,7 @@ vishwakarma show motion-design   # read any skill in full
 </div>
 
 ```bash
-npx vishwakarma targets   # see every supported agent and where it lands
+pnpm vk targets   # from the checkout — see every supported agent and where it lands
 ```
 
 ---
@@ -299,8 +325,20 @@ export function Features({ items }) {
 
 ## 🧪 Enforce it in CI
 
+`@vishwakarma/audit` checks source against the Design Contract and speaks GitHub's annotation format natively:
+
+```js
+// scripts/design-audit.mjs
+import { auditProject, formatReport } from '@vishwakarma/audit'
+import { DEFAULT_CONTRACT } from '@vishwakarma/core'
+
+const report = await auditProject(['src/**/*.{tsx,jsx,css}'], DEFAULT_CONTRACT)
+console.log(formatReport(report, { format: 'github' }))
+if (report.summary.errors > 0) process.exit(1)
+```
+
 ```yaml
-- run: npx vishwakarma audit --format github
+- run: node scripts/design-audit.mjs
 ```
 
 Violations show up as **inline annotations** on the pull request. Errors fail the build; warnings don't. *(And it's honest about being a lower bound — static analysis can't resolve computed class names, and the report says so.)*

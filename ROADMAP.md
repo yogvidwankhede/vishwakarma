@@ -12,7 +12,18 @@ carrying 406 rules, 143 self-review checks, and 42 references.
 Everything listed in the README is implemented. The originality audit, licence audit, skill
 validation, typecheck, test and build all pass from a clean checkout.
 
+The repository is also a **Claude Code plugin marketplace**: `.claude-plugin/` carries the
+manifest, `skills/` carries the compiled catalog, and CI fails if that tree ever drifts
+from the source skills. Installation is two commands with no build step.
+
 ## Still to build
+
+**npm publication.** The packages are release-ready — scoped names, `publishConfig`,
+changesets, permissive-only dependency tree — but not yet on the registry, which is why
+the CLI runs from a checkout and the emitted MCP config points at a local build. Once
+published, `npx vishwakarma` works everywhere and the MCP config can fall back to
+`npx -y @vishwakarma/mcp` on machines without a checkout. `vishwakarma doctor` already
+detects and explains the difference.
 
 **`@vishwakarma/prompts`** — a composable prompt library. Specified but not written: a
 `Prompt` type with typed variables, a fragment composition system, and a library covering

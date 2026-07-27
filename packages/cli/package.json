@@ -48,6 +48,7 @@
     "@vishwakarma/skills": "workspace:*",
     "@vishwakarma/adapters": "workspace:*",
     "@vishwakarma/tokens": "workspace:*",
+    "@vishwakarma/mcp": "workspace:*",
     "commander": "^14.0.0",
     "prompts": "^2.4.2",
     "picocolors": "^1.1.1",

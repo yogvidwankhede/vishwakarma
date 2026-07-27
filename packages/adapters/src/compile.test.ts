@@ -114,6 +114,35 @@ describe('compilation', () => {
     expect(paths).toContain('.claude/skills/test-skill/references/deep.md')
   })
 
+  it('emits only documented frontmatter keys for Claude Code', () => {
+    // Claude Code's frontmatter vocabulary is name, description, allowed-tools and a
+    // few invocation controls. Extra keys are tolerated today but flagged by
+    // `claude plugin validate` — and a generator has no business relying on tolerance.
+    const [result] = compile([skill], { targets: ['claude-code'] })
+    const manifest = result?.files.find((file) => file.path.endsWith('SKILL.md'))
+    const frontmatter = manifest?.contents.split('---')[1] ?? ''
+    expect(frontmatter).toContain('name: test-skill')
+    expect(frontmatter).toContain('description:')
+    expect(frontmatter).not.toContain('version:')
+    expect(frontmatter).not.toContain('license:')
+  })
+
+  it('points the MCP config at a local server build when one is resolvable', () => {
+    // An `npx -y` entry only works once the package is on a registry. Until then, the
+    // only config that starts is one naming a build that exists on this machine.
+    const [local] = compile([skill], {
+      targets: ['mcp'],
+      mcpServerPath: '/checkout/packages/mcp/dist/server.js',
+    })
+    const config = JSON.parse(local?.files[0]?.contents ?? '{}')
+    expect(config.mcpServers.vishwakarma.command).toBe('node')
+    expect(config.mcpServers.vishwakarma.args).toEqual(['/checkout/packages/mcp/dist/server.js'])
+
+    const [fallback] = compile([skill], { targets: ['mcp'] })
+    const fallbackConfig = JSON.parse(fallback?.files[0]?.contents ?? '{}')
+    expect(fallbackConfig.mcpServers.vishwakarma.command).toBe('npx')
+  })
+
   it('emits one file per skill for rule-file targets, with no references', () => {
     const [result] = compile([skill], { targets: ['cursor'] })
     expect(result?.files).toHaveLength(1)

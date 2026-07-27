@@ -214,6 +214,9 @@ const PACKAGES = [
       '@vishwakarma/skills': 'workspace:*',
       '@vishwakarma/adapters': 'workspace:*',
       '@vishwakarma/tokens': 'workspace:*',
+      // The CLI writes MCP client configs that point at the server's built entry, which
+      // it locates by resolving the package — so the server must be resolvable from here.
+      '@vishwakarma/mcp': 'workspace:*',
       commander: V.commander,
       prompts: V.prompts,
       picocolors: V.picocolors,
@@ -337,7 +340,7 @@ export default defineConfig({
   banner: { js: "'use client'" },`
       : ''
   }${
-    pkg.kind === 'cli'
+    pkg.kind === 'cli' || pkg.name === 'mcp'
       ? `
   banner: { js: '#!/usr/bin/env node' },`
       : ''

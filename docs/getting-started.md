@@ -6,8 +6,34 @@ it did.
 
 ## Install
 
+**Claude Code users have a shortcut.** The repository is a ready-made plugin — inside
+Claude Code, run:
+
+```text
+/plugin marketplace add yogvidwankhede/vishwakarma
+/plugin install vishwakarma@vishwakarma
+```
+
+That installs the full skill catalog with no build step, and you can stop reading here
+unless you also want the CLI, the tokens, or the MCP server.
+
+**Everything else goes through the CLI.** The packages are not yet published to npm (it is
+on the roadmap — once they are, every command below becomes `npx vishwakarma …`), so run
+it from a checkout:
+
 ```bash
-npx vishwakarma init
+git clone https://github.com/yogvidwankhede/vishwakarma.git
+cd vishwakarma
+pnpm install && pnpm build
+
+# Make the rest of this guide's commands work verbatim:
+alias vishwakarma="node $PWD/packages/cli/dist/index.js"
+```
+
+Then, from your own project:
+
+```bash
+vishwakarma init
 ```
 
 `init` reads your repository, works out which agents and frameworks you use, installs a
@@ -17,7 +43,7 @@ writes.
 If you want to see what it would do first:
 
 ```bash
-npx vishwakarma init --dry-run
+vishwakarma init --dry-run
 ```
 
 Nothing is written, and the output is identical to what a real run would produce — the dry
@@ -67,7 +93,7 @@ why it is worth stating explicitly.
 Derive the whole system from your own brand colour:
 
 ```bash
-npx vishwakarma tokens build --brand '#0f766e'
+vishwakarma tokens build --brand '#0f766e'
 ```
 
 Everything follows from that one value: an eleven-step perceptual ramp, neutrals tinted
@@ -92,7 +118,7 @@ The file-based installation is good. The MCP server is better, because nothing o
 context until the agent actually asks:
 
 ```bash
-npx vishwakarma add --target mcp
+vishwakarma add --target mcp
 ```
 
 That writes an `.mcp.json` registering the server. Your agent gains thirteen tools:
@@ -198,10 +224,21 @@ the reason the mechanism is built this way round.
 
 ## Enforcing it in CI
 
-Guidance that nothing checks decays. Add the auditor:
+Guidance that nothing checks decays. Add the auditor — `@vishwakarma/audit` speaks
+GitHub's annotation format natively:
+
+```js
+// scripts/design-audit.mjs
+import { auditProject, formatReport } from '@vishwakarma/audit'
+import { DEFAULT_CONTRACT } from '@vishwakarma/core'
+
+const report = await auditProject(['src/**/*.{tsx,jsx,css}'], DEFAULT_CONTRACT)
+console.log(formatReport(report, { format: 'github' }))
+if (report.summary.errors > 0) process.exit(1)
+```
 
 ```yaml
-- run: npx vishwakarma audit --format github
+- run: node scripts/design-audit.mjs
 ```
 
 Violations appear as inline annotations on the pull request. Errors fail the build;

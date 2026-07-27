@@ -79,6 +79,9 @@ importers:
       '@vishwakarma/adapters':
         specifier: workspace:*
         version: link:../adapters
+      '@vishwakarma/mcp':
+        specifier: workspace:*
+        version: link:../mcp
       '@vishwakarma/skills':
         specifier: workspace:*
         version: link:../skills

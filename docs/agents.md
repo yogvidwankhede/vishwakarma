@@ -6,10 +6,13 @@ translation.
 
 ## The short version
 
+Commands below assume the CLI is on your path — see [Getting started](getting-started.md#install)
+for the one-line alias (the packages are not yet on npm).
+
 ```bash
-npx vishwakarma add --all              # every detected agent
-npx vishwakarma add --target cursor    # one specific agent
-npx vishwakarma targets                # what's supported and where it installs
+vishwakarma add --all              # every detected agent
+vishwakarma add --target cursor    # one specific agent
+vishwakarma targets                # what's supported and where it installs
 ```
 
 ## Why translation is necessary at all

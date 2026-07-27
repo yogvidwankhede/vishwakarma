@@ -15,7 +15,9 @@
  * mentioning the twenty thousand tokens is not being straight with anyone.
  */
 
+import { existsSync } from 'node:fs'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { dirname, join, relative, resolve } from 'node:path'
 import process from 'node:process'
 import { Command } from 'commander'
@@ -109,6 +111,27 @@ interface WriteReport {
 }
 
 /**
+ * Locate the built MCP server on this machine, if there is one.
+ *
+ * The MCP target writes a client configuration, and that configuration has to name a
+ * command that actually starts. Until the packages are published to a registry, an
+ * `npx -y @vishwakarma/mcp` entry fails with a 404 on every machine in the world — so
+ * when the server is resolvable locally (a checkout, a workspace, a linked install), we
+ * point the config at that build directly. The npx form remains only as the fallback for
+ * the day the package is on the registry and nothing is resolvable locally.
+ */
+function resolveMcpServerPath(): string | undefined {
+  try {
+    const localRequire = createRequire(import.meta.url)
+    const entry = localRequire.resolve('@vishwakarma/mcp')
+    const server = join(dirname(entry), 'server.js')
+    return existsSync(server) ? server : undefined
+  } catch {
+    return undefined
+  }
+}
+
+/**
  * Write a compiled skill set to disk, without destroying anything the user has edited.
  *
  * The lockfile records what we wrote last time, which lets us tell a file the user has
@@ -125,7 +148,7 @@ async function writeCompiled(
   root: string,
   options: { dryRun?: boolean; force?: boolean },
 ): Promise<{ reports: WriteReport[]; statuses: StatusReport[] }> {
-  const results = compile(skills, { targets })
+  const results = compile(skills, { targets, mcpServerPath: resolveMcpServerPath() })
   const reports: WriteReport[] = []
   const statuses: StatusReport[] = []
 
@@ -756,8 +779,41 @@ program
 
     for (const note of stack.notes) advice.push(note)
 
-    if ((await readIfPresent(resolve(root, '.mcp.json'))) !== null) {
+    const mcpConfig = await readIfPresent(resolve(root, '.mcp.json'))
+    if (mcpConfig !== null) {
       out(`  ${symbols.ok} MCP configuration present`)
+
+      // A config that names a command which cannot start is worse than no config: the
+      // agent reports a failed server on every launch. Catch the two ways that happens —
+      // an npx fetch of a package that is not on the registry, and a node path that no
+      // longer exists on this machine.
+      try {
+        const parsed = JSON.parse(mcpConfig) as {
+          mcpServers?: Record<string, { command?: string; args?: string[] }>
+        }
+        const server = parsed.mcpServers?.['vishwakarma']
+        if (server?.command === 'npx' && server.args?.includes('@vishwakarma/mcp')) {
+          if (resolveMcpServerPath() !== undefined) {
+            problems.push(
+              '.mcp.json fetches @vishwakarma/mcp from the npm registry, where it is not yet published — the server will fail to start. Re-run `vishwakarma add --target mcp` to point it at the local build instead.',
+            )
+          } else {
+            problems.push(
+              '.mcp.json fetches @vishwakarma/mcp from the npm registry, where it is not yet published, and no local build is resolvable. Build the Vishwakarma checkout (`pnpm install && pnpm build`) and re-run `vishwakarma add --target mcp`.',
+            )
+          }
+        }
+        if (server?.command === 'node') {
+          const serverPath = server.args?.[0]
+          if (serverPath && !existsSync(serverPath)) {
+            problems.push(
+              `.mcp.json points at ${serverPath}, which does not exist. Rebuild the checkout and re-run \`vishwakarma add --target mcp\`.`,
+            )
+          }
+        }
+      } catch {
+        problems.push('.mcp.json is not valid JSON.')
+      }
     } else {
       advice.push(
         'No MCP configuration found. `vishwakarma add --target mcp` gives agents on-demand access with no standing context cost.',
