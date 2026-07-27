@@ -239,7 +239,7 @@ Agents appear regularly. An adapter answers three questions — where instructio
 frontmatter is understood, and how much context is affordable — and everything else is
 shared.
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-an-agent-target). The important discipline
+See the [Contributing guide](https://github.com/yogvidwankhede/vishwakarma/blob/main/CONTRIBUTING.md#adding-an-agent-target). The important discipline
 is that an adapter must not render its own body: shared rendering is what keeps the targets
 from drifting apart while still appearing to work.
 
