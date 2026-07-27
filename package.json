@@ -31,7 +31,10 @@
     "release": "turbo run build --filter=./packages/* && changeset publish",
     "prepare": "husky || true",
     "license:headers": "node scripts/apply-license-headers.mjs",
-    "license:check": "node scripts/apply-license-headers.mjs --check"
+    "license:check": "node scripts/apply-license-headers.mjs --check",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.0",
