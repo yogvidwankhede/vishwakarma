@@ -13,8 +13,9 @@ Everything listed in the README is implemented. The originality audit, licence a
 validation, typecheck, test and build all pass from a clean checkout.
 
 The repository is also a **Claude Code plugin marketplace**: `.claude-plugin/` carries the
-manifest, `skills/` carries the compiled catalog, and CI fails if that tree ever drifts
-from the source skills. Installation is two commands with no build step.
+manifest, `.claude/skills/` carries the compiled catalog, and CI fails if that tree ever
+drifts from the source skills. That single directory also serves direct GitHub-link
+installation — paste the URL and Claude installs without any build step.
 
 ## Still to build
 

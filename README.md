@@ -17,8 +17,7 @@
 Works with **Claude Code · Cursor · Windsurf · Cline · Roo Code · Codex · Gemini CLI · Copilot · Continue · Zed · Aider** — and any MCP client.
 
 ```text
-/plugin marketplace add yogvidwankhede/vishwakarma
-/plugin install vishwakarma@vishwakarma
+Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
 <sub>Open source · Apache-2.0 · TypeScript · Zero telemetry</sub>
@@ -79,16 +78,26 @@ The **Design Contract** turns "this could be better" into a test that passes or 
 
 ## 🚀 Quick start
 
-### Claude Code — two commands, no build
+### Paste the URL — Claude installs it
 
-The repository ships as a ready-made **Claude Code plugin**. Inside Claude Code:
+The fastest path. In any Claude Code session, just tell it where to look:
+
+```text
+Install the skills from https://github.com/yogvidwankhede/vishwakarma
+```
+
+Claude fetches the compiled catalog from `.claude/skills/` in the repository and copies all 21 skills into your project. No commands, no build, no npm.
+
+### Claude Code plugin — two commands
+
+The repository also ships as a **Claude Code plugin marketplace**, which gives you proper version management:
 
 ```text
 /plugin marketplace add yogvidwankhede/vishwakarma
 /plugin install vishwakarma@vishwakarma
 ```
 
-All 21 skills load with progressive disclosure — descriptions always visible, full guidance and references only when relevant. Nothing to clone, nothing to compile.
+All 21 skills load with progressive disclosure — descriptions always visible, full guidance and references only when relevant.
 
 ### Every other agent — the CLI
 

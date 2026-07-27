@@ -6,16 +6,24 @@ it did.
 
 ## Install
 
-**Claude Code users have a shortcut.** The repository is a ready-made plugin — inside
-Claude Code, run:
+**The simplest path — paste the URL.** In any Claude Code session:
+
+```text
+Install the skills from https://github.com/yogvidwankhede/vishwakarma
+```
+
+Claude fetches the compiled catalog and copies all 21 skills into your project. No
+commands, no build, no npm. Stop reading here if that is all you need.
+
+**Plugin install — two commands, version management.** Inside Claude Code:
 
 ```text
 /plugin marketplace add yogvidwankhede/vishwakarma
 /plugin install vishwakarma@vishwakarma
 ```
 
-That installs the full skill catalog with no build step, and you can stop reading here
-unless you also want the CLI, the tokens, or the MCP server.
+This registers the repo as a plugin source, giving you `vishwakarma doctor` and future
+update notifications in addition to the full skill catalog.
 
 **Everything else goes through the CLI.** The packages are not yet published to npm (it is
 on the roadmap — once they are, every command below becomes `npx vishwakarma …`), so run

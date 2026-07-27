@@ -6,16 +6,26 @@
  * Builds the Claude Code plugin from the skill catalog.
  *
  * The repository doubles as a Claude Code plugin marketplace: `.claude-plugin/` carries
- * the manifest and marketplace definition, and `skills/` carries the compiled catalog in
- * Claude Code's native SKILL.md layout. That makes the whole catalog installable with two
- * commands and zero build steps:
+ * the manifest and marketplace definition, and `.claude/skills/` carries the compiled
+ * catalog in Claude Code's native SKILL.md layout. That single directory serves two
+ * install paths without any duplication:
  *
- *     /plugin marketplace add yogvidwankhede/vishwakarma
- *     /plugin install vishwakarma@vishwakarma
+ * 1. Plugin install — two commands, no build step:
  *
- * The `skills/` tree is generated — from the same source of truth the CLI compiles — and
- * committed, because an installable artifact that requires the installer to run our build
- * first is not installable. This script is the only thing that may write it.
+ *        /plugin marketplace add yogvidwankhede/vishwakarma
+ *        /plugin install vishwakarma@vishwakarma
+ *
+ * 2. GitHub-link install — paste the URL and Claude installs directly:
+ *
+ *        "Install https://github.com/yogvidwankhede/vishwakarma"
+ *
+ *    Claude looks for `.claude/skills/` in the repository root, finds the compiled
+ *    catalog there, and copies it into the target project.
+ *
+ * The `.claude/skills/` tree is generated — from the same source of truth the CLI
+ * compiles — and committed, because an installable artifact that requires the installer
+ * to run our build first is not installable. This script is the only thing that may
+ * write it.
  *
  * Run: node scripts/build-plugin.mjs [--check]
  *
@@ -29,7 +39,7 @@ import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const SKILLS_DIR = join(ROOT, 'skills')
+const SKILLS_DIR = join(ROOT, '.claude', 'skills')
 
 async function loadBuilt(name) {
   const path = join(ROOT, 'packages', name, 'dist', 'index.js')
@@ -47,10 +57,9 @@ async function loadBuilt(name) {
 function planFiles(catalog, claudeCodeAdapter) {
   const desired = new Map()
   for (const file of claudeCodeAdapter.emit(catalog)) {
-    // The adapter emits project-install paths (.claude/skills/…). In a plugin, skills
-    // live at <plugin-root>/skills/… — same layout, different prefix.
-    const path = file.path.replace(/^\.claude\/skills\//, 'skills/')
-    desired.set(path, file.contents)
+    // The adapter emits .claude/skills/… paths — exactly where Claude Code looks for
+    // skills both when installing via /plugin and when installing from a GitHub URL.
+    desired.set(file.path, file.contents)
   }
   return desired
 }
@@ -94,7 +103,7 @@ async function main() {
     for (const path of stale) process.stderr.write(`  stale:   ${path}\n`)
     for (const [path] of changed) process.stderr.write(`  changed: ${path}\n`)
     process.stderr.write(
-      '\nThe committed skills/ tree does not match the catalog. Run `node scripts/build-plugin.mjs` and commit the result.\n',
+      '\nThe committed .claude/skills/ tree does not match the catalog. Run `node scripts/build-plugin.mjs` and commit the result.\n',
     )
     process.exit(1)
   }
@@ -107,7 +116,7 @@ async function main() {
   }
 
   process.stdout.write(
-    `Plugin skills regenerated: ${desired.size} files (${changed.length} changed, ${stale.length} removed).\n`,
+    `.claude/skills/ regenerated: ${desired.size} files (${changed.length} changed, ${stale.length} removed).\n`,
   )
 }
 
