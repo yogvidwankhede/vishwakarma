@@ -11,7 +11,7 @@ export default defineConfig({
   base: '/vishwakarma/',
 
   head: [
-    ['link', { rel: 'icon', href: '/vishwakarma/favicon.svg', type: 'image/svg+xml' }],
+    ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
     ['meta', { name: 'theme-color', content: '#0f766e' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'Vishwakarma' }],
@@ -41,7 +41,7 @@ export default defineConfig({
   },
 
   themeConfig: {
-    logo: { src: '/vishwakarma/favicon.svg', width: 24, height: 24 },
+    logo: { src: '/favicon.svg', width: 24, height: 24 },
 
     nav: [
       { text: 'Getting started', link: '/getting-started' },
