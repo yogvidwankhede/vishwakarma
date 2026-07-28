@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Vishwakarma
   text: Design intelligence for AI coding agents
-  tagline: 21 skills that give Claude, Cursor, Cline, and Windsurf real design taste — colour, motion, accessibility, hierarchy, layout, and theming, all computed rather than guessed.
+  tagline: 23 skills that give Claude, Cursor, Cline, and Windsurf real design taste — colour, motion, accessibility, hierarchy, layout, theming, multiplayer games, and 3D assets, all computed rather than guessed.
   actions:
     - theme: brand
       text: Get started
@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: One line to install
-    details: Paste the GitHub URL into any Claude Code session and all 21 skills copy into your project. No commands, no build step, no npm.
+    details: Paste the GitHub URL into any Claude Code session and all 23 skills copy into your project. No commands, no build step, no npm.
     icon: 🔗
   - title: Computed, not described
     details: Contrast ratios, perceptual colour ramps, fluid type scales, motion timing, stagger delays — everything that can be calculated is calculated. Agents calling functions are never wrong.
@@ -42,7 +42,7 @@ In any Claude Code session:
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
-Claude fetches the compiled catalog and copies all 21 skills into your project. No commands, no build, no npm.
+Claude fetches the compiled catalog and copies all 23 skills into your project. No commands, no build, no npm.
 
 ## Or use the plugin
 
