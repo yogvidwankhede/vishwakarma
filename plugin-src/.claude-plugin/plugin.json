@@ -1,0 +1,16 @@
+{
+  "name": "vishwakarma",
+  "version": "1.0.0",
+  "description": "Design intelligence and engineering discipline as one skill. Computed colour, derived motion timing, platform-correct constants for web, Android and Apple, accessibility evidence grading, and a working discipline that resolves ambiguity, measures baselines and keeps diffs scoped. Ships verification scripts.",
+  "author": {
+    "name": "Yogvid Wankhede and the Vishwakarma project authors"
+  },
+  "homepage": "https://yogvidwankhede.github.io/vishwakarma/",
+  "repository": "https://github.com/yogvidwankhede/vishwakarma",
+  "license": "Apache-2.0",
+  "keywords": [
+    "design", "ui", "ux", "colour", "motion", "accessibility", "typography",
+    "android", "jetpack-compose", "material3", "ios", "swiftui", "apple",
+    "web", "css", "design-tokens", "theming", "performance", "code-quality"
+  ]
+}

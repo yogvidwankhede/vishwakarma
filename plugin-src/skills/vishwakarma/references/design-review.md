@@ -1,0 +1,316 @@
+# Design Review
+
+A review is engineering output, not a reaction. Its worth is measured in defects actually
+fixed, and a finding too vague to act on is fixed at a rate near zero. Two failure modes
+account for most bad reviews: the undifferentiated wall, where forty complaints carry equal
+weight so the author triages by fatigue, and the gesture — "the spacing feels off" — which
+hands the diagnosis back to the person who could not see the problem.
+
+---
+
+## 1. Defect or preference — say which
+
+Classify every finding before writing it. A **defect** violates something outside your
+opinion: a specification, a stated system rule, or a measurable harm. "The focus ring
+scores 1.6:1 against the button" is a defect — SC 2.4.7 exists and the number is checkable. A **preference** rests on your taste alone: "I would give the hero
+more room." It may well be right. It is still a preference.
+
+The test: if you cannot name the evidence that would prove you wrong, it is a preference.
+
+Label each finding explicitly. An author who cannot tell which findings are binding either
+treats all of them as binding and resents the review, or none of them and ships the
+contrast bug. Marking preferences as preferences is what buys the defects their authority.
+
+---
+
+## 2. The seven passes
+
+Run them in order and separately. Each pass suppresses what the next one needs, so a single
+combined sweep catches nothing thoroughly.
+
+**Squint — hierarchy.** Blur until type is unreadable and note the order shapes emerge in.
+Compare that to the content's real ranking. Report: no focal point; the wrong element
+dominating; two elements tied at rank one; decoration outweighing the primary action.
+
+**Measure — system adherence.** Stop looking; read values. Extract every distinct spacing,
+font size, radius, weight and colour. Report near-misses (20px beside 24px reads as a bug),
+values absent from the scale, and section-to-element separation below 3:1.
+
+**Contrast — accessibility.** Text pairs against 4.5:1, 3:1 for large text, including the
+ones routinely skipped: hover and selected backgrounds, placeholder text, disabled
+controls, text over imagery. Then non-text at 3:1 under SC 1.4.11 — input borders, switch
+tracks, unchecked boxes, icon-only buttons, chart edges — and the focus ring against both
+the component and the page behind it.
+
+**Content stress.** Triple every string; empty every collection; fill one with 200 rows;
+remove every image; set a count to 999,999; try a name with no spaces. Report what
+overflows, clips, wraps and shifts the layout, or leaves a bare rectangle unexplained.
+
+**Viewport sweep.** 320px, 768px, 1280px, and 400% zoom at 1280px, which SC 1.4.10 treats
+as equivalent to the 320px case. Report horizontal scrolling, sticky headers eating the
+viewport at zoom, and pointer targets under 24 by 24 CSS pixels (SC 2.5.8, AA).
+
+**Keyboard.** Tab the whole surface. Report unreachable controls, focus order diverging
+from visual order, invisible focus at any stop, focus obscured by a sticky element
+(SC 2.4.11), modals that neither trap nor restore focus, and anything Escape fails to close.
+
+**Motion.** Enable `prefers-reduced-motion` and confirm spatial movement stops while state
+changes stay legible. Report animation on `width`, `height`, `top` or `left`;
+durations over 600ms; infinite loops outside a pending state; one scroll-entrance on
+everything.
+
+---
+
+## 3. Priority: harm, then system, then taste
+
+Order findings by the cost of not fixing them.
+
+**Tier 1 — user harm.** Someone is blocked, misled, or excluded: keyboard traps, invisible
+focus, contrast failures, destructive actions without confirmation, data lost on error,
+text overflowing into illegibility.
+
+**Tier 2 — system violation.** It works, but diverges from the codebase's own rules:
+hard-coded colours beside tokens, a one-off spacing value, a duplicated component, an API
+shaped unlike its siblings. These cost nothing today and compound forever, which is exactly
+why nobody raises them.
+
+**Tier 3 — craft and taste.** Hierarchy, rhythm, typographic fit, composition. Real, and
+last, because a beautiful screen nobody can operate by keyboard is worse than a plain one
+they can.
+
+Within a tier, order by breadth: the same defect in a shared component outranks it on one
+page.
+
+---
+
+## 4. Severity, calibrated
+
+Four labels, and hold the line on each. **Blocker** — ships broken or excludes users.
+**Major** — works, but a real user meets friction or the codebase takes on lasting cost.
+**Minor** — noticeable, cheap, nobody is harmed. **Nit** — genuinely optional; the author
+may close it unfixed without replying.
+
+A review where a third of the findings are blockers has no severity signal left. If the
+list runs long, cap tier 3 at the five that matter most; the rest is noise.
+
+---
+
+## 5. Anatomy of a finding
+
+Four parts, always: **location** (file and line, or component and state), **observed
+behaviour** stated as fact, **why it is a problem** in terms of user or system cost, and
+**the exact change**.
+
+Weak: *"Buttons look inconsistent and the spacing is off in places."*
+
+Strong: *"[Defect · Major] `PricingCard.tsx:41` — the secondary button renders `#8b8b8b`
+text on `#f5f5f5`, a ratio of 2.9:1, below the 4.5:1 of SC 1.4.3. Readers with reduced
+contrast sensitivity cannot read the fallback action. Replace with
+`var(--color-fg-muted)`, which resolves to 5.2:1 on this surface."*
+
+The difference is not length. The weak version gives no location, no measurement, no
+consequence and no change, so acting on it means redoing the review.
+
+---
+
+## 6. Reviewing generated output
+
+Generated interfaces fail structurally rather than randomly, so check the signature
+directly: gradient-filled heading text; exactly three equal cards under a centred heading;
+emoji standing in for icons; one radius and one shadow everywhere; every section at the same
+max-width; the violet-to-cyan palette; blur blobs behind the hero; a subtitle restating the
+heading; invented testimonials; the same fade-up on every element; only the happy path built.
+
+State the meta-finding plainly: uniformity is the diagnosis. Where every value is identical,
+no decision was made, and the correction is ranking, not polish.
+
+---
+
+## 7. Reviewing what you cannot run
+
+Say so once, at the top. Then review what the source proves: contrast between literal
+colour values, tokens versus hard-coded values, semantic markup and ARIA usage, focus
+management inside modal code, which properties are animated, and whether empty, loading and
+error branches exist at all. Mark anything needing rendered layout as *unverified —
+requires a running build*, and never assert a defect you have not seen.
+
+---
+
+## 8. Reviewing a design system
+
+Consistency here is countable. Report the **token adherence rate** — styled properties
+resolving to a token over total styled properties — and list every one-off value beside its
+nearest token. Report **API drift**: the same concept named `variant`, `kind` and
+`type` across three components; `isDisabled` beside `disabled`; `onChange` handing
+back a value in one place and an event in another. Report duplicates, and name which one is
+canonical.
+
+---
+
+## 9. The review is read by a person
+
+Open with what is working, specifically. "The empty states are designed, which is rare"
+costs one line and changes how everything after it lands. A review that finds only faults
+gets discounted wholesale, because the author correctly infers you were not looking for
+anything else.
+
+Then critique the artefact, never the author. "This component re-renders the entire list on
+every keystroke" is about code. "You clearly didn't think about performance" is about a
+person, and it converts a fixable defect into a dispute. Describe what you observed rather
+than what you assume was intended, and where you are guessing, say you are guessing.
+
+## Rules
+
+### MUST NOT — Do not assert a rendered-layout defect that you have not actually observed; record it in an unverified section with what would confirm it.
+
+*Why:* Layout is the product of the whole cascade, container size, font metrics and content, none of which are determinable from a single source file. One confidently stated finding that turns out to be false causes the author to re-open every other finding, so the credibility cost is paid across the entire review.
+
+### MUST NOT — Do not address the author or attribute intent, capability, or care; describe the artefact and the observed behaviour.
+
+*Why:* A statement about a person invites a defence of the person, which converts a fixable defect into a dispute in which nobody is discussing the code. It is also nearly always a false inference: the same output arises from time pressure, a missing primitive, or an unstated requirement.
+
+Incorrect:
+
+```markdown
+You clearly did not think about keyboard users when you built this menu.
+```
+
+Correct:
+
+```markdown
+The menu trigger is a div with an onClick handler and no tabindex, so it is not reachable by Tab.
+```
+
+### MUST — Label every finding as either a defect (grounded in a spec, a stated system rule, or a measurable harm) or a preference (grounded in reviewer taste).
+
+*Why:* An author cannot act correctly on a mixed list, because the cost of ignoring a finding differs by an order of magnitude between the two kinds. Without the label they apply one policy to everything — usually discounting the whole review, which means the defects ship alongside the disagreements.
+
+Incorrect:
+
+```markdown
+- The secondary button text is too light and the hero could use more room.
+```
+
+Correct:
+
+```markdown
+- [Defect] Secondary button text is 2.9:1, below SC 1.4.3.
+- [Preference] I would give the hero more vertical room; current spacing is internally consistent.
+```
+
+### MUST — Give every finding a resolvable location, the observed behaviour stated as fact, the user or system cost, and the exact change to make.
+
+*Why:* Each missing part transfers work back to the author: no location means they must search, no observation means they must reproduce, no cost means they cannot prioritise, and no change means they must redesign the fix you already have in mind. A finding missing any of the four is reliably deferred.
+
+### MUST — Order findings by user harm first, then system violations, then craft and taste — never by the order in which you noticed them.
+
+*Why:* Reviews are read top-down and acted on until attention runs out, so ordering determines what actually gets fixed. Notice-order correlates with visual salience, which is the inverse of severity: contrast and keyboard defects are invisible to a sighted mouse user and surface late.
+
+### MUST — State the measured value — contrast ratio, pixel size, millisecond duration, character count — for any finding where a number exists, rather than describing the problem qualitatively.
+
+*Why:* A number converts a finding from a claim into a check the author can repeat, which removes the argument entirely. It also forces the reviewer to verify before reporting: "the text looks light" survives no measurement, while "2.9:1 against #f5f5f5" either holds or is withdrawn.
+
+### MUST — State at the top of the review how the interface was inspected — rendered at which viewports, from source only, or from a screenshot — and what that excluded.
+
+*Why:* The method bounds what the findings can possibly cover. A reader who does not know the review was source-only will read the absence of layout findings as evidence that the layout is sound, which is the opposite of what the review established.
+
+### SHOULD NOT — Do not label a finding a blocker unless it ships broken or excludes a class of user, and do not let blockers exceed a small fraction of the total.
+
+*Why:* A severity scale carries information only through the rarity of its top level. When a third of findings are blockers the author stops reading the labels and re-triages from scratch, which is strictly worse than having supplied no severities at all.
+
+### SHOULD NOT — Do not report more than about five craft-and-taste findings in one review, however many you could list.
+
+*Why:* Review attention is a fixed budget spent top-down. Twenty aesthetic notes do not add twenty fixes; they add reading time that is subtracted from the tier-one findings above them, and they shift the author’s reading of the review from audit to opinion piece.
+
+*Exceptions:*
+- An explicitly requested exhaustive visual audit, where completeness is the deliverable.
+
+### SHOULD — Run the seven passes — squint, measure, contrast, content stress, viewport sweep, keyboard, motion — as separate sweeps rather than assessing everything at once.
+
+*Why:* Each pass requires suppressing what another pass needs: reading pixel values requires attending to detail that the squint test exists to destroy, and keyboard traversal requires ignoring appearance entirely. Attempting them simultaneously means the most visually salient defect masks the rest.
+
+### SHOULD — Collapse repeated instances of one underlying cause into a single finding that names the pattern and the count.
+
+*Why:* Six instances of an off-scale spacing value are one decision, not six defects. Listing them separately inflates the apparent severity of the review, buries the tier-one findings, and hides the single change that resolves all of them.
+
+### SHOULD — Within a severity tier, rank a defect in a shared component above the identical defect in a single page.
+
+*Why:* The cost of a defect scales with the number of surfaces that inherit it, and a fix in a shared component is applied once rather than per occurrence. Breadth is the only variable that distinguishes two findings of equal local severity.
+
+### SHOULD — Open every review with three to five specific observations of what the interface does well, naming the thing rather than offering a compliment.
+
+*Why:* A report containing only faults signals that the reviewer was searching for faults, so the author discounts the entire set rather than each finding on its merits. Naming what is right also protects it: undocumented good decisions are routinely removed in the next revision.
+
+### SHOULD — When reviewing generated interface output, check the template signature explicitly — gradient headings, three equal cards, emoji icons, one radius, one shadow, uniform section widths, single scroll animation, happy path only.
+
+*Why:* Generated output fails from a shared distribution rather than idiosyncratically, so the defects are predictable and enumerable. Reviewing it as if the failures were random misses the systematic ones, which are also the ones that make the result recognisable as generated.
+
+### SHOULD — When reviewing a design system, report a token adherence rate and enumerate every one-off value alongside its nearest token, rather than describing consistency qualitatively.
+
+*Why:* Consistency in a token system is a countable property, so a qualitative verdict discards the only precise signal available. A rate also gives the team a threshold to defend over time, whereas "mostly consistent" cannot regress detectably.
+
+### SHOULD — Report component API drift — the same concept exposed under different prop names, inconsistent boolean naming, or handlers with differing signatures — as a distinct class of finding.
+
+*Why:* API drift is invisible in any rendered view, so no visual pass detects it, yet it is what makes a system expensive to use: every inconsistency is a fact the consumer must memorise rather than infer, and the error it causes surfaces at the call site rather than in the component.
+
+### SHOULD — State explicitly whether the subject is shippable as-is, and if not, which specific findings block it.
+
+*Why:* Without an explicit verdict the author infers your overall judgment from the tone and volume of findings, and that inference is unreliable in both directions — a long list of nits reads as rejection, while a terse list containing one blocker reads as approval.
+
+## Before reporting completion
+
+Run these checks against your own output. Answer each question explicitly rather than
+assuming the answer, because the point of the exercise is to notice what you did not
+notice while building.
+
+### Confirm every finding is actionable on its own terms. (blocking)
+
+- Does every finding name a location precise enough to open without searching?
+- Does every finding state the observed behaviour as fact, with a measured value wherever one exists?
+- Does every finding state who is harmed or what the system pays?
+- Does every finding end with a specific change, not a direction to improve?
+- Is every finding tagged as either a defect or a preference?
+
+### Confirm the findings are ordered by cost rather than by discovery. (blocking)
+
+- Is every user-harm finding above every system-violation finding, and every system-violation finding above every taste finding?
+- Within each tier, do findings in shared components precede identical findings in single pages?
+- Would an author who stopped reading after the first three findings have fixed the three most costly problems?
+
+### Confirm the severity labels still carry information.
+
+- What fraction of findings are labelled blocker? If it is more than roughly a fifth, which ones are actually majors?
+- For each blocker, name the class of user who is excluded or the way the build ships broken.
+- Are there more than five taste findings? If so, which five survive?
+
+### Confirm all seven passes were run, or that their absence is declared. (blocking)
+
+- Which of the seven passes — squint, measure, contrast, content stress, viewport sweep, keyboard, motion — produced no findings, and was each one actually performed?
+- Was the keyboard pass run by traversing the interface, or inferred from the source?
+- Was contrast checked on hover, selected, disabled, and placeholder states, not only on resting text?
+
+### Confirm no claim exceeds what was actually observed. (blocking)
+
+- Does the report state how the interface was inspected and at which viewports?
+- Is every claim about rendered layout backed by something actually rendered, rather than inferred from source?
+- Is everything suspected but unconfirmed listed separately, with what would confirm it?
+
+### Confirm the review criticises the work rather than the author.
+
+- Does the review open with specific observations of what is working?
+- Does any sentence address the author directly or attribute intent, care, or capability?
+- Would the report read the same way if the author were in the room?
+
+### Confirm a design system review reports countable consistency, not impressions.
+
+- Is a token adherence rate reported, with each one-off value listed beside its nearest token?
+- Were prop names, boolean naming, and handler signatures compared across sibling components?
+- Were duplicate implementations of the same concept identified, with one named canonical?
+
+## Further reference
+
+These are not loaded by default. Read one only when its question is the question you
+currently have.
+
+- `references/report-template.md` — What is the exact structure and section-by-section format of a written design review report?
+- `references/worked-review.md` — What does a complete, well-calibrated review actually look like — with real findings at every severity level and a preference kept separate?
