@@ -1,0 +1,12 @@
+{
+  "name": "vishwakarma",
+  "version": "0.2.0",
+  "description": "Design intelligence for AI coding agents — one skill covering all 23 design domains: UI generation, colour, motion, accessibility, components, tokens, layout, typography, theming, SEO, performance, interaction, scroll, surface, responsive, information architecture, interface copy, states, micro-interactions, game publishing, and 3D assets.",
+  "author": {
+    "name": "Yogvid Wankhede and the Vishwakarma project authors"
+  },
+  "homepage": "https://yogvidwankhede.github.io/vishwakarma/",
+  "repository": "https://github.com/yogvidwankhede/vishwakarma",
+  "license": "Apache-2.0",
+  "keywords": ["design", "ui", "colour", "motion", "game", "3d", "accessibility", "typography", "tokens", "theming"]
+}
