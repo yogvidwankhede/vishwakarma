@@ -32,15 +32,16 @@
  * exists to prevent, so it never has an opinion it cannot justify.
  */
 
+import { posix } from 'node:path'
 import {
   aliasSpecifier,
+  DEFAULT_LAYOUT,
+  type ImportAlias,
   relativeSpecifier,
   specifierExtension,
-  type ImportAlias,
+  type TargetLayout,
 } from './paths.js'
-import { posix } from 'node:path'
 import type { PlannedFile } from './resolve.js'
-import { DEFAULT_LAYOUT, type TargetLayout } from './paths.js'
 
 /**
  * Matches the module specifier of an import, re-export, dynamic import or require.

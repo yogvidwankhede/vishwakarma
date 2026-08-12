@@ -3,10 +3,10 @@
 
 import { describe, expect, it } from 'vitest'
 import {
-  VARIANT_AXES,
   hashSequence,
   hashString,
   resolveVariation,
+  VARIANT_AXES,
   variationSpace,
 } from './variation.js'
 
@@ -28,7 +28,11 @@ describe('hashing', () => {
   })
 
   it('produces an unsigned 32-bit value', () => {
-    for (const input of ['', 'a', 'a much longer brief with punctuation, numbers 123, and symbols !@#']) {
+    for (const input of [
+      '',
+      'a',
+      'a much longer brief with punctuation, numbers 123, and symbols !@#',
+    ]) {
       const hash = hashString(input)
       expect(hash).toBeGreaterThanOrEqual(0)
       expect(hash).toBeLessThan(2 ** 32)
@@ -50,8 +54,20 @@ describe('hashing', () => {
   })
 
   it('replays the same sequence for the same seed', () => {
-    const first = Array.from({ length: 5 }, ((s) => () => s.next().value)(hashSequence('seed')))
-    const second = Array.from({ length: 5 }, ((s) => () => s.next().value)(hashSequence('seed')))
+    const first = Array.from(
+      { length: 5 },
+      (
+        (s) => () =>
+          s.next().value
+      )(hashSequence('seed')),
+    )
+    const second = Array.from(
+      { length: 5 },
+      (
+        (s) => () =>
+          s.next().value
+      )(hashSequence('seed')),
+    )
     expect(first).toEqual(second)
   })
 })
@@ -81,7 +97,9 @@ describe('variation resolution', () => {
     ]
 
     const signatures = briefs.map((brief) =>
-      resolveVariation({ brief }).variants.map((v) => v.value).join('|'),
+      resolveVariation({ brief })
+        .variants.map((v) => v.value)
+        .join('|'),
     )
 
     // The point of the engine. Six briefs collapsing onto two or three designs would mean

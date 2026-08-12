@@ -46,17 +46,20 @@ export function compile(skills: SkillManifest[], options: CompileOptions = {}): 
 
   const resolvedTargets =
     targets ??
-    Array.from(
-      new Set(skills.flatMap((skill) => skill.targets ?? [])),
-    ).filter((target): target is AgentTarget => Boolean(target))
+    Array.from(new Set(skills.flatMap((skill) => skill.targets ?? []))).filter(
+      (target): target is AgentTarget => Boolean(target),
+    )
 
-  const effectiveTargets = resolvedTargets.length > 0 ? resolvedTargets : (['claude-code'] as AgentTarget[])
+  const effectiveTargets =
+    resolvedTargets.length > 0 ? resolvedTargets : (['claude-code'] as AgentTarget[])
 
   return effectiveTargets.map((target) => {
     const adapter = getAdapter(target)
 
     const applicable = skills.filter((skill) => !skill.targets || skill.targets.includes(target))
-    const skipped = skills.filter((skill) => skill.targets && !skill.targets.includes(target)).map((s) => s.id)
+    const skipped = skills
+      .filter((skill) => skill.targets && !skill.targets.includes(target))
+      .map((s) => s.id)
 
     return {
       target,
@@ -98,7 +101,11 @@ export interface MergeResult {
  * just the content lets the CLI tell the user precisely what it did to their repository,
  * which is the difference between a tool that feels safe and one that does not.
  */
-export function mergeFile(file: EmittedFile, existing: string | null, marker = DEFAULT_MARKER): MergeResult {
+export function mergeFile(
+  file: EmittedFile,
+  existing: string | null,
+  marker = DEFAULT_MARKER,
+): MergeResult {
   if (existing === null) {
     return { contents: file.contents, action: 'created' }
   }
@@ -149,7 +156,10 @@ export function mergeFile(file: EmittedFile, existing: string | null, marker = D
  */
 export function removeSection(existing: string, marker = DEFAULT_MARKER): string | null {
   const { begin } = markers(marker)
-  const stripped = existing.replace(begin, '').replace(/\n{3,}/g, '\n\n').trim()
+  const stripped = existing
+    .replace(begin, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
   return stripped.length === 0 ? null : `${stripped}\n`
 }
 
@@ -205,7 +215,9 @@ export function estimateContextCost(
       (sum, skill) =>
         sum +
         estimate(skill.description) +
-        (skill.activation.always ? bodyOf(skill) : (skill.rules ?? []).reduce((s, r) => s + estimate(r.statement), 0)),
+        (skill.activation.always
+          ? bodyOf(skill)
+          : (skill.rules ?? []).reduce((s, r) => s + estimate(r.statement), 0)),
       0,
     )
     return {
@@ -234,10 +246,14 @@ export function estimateContextCost(
   }
 
   const always = skills.reduce(
-    (sum, skill) => sum + estimate(skill.description) + (skill.activation.always ? bodyOf(skill) : 0),
+    (sum, skill) =>
+      sum + estimate(skill.description) + (skill.activation.always ? bodyOf(skill) : 0),
     0,
   )
-  const onDemand = skills.reduce((sum, skill) => sum + (skill.activation.always ? 0 : bodyOf(skill)), 0)
+  const onDemand = skills.reduce(
+    (sum, skill) => sum + (skill.activation.always ? 0 : bodyOf(skill)),
+    0,
+  )
 
   return {
     alwaysLoadedTokens: always,

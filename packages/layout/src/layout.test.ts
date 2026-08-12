@@ -3,8 +3,8 @@
 
 import { describe, expect, it } from 'vitest'
 import { planBentoSpans } from './bento.js'
-import { SPACE_ALIASES, SPACE_STEPS, resolveSpace, spaceVar } from './space.js'
 import { alignValue, cx, justifyValue, toLength } from './primitive.js'
+import { resolveSpace, SPACE_ALIASES, SPACE_STEPS, spaceVar } from './space.js'
 
 describe('bento span planning', () => {
   it('leaves a row that already fills the grid alone', () => {

@@ -283,11 +283,16 @@ export function checkContract(contract: DesignContract, observation: Observation
         const nearest = contract.typography.sizes.reduce((best, candidate) =>
           Math.abs(candidate - size) < Math.abs(best - size) ? candidate : best,
         )
-        report('typography/off-scale', 'warning', `Font size ${size}rem is not on the type scale.`, {
-          actual: `${size}rem`,
-          expected: `${nearest}rem`,
-          fix: `Replace ${size}rem with ${nearest}rem.`,
-        })
+        report(
+          'typography/off-scale',
+          'warning',
+          `Font size ${size}rem is not on the type scale.`,
+          {
+            actual: `${size}rem`,
+            expected: `${nearest}rem`,
+            fix: `Replace ${size}rem with ${nearest}rem.`,
+          },
+        )
       }
       if (contract.typography.minBodySize && size < contract.typography.minBodySize) {
         report(
@@ -416,10 +421,15 @@ export function checkContract(contract: DesignContract, observation: Observation
     for (const property of observation.animatedProperties) {
       checked++
       if (layoutProps.has(property.toLowerCase())) {
-        report('motion/layout-animation', 'error', `Animating "${property}" forces layout every frame.`, {
-          actual: property,
-          fix: 'Animate transform or opacity instead, or use a measured layout-animation technique.',
-        })
+        report(
+          'motion/layout-animation',
+          'error',
+          `Animating "${property}" forces layout every frame.`,
+          {
+            actual: property,
+            fix: 'Animate transform or opacity instead, or use a measured layout-animation technique.',
+          },
+        )
       }
     }
   }
@@ -465,10 +475,15 @@ export function checkContract(contract: DesignContract, observation: Observation
     for (const radius of new Set(observation.radiiPx)) {
       checked++
       if (!allowed.has(radius)) {
-        report('layout/off-radius', 'suggestion', `Border radius ${radius}px is not a system value.`, {
-          actual: radius,
-          expected: contract.layout.radii.join(', '),
-        })
+        report(
+          'layout/off-radius',
+          'suggestion',
+          `Border radius ${radius}px is not a system value.`,
+          {
+            actual: radius,
+            expected: contract.layout.radii.join(', '),
+          },
+        )
       }
     }
   }
@@ -497,10 +512,15 @@ export function checkContract(contract: DesignContract, observation: Observation
   if (contract.accessibility.requireAccessibleNames && observation.interactiveWithoutName?.length) {
     for (const element of observation.interactiveWithoutName) {
       checked++
-      report('a11y/missing-name', 'error', `Interactive element "${element}" has no accessible name.`, {
-        actual: element,
-        fix: 'Add visible text, or an aria-label when the control is icon-only.',
-      })
+      report(
+        'a11y/missing-name',
+        'error',
+        `Interactive element "${element}" has no accessible name.`,
+        {
+          actual: element,
+          fix: 'Add visible text, or an aria-label when the control is icon-only.',
+        },
+      )
     }
   }
 

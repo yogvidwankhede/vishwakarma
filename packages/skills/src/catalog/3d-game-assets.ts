@@ -185,7 +185,8 @@ integration, fallback primitives, and Motion Grammar timings are in the integrat
     references: [
       {
         id: 'asset-generation-workflow',
-        title: 'Declaring the manifest, choosing a generation route, writing prompts, and auditing orientation',
+        title:
+          'Declaring the manifest, choosing a generation route, writing prompts, and auditing orientation',
         answers:
           'How do I set up an asset manifest before generating, which generation route should a character versus a prop take, what does a good generation prompt contain, and exactly how do I audit and record an asset’s forward axis?',
         content: `# Asset generation workflow: manifest, routes, prompts, orientation audit
@@ -328,7 +329,8 @@ engine expects and corrects the appearance alone.
       },
       {
         id: 'manifest-structure-and-threejs-integration',
-        title: 'Canonical manifest structure, Three.js and R3F integration, fallback primitives, and Motion Grammar timings',
+        title:
+          'Canonical manifest structure, Three.js and R3F integration, fallback primitives, and Motion Grammar timings',
         answers:
           'What is the canonical shape of asset_manifest.json, how do I load a character and its clips into Three.js or React Three Fiber with one mixer and correct calibration, what should render when a GLB fails to load, and which Motion Grammar timings apply to asset state changes?',
         content: `# Manifest structure, Three.js integration, fallbacks, and Motion Grammar
@@ -722,5 +724,10 @@ clarity. Reduced motion means gentler and fewer, not zero — the spawn still ha
     },
   ],
 
-  relatedSkills: ['multiplayer-game-publishing', 'colour-systems', 'motion-design', 'surface-and-depth'],
+  relatedSkills: [
+    'multiplayer-game-publishing',
+    'colour-systems',
+    'motion-design',
+    'surface-and-depth',
+  ],
 }

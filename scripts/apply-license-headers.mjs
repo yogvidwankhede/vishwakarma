@@ -18,7 +18,7 @@
  * Run: node scripts/apply-license-headers.mjs [--check]
  */
 
-import { readFile, readdir, writeFile } from 'node:fs/promises'
+import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { extname, join, relative } from 'node:path'
 import process from 'node:process'
 

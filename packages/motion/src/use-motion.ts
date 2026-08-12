@@ -1,18 +1,19 @@
 'use client'
+
 // Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
 // SPDX-License-Identifier: Apache-2.0
 
-import { useMemo } from 'react'
 import {
-  resolveMotion,
-  stagger,
-  toPhysicalSpring,
   type MotionDistance,
   type MotionIntent,
   type ResolvedMotion,
+  resolveMotion,
   type SpringName,
   type SpringSpec,
+  stagger,
+  toPhysicalSpring,
 } from '@vishwakarma/core'
+import { useMemo } from 'react'
 import { useReducedMotion } from './use-reduced-motion.js'
 
 export interface UseMotionOptions {
@@ -80,7 +81,9 @@ export function useMotionStyle(options: UseMotionOptions & { properties?: string
       transitionDuration: duration,
       transitionTimingFunction: easing,
       transitionDelay: delay,
-      transition: properties.map((property) => `${property} ${duration} ${easing} ${delay}`).join(', '),
+      transition: properties
+        .map((property) => `${property} ${duration} ${easing} ${delay}`)
+        .join(', '),
     }
   }, [resolved, properties])
 }

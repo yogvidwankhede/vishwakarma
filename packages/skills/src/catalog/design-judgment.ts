@@ -496,8 +496,7 @@ the exact change. "Increase the gap between the section heading and the first ca
     {
       id: 'design-judgment/no-gradient-text',
       strength: 'must-not',
-      statement:
-        'Do not apply multi-hue gradients to heading text as a decorative effect.',
+      statement: 'Do not apply multi-hue gradients to heading text as a decorative effect.',
       evidence: {
         rationale:
           'Gradient headline text is the strongest single visual marker of generated marketing pages, and it additionally fails contrast auditing at some point along its run because the ratio varies with position.',
@@ -533,7 +532,9 @@ the exact change. "Increase the gap between the section heading and the first ca
           'Hierarchy is expressed through perceptible differences between levels. Beyond roughly six levels the differences become too small to perceive, so additional sizes add visual noise without adding structure.',
         confidence: 'strong',
       },
-      exceptions: ['Dense data applications where a documented scale intentionally covers more levels.'],
+      exceptions: [
+        'Dense data applications where a documented scale intentionally covers more levels.',
+      ],
     },
     {
       id: 'design-judgment/tracking-by-size',
@@ -549,7 +550,8 @@ the exact change. "Increase the gap between the section heading and the first ca
     {
       id: 'design-judgment/measure-limit',
       strength: 'must',
-      statement: 'Constrain any container holding prose to a maximum measure of about 75 characters.',
+      statement:
+        'Constrain any container holding prose to a maximum measure of about 75 characters.',
       evidence: {
         rationale:
           'Beyond roughly 75 characters per line, the return sweep to the start of the next line becomes unreliable and readers lose their place, which measurably reduces reading speed and comprehension.',
@@ -560,7 +562,8 @@ the exact change. "Increase the gap between the section heading and the first ca
     {
       id: 'design-judgment/accent-single-job',
       strength: 'should',
-      statement: 'Assign the accent colour exactly one semantic job, and do not use it for decoration.',
+      statement:
+        'Assign the accent colour exactly one semantic job, and do not use it for decoration.',
       evidence: {
         rationale:
           'An accent directs attention by being rare. Each additional use dilutes it, and past a handful of uses it conveys no information at all while still consuming visual energy.',
@@ -608,8 +611,7 @@ the exact change. "Increase the gap between the section heading and the first ca
     {
       id: 'design-judgment/glass-needs-background',
       strength: 'must-not',
-      statement:
-        'Do not apply backdrop blur over a flat background.',
+      statement: 'Do not apply backdrop blur over a flat background.',
       evidence: {
         rationale:
           'A backdrop filter samples and blurs what is behind the element. Over a flat fill there is nothing to sample, so the effect produces only a slight tint while still forcing the compositor to allocate and blur a backdrop texture every frame.',
@@ -648,7 +650,9 @@ the exact change. "Increase the gap between the section heading and the first ca
           'A primary button communicates the expected next action. Two equally weighted primaries force the user to make a decision the interface should have made for them, which measurably slows task completion.',
         confidence: 'strong',
       },
-      exceptions: ['Genuinely symmetric binary choices, such as accept and decline in a consent dialog.'],
+      exceptions: [
+        'Genuinely symmetric binary choices, such as accept and decline in a consent dialog.',
+      ],
     },
     {
       id: 'design-judgment/no-emoji-icons',
@@ -747,5 +751,10 @@ the exact change. "Increase the gap between the section heading and the first ca
     },
   ],
 
-  relatedSkills: ['responsive-architecture', 'motion-design', 'accessible-components', 'design-tokens'],
+  relatedSkills: [
+    'responsive-architecture',
+    'motion-design',
+    'accessible-components',
+    'design-tokens',
+  ],
 }

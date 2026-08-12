@@ -281,7 +281,9 @@ export interface SkillManifest {
   targets?: AgentTarget[]
 
   /** Per-target overrides, for the rare case where one agent needs different phrasing. */
-  overrides?: Partial<Record<AgentTarget, { description?: string; body?: string; alwaysApply?: boolean }>>
+  overrides?: Partial<
+    Record<AgentTarget, { description?: string; body?: string; alwaysApply?: boolean }>
+  >
 
   /**
    * Tools this skill expects the agent to have. Adapters that support tool restriction
@@ -337,7 +339,11 @@ export const TIER_BUDGETS = {
  */
 export function validateManifest(manifest: unknown): ValidationIssue[] {
   const issues: ValidationIssue[] = []
-  const add = (path: string, message: string, severity: ValidationIssue['severity'] = 'error'): void => {
+  const add = (
+    path: string,
+    message: string,
+    severity: ValidationIssue['severity'] = 'error',
+  ): void => {
     issues.push({ path, message, severity })
   }
 
@@ -391,7 +397,8 @@ export function validateManifest(manifest: unknown): ValidationIssue[] {
     add('activation', 'An activation block is required.')
   } else {
     const a = m.activation
-    const hasTrigger = a.always || a.globs?.length || a.intents?.length || a.keywords?.length || a.onDemandOnly
+    const hasTrigger =
+      a.always || a.globs?.length || a.intents?.length || a.keywords?.length || a.onDemandOnly
     if (!hasTrigger) {
       add('activation', 'The skill has no activation trigger, so it will never load.')
     }
@@ -420,11 +427,7 @@ export function validateManifest(manifest: unknown): ValidationIssue[] {
   } else {
     if (!m.content.summary) add('content.summary', 'A summary is required.')
     else if (estimateTokens(m.content.summary) > TIER_BUDGETS.summary) {
-      add(
-        'content.summary',
-        `Summary is over the ${TIER_BUDGETS.summary}-token budget.`,
-        'warning',
-      )
+      add('content.summary', `Summary is over the ${TIER_BUDGETS.summary}-token budget.`, 'warning')
     }
 
     if (!m.content.body) add('content.body', 'A body is required.')

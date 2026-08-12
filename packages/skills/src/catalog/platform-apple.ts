@@ -940,7 +940,8 @@ tonal structure rather than a flat fill.
     {
       id: 'layout-and-type-audit',
       kind: 'self-review',
-      description: 'Confirm geometry comes from the system and the layout survives the largest type size.',
+      description:
+        'Confirm geometry comes from the system and the layout survives the largest type size.',
       blocking: true,
       questions: [
         'Does any device-generation status bar height (20, 44, 47, 54, 59) or the literal 34 appear as an inset in layout code?',
@@ -953,7 +954,8 @@ tonal structure rather than a flat fill.
     {
       id: 'surface-and-motion-review',
       kind: 'self-review',
-      description: 'Confirm corners, materials, colour, and spring parameters follow the platform mechanisms.',
+      description:
+        'Confirm corners, materials, colour, and spring parameters follow the platform mechanisms.',
       blocking: true,
       questions: [
         'Does every rounded surface declare a continuous corner curve, and does each nested radius equal its parent’s radius minus the padding?',
@@ -966,7 +968,8 @@ tonal structure rather than a flat fill.
     {
       id: 'system-integration-review',
       kind: 'self-review',
-      description: 'Confirm navigation, VoiceOver, haptics, and system-provided states behave correctly.',
+      description:
+        'Confirm navigation, VoiceOver, haptics, and system-provided states behave correctly.',
       questions: [
         'Is the interactive pop gesture still enabled on every pushed screen, and does no custom gesture begin within the leading 20pt?',
         'Does the tab bar carry 2 to 5 tabs and reserve 83pt of height, and does each back button carry the previous screen’s title?',

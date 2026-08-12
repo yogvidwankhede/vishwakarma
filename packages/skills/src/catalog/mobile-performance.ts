@@ -739,7 +739,8 @@ damage.`,
     {
       id: 'percentile-and-field-review',
       kind: 'self-review',
-      description: 'Confirm the numbers being reported are field percentiles rather than lab means.',
+      description:
+        'Confirm the numbers being reported are field percentiles rather than lab means.',
       questions: [
         'Are jank figures reported as P50/P90/P99 and percentage of frames over budget, with no mean presented as a verdict?',
         'Is the user-perceived crash rate below 1.09% and the ANR rate below 0.47% on every significant device model, with alerts set at a warning level below those thresholds rather than at them?',
@@ -762,5 +763,10 @@ damage.`,
     },
   ],
 
-  relatedSkills: ['rendering-performance', 'platform-android', 'code-quality', 'engineering-discipline'],
+  relatedSkills: [
+    'rendering-performance',
+    'platform-android',
+    'code-quality',
+    'engineering-discipline',
+  ],
 }

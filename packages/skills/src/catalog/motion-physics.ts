@@ -449,7 +449,8 @@ which reads as the interface refusing.
       },
       {
         id: 'timing-easing-and-performance',
-        title: 'Easing curves, the duration ladder, the frequency gate, reduced motion, and compositing',
+        title:
+          'Easing curves, the duration ladder, the frequency gate, reduced motion, and compositing',
         answers:
           'Which easing curve does this motion take, how long should it run, how do I decide whether to animate it at all, what does the reduced-motion branch replace it with, and which properties and APIs keep it off the main thread?',
         content: `# Easing curves, the duration ladder, the frequency gate, reduced motion, and compositing
@@ -848,7 +849,8 @@ directly, so the browser has both endpoints at insertion time.
     {
       id: 'spring-and-gesture-review',
       kind: 'self-review',
-      description: 'Confirm springs, handoffs, projections, and gesture ownership follow the physics.',
+      description:
+        'Confirm springs, handoffs, projections, and gesture ownership follow the physics.',
       blocking: true,
       questions: [
         'Is every spring stated as damping ratio and response (or bounce and duration), and does every damping ratio below 1.0 belong to a gesture that supplied momentum in that direction?',

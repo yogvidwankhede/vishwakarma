@@ -2,7 +2,7 @@
 // Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
 // SPDX-License-Identifier: Apache-2.0
 
-import { useCallback, type Ref, type RefCallback } from 'react'
+import { type Ref, type RefCallback, useCallback } from 'react'
 
 /**
  * Write a value into a ref of either form.
@@ -31,7 +31,10 @@ export function assignRef<T>(ref: Ref<T> | undefined, value: T | null): void {
  * render makes any observer or measurement attached to it tear down and restart on every
  * render, which is both a performance problem and a source of measurement flicker.
  */
-export function useMergedRef<T>(internal: Ref<T> | undefined, external: Ref<T> | undefined): RefCallback<T> {
+export function useMergedRef<T>(
+  internal: Ref<T> | undefined,
+  external: Ref<T> | undefined,
+): RefCallback<T> {
   return useCallback(
     (node: T | null) => {
       assignRef(internal, node)

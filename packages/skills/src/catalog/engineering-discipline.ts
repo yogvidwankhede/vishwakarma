@@ -988,7 +988,8 @@ a defect. Name the problem explicitly, do not silently deviate, and get a decisi
     {
       id: 'evidence-before-motion',
       kind: 'self-review',
-      description: 'Confirm the work started from stated readings, a measured baseline, and a checkable goal.',
+      description:
+        'Confirm the work started from stated readings, a measured baseline, and a checkable goal.',
       blocking: true,
       questions: [
         'Did the request admit more than one reasonable reading, and if so, did you present the readings with an effort estimate and a consequence each before building?',
@@ -1026,7 +1027,8 @@ a defect. Name the problem explicitly, do not silently deviate, and get a decisi
     {
       id: 'proportionality',
       kind: 'self-review',
-      description: 'Confirm the size of the solution and the weight of the process both match the problem.',
+      description:
+        'Confirm the size of the solution and the weight of the process both match the problem.',
       questions: [
         'Does every abstraction, extension point, configuration option and injected collaborator have a second real caller present in the codebase today?',
         'What would a demanding reviewer call unnecessary in this solution, and have you removed it?',

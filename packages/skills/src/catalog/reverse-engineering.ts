@@ -195,7 +195,8 @@ that decides which work is worth doing.`,
     references: [
       {
         id: 'fingerprint-and-decompile',
-        title: 'Scope and authorisation, framework fingerprinting, library detection, obfuscation level, engine selection, and the split-APK trap',
+        title:
+          'Scope and authorisation, framework fingerprinting, library detection, obfuscation level, engine selection, and the split-APK trap',
         answers:
           'What must be established before the first command, how do I tell in ten seconds which toolchain an artefact needs, which libraries can I detect without reading code, how obfuscated is this, and why did decompiling produce nine source files?',
         content: `# Scope, fingerprinting, library detection, obfuscation level, and archive selection
@@ -393,7 +394,8 @@ about the product that no amount of code reading reveals.
       },
       {
         id: 'analysis-and-reporting',
-        title: 'Structural survey, Kotlin name recovery, call-flow anchoring, tiered output, and the general fingerprint-abort-tier discipline',
+        title:
+          'Structural survey, Kotlin name recovery, call-flow anchoring, tiered output, and the general fingerprint-abort-tier discipline',
         answers:
           'What do I read first once the right archive is decompiled, how much of an obfuscated Kotlin application can be renamed back, how do I trace a flow with no readable method names, and how should the report be shaped so it is read?',
         content: `# Structural survey, name recovery, call-flow anchoring, and tiered reporting
@@ -607,8 +609,7 @@ worth doing, and it is almost always cheaper than the first step of the alternat
     {
       id: 'reverse-engineering/stay-static-and-structural',
       strength: 'must-not',
-      statement:
-        'Stop at understanding structure; do not cross into defeating a control.',
+      statement: 'Stop at understanding structure; do not cross into defeating a control.',
       evidence: {
         rationale:
           'That transition is the boundary of legitimate analysis, and it is also a different activity in practice: those techniques operate on runtime state rather than static structure, so nothing in a static workflow produces them as a by-product and reaching them requires a deliberate change of method. Findings here are claims about the artefact, not authorisation to act against a live service or its users.',
@@ -775,7 +776,8 @@ worth doing, and it is almost always cheaper than the first step of the alternat
     {
       id: 'triage-and-toolchain-review',
       kind: 'self-review',
-      description: 'Confirm the fingerprint ran first and the right archive reached the right engine.',
+      description:
+        'Confirm the fingerprint ran first and the right archive reached the right engine.',
       blocking: true,
       questions: [
         'Was an archive listing checked for framework markers before any decompiler was installed or invoked?',
@@ -788,7 +790,8 @@ worth doing, and it is almost always cheaper than the first step of the alternat
     {
       id: 'recovery-and-trace-review',
       kind: 'self-review',
-      description: 'Confirm detection, name recovery, and traces rest on things that could not be renamed.',
+      description:
+        'Confirm detection, name recovery, and traces rest on things that could not be renamed.',
       questions: [
         'Was a string scan run for network, dependency-injection and serialisation signals, and was the obfuscation level estimated from the share of one- and two-character package names?',
         'Did a scan for URL literals come back near-empty on a networked application, and if so was string encryption declared and extraction stopped?',
@@ -800,7 +803,8 @@ worth doing, and it is almost always cheaper than the first step of the alternat
     {
       id: 'report-shape-review',
       kind: 'self-review',
-      description: 'Confirm the report is an exhaustive inventory plus rationed depth, with coverage stated.',
+      description:
+        'Confirm the report is an exhaustive inventory plus rationed depth, with coverage stated.',
       questions: [
         'Does the report contain a complete flat inventory of endpoints, components with exported status, permissions, libraries, and build-configuration values, one row each?',
         'Is deep detail capped at roughly ten items, and is each of them either an anomaly or a flow the requester named?',
@@ -810,5 +814,10 @@ worth doing, and it is almost always cheaper than the first step of the alternat
     },
   ],
 
-  relatedSkills: ['engineering-discipline', 'code-quality', 'platform-android', 'mobile-performance'],
+  relatedSkills: [
+    'engineering-discipline',
+    'code-quality',
+    'platform-android',
+    'mobile-performance',
+  ],
 }

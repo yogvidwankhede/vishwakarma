@@ -550,14 +550,12 @@ also do not execute JavaScript, and they are not all on the default list.
         'Server-render or statically generate any route that must be discoverable, so its content and metadata are present in the initial HTML response.',
       evidence: {
         rationale:
-          'Vercel\'s December 2024 analysis of crawler logs found that GPTBot, ClaudeBot, OAI-SearchBot, ChatGPT-User and PerplexityBot fetch JavaScript files but do not execute them. Googlebot renders on a deferred queue. A client-only route therefore presents an empty document to every consumer except Google, and a delayed one to Google.',
+          "Vercel's December 2024 analysis of crawler logs found that GPTBot, ClaudeBot, OAI-SearchBot, ChatGPT-User and PerplexityBot fetch JavaScript files but do not execute them. Googlebot renders on a deferred queue. A client-only route therefore presents an empty document to every consumer except Google, and a delayed one to Google.",
         source: 'Vercel, "The rise of the AI crawler" (December 2024)',
         url: 'https://vercel.com/blog/the-rise-of-the-ai-crawler',
         confidence: 'strong',
       },
-      exceptions: [
-        'Authenticated application routes that should never be indexed anyway.',
-      ],
+      exceptions: ['Authenticated application routes that should never be indexed anyway.'],
       verifiedBy: 'rendering-audit',
     },
     {

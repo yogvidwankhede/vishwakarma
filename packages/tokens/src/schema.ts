@@ -186,7 +186,10 @@ export class TokenResolutionError extends Error {
  * because in a set of several hundred tokens the chain is the only thing that makes the
  * error fixable.
  */
-export function resolveTokens(set: TokenSet, options: ResolutionOptions = {}): Map<string, TokenValue> {
+export function resolveTokens(
+  set: TokenSet,
+  options: ResolutionOptions = {},
+): Map<string, TokenValue> {
   const { theme, maxDepth = 32 } = options
   const byPath = new Map(set.tokens.map((token) => [token.path, token]))
   const resolved = new Map<string, TokenValue>()
@@ -241,11 +244,7 @@ export function resolveTokens(set: TokenSet, options: ResolutionOptions = {}): M
 
     const token = byPath.get(path)
     if (!token) {
-      throw new TokenResolutionError(
-        `Token "${path}" is referenced but not defined.`,
-        path,
-        chain,
-      )
+      throw new TokenResolutionError(`Token "${path}" is referenced but not defined.`, path, chain)
     }
 
     const value = resolveValue(rawValue(token), [...chain, path]) as TokenValue

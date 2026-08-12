@@ -21,13 +21,25 @@
  * line, rather than being pinned to an arbitrary one.
  */
 
-import fg from 'fast-glob'
 import { readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
-import { checkContract, type DesignContract, type Observation, type Severity, type Violation } from '@vishwakarma/core'
-import { extractFromSource, type Evidence, type EvidenceKind, type ExtractOptions, type Unresolved } from './extract.js'
+import {
+  checkContract,
+  type DesignContract,
+  type Observation,
+  type Severity,
+  type Violation,
+} from '@vishwakarma/core'
+import fg from 'fast-glob'
+import {
+  type Evidence,
+  type EvidenceKind,
+  type ExtractOptions,
+  extractFromSource,
+  type Unresolved,
+} from './extract.js'
 import { STATIC_ANALYSIS_LIMITS } from './limits.js'
-import { suppressionCovers, type Suppression } from './suppressions.js'
+import { type Suppression, suppressionCovers } from './suppressions.js'
 
 /* -------------------------------------------------------------------------- */
 /* Report shapes                                                               */
@@ -242,11 +254,7 @@ export function auditSource(
 }
 
 /** Resolve a rule's severity, or `null` when the contract switches the rule off entirely. */
-function severityFor(
-  contract: DesignContract,
-  rule: string,
-  fallback: Severity,
-): Severity | null {
+function severityFor(contract: DesignContract, rule: string, fallback: Severity): Severity | null {
   if ((contract.disabled ?? []).some((entry) => entry.rule === rule)) return null
   return contract.severityOverrides?.[rule] ?? fallback
 }
@@ -360,7 +368,10 @@ function summarise(violations: Violation[], checked: number, suppressed: number)
 }
 
 function scoreOf(violations: Violation[], checked: number): number {
-  const penalty = violations.reduce((sum, violation) => sum + SEVERITY_WEIGHT[violation.severity], 0)
+  const penalty = violations.reduce(
+    (sum, violation) => sum + SEVERITY_WEIGHT[violation.severity],
+    0,
+  )
   const surface = Math.max(checked, 1) * 2
   return Math.round((surface / (surface + penalty)) * 100)
 }
@@ -427,7 +438,10 @@ export async function auditProject(
         const code = await readFile(absolute, 'utf8')
         files.push(auditSource(code, relative, contract, options))
       } catch (error) {
-        skipped.push({ file: relative, reason: error instanceof Error ? error.message : 'unreadable' })
+        skipped.push({
+          file: relative,
+          reason: error instanceof Error ? error.message : 'unreadable',
+        })
       }
     }
   })

@@ -359,7 +359,8 @@ export function resolveVariation(request: VariationRequest): VariationResult {
 
   const variants: ResolvedVariant[] = selected.map((axis) => {
     const available = axis.options.filter(
-      (option) => !(option.unsuitableFor ?? []).some((condition) => constraints.includes(condition)),
+      (option) =>
+        !(option.unsuitableFor ?? []).some((condition) => constraints.includes(condition)),
     )
 
     // A constraint set that excludes everything is a configuration error, but throwing

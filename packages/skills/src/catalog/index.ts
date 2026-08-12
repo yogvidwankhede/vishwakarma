@@ -113,9 +113,7 @@ export const catalog: SkillManifest[] = [
 ]
 
 /** Look up a skill by its id. */
-export const catalogById = new Map<string, SkillManifest>(
-  catalog.map((skill) => [skill.id, skill]),
-)
+export const catalogById = new Map<string, SkillManifest>(catalog.map((skill) => [skill.id, skill]))
 
 /** Every category present in the catalog. */
 export const categories = Array.from(new Set(catalog.map((skill) => skill.category))).sort()
@@ -140,7 +138,8 @@ export function resolveSelection(ids: string[]): SkillManifest[] {
     const id = queue.shift() as string
     if (selected.has(id)) continue
     const skill = catalogById.get(id)
-    if (!skill) throw new Error(`Unknown skill "${id}". Run \`vishwakarma list\` to see the catalog.`)
+    if (!skill)
+      throw new Error(`Unknown skill "${id}". Run \`vishwakarma list\` to see the catalog.`)
     selected.set(id, skill)
     for (const required of skill.activation.requires ?? []) queue.push(required)
   }

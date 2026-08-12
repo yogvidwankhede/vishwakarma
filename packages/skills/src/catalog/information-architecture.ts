@@ -26,7 +26,15 @@ export const informationArchitecture: SkillManifest = {
   version: '1.0.0',
   license: 'Apache-2.0',
   category: 'ux',
-  tags: ['information-architecture', 'navigation', 'findability', 'hierarchy', 'taxonomy', 'dashboards', 'search'],
+  tags: [
+    'information-architecture',
+    'navigation',
+    'findability',
+    'hierarchy',
+    'taxonomy',
+    'dashboards',
+    'search',
+  ],
 
   activation: {
     intents: [
@@ -457,7 +465,8 @@ a number that has not changed materially in a year is documentation, not a dashb
       evidence: {
         rationale:
           'Larson and Czerwinski compared 8×8×8, 16×32 and 32×16 hierarchies over 512 documents and found the eight-wide three-level structure reliably slowest and most disorienting. Each extra level is another prediction the user must make from a label, and a wrong prediction costs a full backtrack, whereas extra items on one screen are merely read.',
-        source: 'Larson & Czerwinski, "Web page design: implications of memory, structure and scent for information retrieval", CHI 1998',
+        source:
+          'Larson & Czerwinski, "Web page design: implications of memory, structure and scent for information retrieval", CHI 1998',
         confidence: 'strong',
       },
       exceptions: [
@@ -513,7 +522,8 @@ a number that has not changed materially in a year is documentation, not a dashb
     {
       id: 'information-architecture/heading-level-is-structure',
       strength: 'must-not',
-      statement: 'Do not choose a heading level for its default font size; set the level from the outline and the size from a class.',
+      statement:
+        'Do not choose a heading level for its default font size; set the level from the outline and the size from a class.',
       evidence: {
         rationale:
           'Heading level is a structural assertion consumed by screen readers, in-page tables of contents, and machine parsers, none of which see the rendered size. Selecting h4 because it looked right silently corrupts the outline for every user who navigates by structure rather than by eye.',
@@ -651,7 +661,9 @@ a number that has not changed materially in a year is documentation, not a dashb
         url: 'https://www.w3.org/WAI/WCAG22/Understanding/multiple-ways.html',
         confidence: 'established',
       },
-      exceptions: ['Steps within a linear process, where the process is the only legitimate route.'],
+      exceptions: [
+        'Steps within a linear process, where the process is the only legitimate route.',
+      ],
     },
     {
       id: 'information-architecture/zero-results-recovery',
@@ -753,7 +765,8 @@ a number that has not changed materially in a year is documentation, not a dashb
     {
       id: 'task-model-review',
       kind: 'self-review',
-      description: 'Confirm the structure follows the user’s task model rather than an internal one.',
+      description:
+        'Confirm the structure follows the user’s task model rather than an internal one.',
       blocking: true,
       questions: [
         'Write the sentence a user would say about what they came to do. Which nouns in it appear as navigation items?',
@@ -764,7 +777,8 @@ a number that has not changed materially in a year is documentation, not a dashb
     {
       id: 'structure-audit',
       kind: 'self-review',
-      description: 'Confirm the hierarchy is shallow, evenly balanced, and free of catch-all buckets.',
+      description:
+        'Confirm the hierarchy is shallow, evenly balanced, and free of catch-all buckets.',
       questions: [
         'How many levels deep is the deepest routinely-used destination? Is anything beyond three levels?',
         'How many items sit at each level? Is any branch more than about four times the size of its siblings?',
@@ -838,5 +852,11 @@ a number that has not changed materially in a year is documentation, not a dashb
     },
   ],
 
-  relatedSkills: ['design-judgment', 'interface-copy', 'accessible-components', 'layout-composition', 'interaction-design'],
+  relatedSkills: [
+    'design-judgment',
+    'interface-copy',
+    'accessible-components',
+    'layout-composition',
+    'interaction-design',
+  ],
 }

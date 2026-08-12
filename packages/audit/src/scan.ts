@@ -33,7 +33,12 @@ const QUOTES = new Set(['"', "'", '`'])
  * closing delimiter, or -1 when the region never closes — which happens on truncated or
  * syntactically broken files, and must not be allowed to hang the scan.
  */
-export function matchDelimiter(source: string, openIndex: number, open: string, close: string): number {
+export function matchDelimiter(
+  source: string,
+  openIndex: number,
+  open: string,
+  close: string,
+): number {
   let depth = 0
   let index = openIndex
 

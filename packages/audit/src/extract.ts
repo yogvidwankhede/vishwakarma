@@ -29,7 +29,6 @@
 
 import type { Observation } from '@vishwakarma/core'
 import { createLocator, lineTextAt } from './locate.js'
-import { parseSuppressions, type Suppression } from './suppressions.js'
 import {
   collectStringLiterals,
   escapeRegExp,
@@ -38,6 +37,7 @@ import {
   matchDelimiter,
   toCamelCase,
 } from './scan.js'
+import { parseSuppressions, type Suppression } from './suppressions.js'
 import {
   parseTailwindClass,
   resolveTailwindAnimatedProperties,
@@ -45,8 +45,8 @@ import {
   resolveTailwindFontSizeRem,
   resolveTailwindRadiusPx,
   resolveTailwindSpacingPx,
-  tokenizeClassList,
   type TailwindTheme,
+  tokenizeClassList,
 } from './tailwind.js'
 import { isRelativeLength, lengthToPx, lengthToRem, timeToMs, type UnitOptions } from './units.js'
 
@@ -212,7 +212,8 @@ function declarationMatcher(properties: string[]): RegExp {
  * `z-10` all contribute phantom spacing values, and a report full of numbers the developer
  * cannot find in their own file is a report nobody runs twice.
  */
-const LENGTH_TOKEN = /(?<![\w.$[\]-])([+-]?(?:\d*\.)?\d+)(px|rem|em|pt|pc|in|cm|mm|q|%|ch|ex|vw|vh|vmin|vmax)?(?![\w.%])/gi
+const LENGTH_TOKEN =
+  /(?<![\w.$[\]-])([+-]?(?:\d*\.)?\d+)(px|rem|em|pt|pc|in|cm|mm|q|%|ch|ex|vw|vh|vmin|vmax)?(?![\w.%])/gi
 
 const TIME_TOKEN = /(?<![\w.$-])((?:\d*\.)?\d+)(ms|s)(?![\w-])/gi
 
@@ -504,7 +505,8 @@ function extractDeclarations(
 
   forEachDeclaration(code, FONT_WEIGHT_MATCHER, (value, valueOffset) => {
     const weight = Number(value.replace(/['",;]/g, '').trim())
-    if (Number.isFinite(weight) && weight > 0) record('font-weight', weight, originOf(value), valueOffset)
+    if (Number.isFinite(weight) && weight > 0)
+      record('font-weight', weight, originOf(value), valueOffset)
   })
 
   for (const matcher of [DURATION_MATCHER, TRANSITION_MATCHER, ANIMATION_MATCHER]) {
@@ -530,15 +532,20 @@ function extractDeclarations(
         .trim()
         .split(/\s+/)
         .find((token) => /^[a-z][a-z-]*$/i.test(token) && !TIMING_KEYWORDS.has(token.toLowerCase()))
-      if (property !== undefined) record('animated-property', property, originOf(value), valueOffset)
-      if (/(^|\s)all(\s|$)/.test(part)) record('animated-property', 'all', originOf(value), valueOffset)
+      if (property !== undefined)
+        record('animated-property', property, originOf(value), valueOffset)
+      if (/(^|\s)all(\s|$)/.test(part))
+        record('animated-property', 'all', originOf(value), valueOffset)
     }
   })
 }
 
 /** Whether a declaration value depends on something we cannot see. */
 function hasComputedValue(value: string): boolean {
-  return /\b(?:calc|var|clamp|min|max|env|theme)\s*\(/.test(value) || /[A-Za-z_$][\w$]*\s*[.[]/.test(value)
+  return (
+    /\b(?:calc|var|clamp|min|max|env|theme)\s*\(/.test(value) ||
+    /[A-Za-z_$][\w$]*\s*[.[]/.test(value)
+  )
 }
 
 /** Style objects and stylesheets are worth distinguishing in a report; the cue is quoting. */
@@ -628,7 +635,8 @@ function extractKeyframes(code: string, record: Recorder): void {
       let property: RegExpExecArray | null = KEYFRAME_PROPERTY.exec(body)
       while (property !== null) {
         const name = property[1]
-        if (name !== undefined) record('animated-property', name, 'keyframes', braceIndex + property.index)
+        if (name !== undefined)
+          record('animated-property', name, 'keyframes', braceIndex + property.index)
         property = KEYFRAME_PROPERTY.exec(body)
       }
       KEYFRAMES.lastIndex = end
@@ -752,7 +760,10 @@ function extractUnnamedInteractives(code: string, record: Recorder, cannotResolv
     // Strip elements, then see whether any text survives. A nested `<img alt="…">` or a
     // visually-hidden span both leave text behind and both give the control a name.
     const withAlt = /\balt\s*=\s*["'][^"']+["']/.test(children)
-    const text = children.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/gi, ' ').trim()
+    const text = children
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&[a-z]+;/gi, ' ')
+      .trim()
 
     if (!withAlt && text.length === 0) {
       record('missing-name', descriptor, 'jsx', match.index)
@@ -779,7 +790,9 @@ function extractUnnamedInteractives(code: string, record: Recorder, cannotResolv
  */
 function toObservation(evidence: Evidence[], hasReducedMotionGuard: boolean): Observation {
   const numbers = (kind: EvidenceKind): number[] =>
-    evidence.filter((item) => item.kind === kind && typeof item.value === 'number').map((item) => item.value as number)
+    evidence
+      .filter((item) => item.kind === kind && typeof item.value === 'number')
+      .map((item) => item.value as number)
 
   const strings = (kind: EvidenceKind): string[] =>
     evidence.filter((item) => item.kind === kind).map((item) => String(item.value))

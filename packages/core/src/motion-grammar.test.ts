@@ -235,7 +235,9 @@ describe('reduced-motion guard detection', () => {
   })
 
   it('flags anything that loops, regardless of size', () => {
-    expect(needsReducedMotionGuard({ properties: ['rotate'], rotationDeg: 2, loops: true })).toBe(true)
+    expect(needsReducedMotionGuard({ properties: ['rotate'], rotationDeg: 2, loops: true })).toBe(
+      true,
+    )
   })
 
   it('flags significant scale and rotation', () => {

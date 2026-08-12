@@ -1,19 +1,20 @@
 'use client'
+
 // Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { MotionDistance, MotionIntent } from '@vishwakarma/core'
 import {
   Children,
+  type CSSProperties,
+  type ElementType,
   isValidElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,
   useState,
-  type CSSProperties,
-  type ElementType,
-  type ReactNode,
 } from 'react'
-import type { MotionDistance, MotionIntent } from '@vishwakarma/core'
 import { useMotion } from './use-motion.js'
 import { useReducedMotion } from './use-reduced-motion.js'
 

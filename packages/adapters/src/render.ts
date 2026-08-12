@@ -16,7 +16,7 @@
  * become false.
  */
 
-import type { SkillManifest, SkillRule, SkillCheck } from '@vishwakarma/skills'
+import type { SkillCheck, SkillManifest, SkillRule } from '@vishwakarma/skills'
 
 export interface RenderOptions {
   /**
@@ -96,9 +96,7 @@ export function renderRules(rules: SkillRule[], options: RenderOptions = {}): st
   if (rules.length === 0) return ''
 
   const { detail = 'full', includeExamples = true, headingLevel = 2 } = options
-  const sorted = [...rules].sort(
-    (a, b) => STRENGTH_ORDER[a.strength] - STRENGTH_ORDER[b.strength],
-  )
+  const sorted = [...rules].sort((a, b) => STRENGTH_ORDER[a.strength] - STRENGTH_ORDER[b.strength])
 
   const parts: string[] = [heading(headingLevel, 'Rules'), '']
 
@@ -112,7 +110,9 @@ export function renderRules(rules: SkillRule[], options: RenderOptions = {}): st
   }
 
   for (const rule of sorted) {
-    parts.push(`${heading(headingLevel + 1, `${STRENGTH_LABEL[rule.strength]} — ${rule.statement}`)}`)
+    parts.push(
+      `${heading(headingLevel + 1, `${STRENGTH_LABEL[rule.strength]} — ${rule.statement}`)}`,
+    )
     parts.push('')
 
     if (rule.evidence?.rationale) {
@@ -215,7 +215,9 @@ export function renderBody(manifest: SkillManifest, options: RenderOptions = {})
   }
 
   if (includeVerification && manifest.verification?.length && detail === 'full') {
-    parts.push(renderVerification(manifest.verification, { ...options, headingLevel: headingLevel + 1 }))
+    parts.push(
+      renderVerification(manifest.verification, { ...options, headingLevel: headingLevel + 1 }),
+    )
   }
 
   if (manifest.content.references?.length && detail === 'full') {
@@ -266,7 +268,7 @@ export function toFrontmatter(fields: Record<string, unknown>): string {
  */
 function quoteYaml(value: string): string {
   const needsQuoting =
-    /[:#\[\]{}&*!|>'"%@`,]/.test(value) ||
+    /[:#[\]{}&*!|>'"%@`,]/.test(value) ||
     // A newline inside an unquoted scalar terminates it, so the remainder of the value
     // becomes a syntax error or, worse, is silently parsed as the next key. Descriptions
     // are the field most likely to arrive wrapped, so this is not a theoretical case.

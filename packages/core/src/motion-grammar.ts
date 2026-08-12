@@ -492,20 +492,23 @@ export function judgeProperty(property: string): PropertyVerdict {
 
   if (LAYOUT_TRIGGERING_PROPERTIES.has(normalised)) {
     const suggestions: Record<string, string> = {
-      width: 'Animate scaleX on a wrapper, or use a layout-animation technique that reads both positions and applies a transform between them.',
+      width:
+        'Animate scaleX on a wrapper, or use a layout-animation technique that reads both positions and applies a transform between them.',
       height:
         'Animate scaleY, or use grid-template-rows 0fr to 1fr, which is animatable in modern browsers without a measured pixel height.',
       top: 'Animate translateY instead.',
       left: 'Animate translateX instead.',
       right: 'Animate translateX instead.',
       bottom: 'Animate translateY instead.',
-      'font-size': 'Animate scale on a wrapper, and correct the resulting blur by scaling from a larger rendered size downward.',
+      'font-size':
+        'Animate scale on a wrapper, and correct the resulting blur by scaling from a larger rendered size downward.',
       gap: 'Animate the children with transforms rather than the container gap.',
     }
     const verdict: PropertyVerdict = {
       property: normalised,
       safe: false,
-      reason: 'Triggers layout on every frame, so it competes with everything else on the main thread.',
+      reason:
+        'Triggers layout on every frame, so it competes with everything else on the main thread.',
     }
     const suggestion = suggestions[normalised]
     if (suggestion) verdict.suggestion = suggestion
@@ -548,7 +551,9 @@ export function needsReducedMotionGuard(input: {
   loops?: boolean
 }): boolean {
   const { properties, travelPx = 0, scaleDelta = 0, rotationDeg = 0, loops = false } = input
-  const touchesRisky = properties.some((p) => VESTIBULAR_RISK_PROPERTIES.has(p.trim().toLowerCase()))
+  const touchesRisky = properties.some((p) =>
+    VESTIBULAR_RISK_PROPERTIES.has(p.trim().toLowerCase()),
+  )
   if (!touchesRisky) return false
   if (loops) return true
   return travelPx > 48 || Math.abs(scaleDelta) > 0.12 || Math.abs(rotationDeg) > 8

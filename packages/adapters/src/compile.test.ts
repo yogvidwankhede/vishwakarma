@@ -1,11 +1,11 @@
 // Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
 // SPDX-License-Identifier: Apache-2.0
 
-import { describe, expect, it } from 'vitest'
 import type { SkillManifest } from '@vishwakarma/skills'
+import { describe, expect, it } from 'vitest'
 import { compile, estimateContextCost, mergeFile, planFor, removeSection } from './compile.js'
-import { getAdapter } from './targets.js'
 import { shiftHeadings, toFrontmatter } from './render.js'
+import { getAdapter } from './targets.js'
 
 function makeSkill(overrides: Partial<SkillManifest> = {}): SkillManifest {
   return {
@@ -19,7 +19,14 @@ function makeSkill(overrides: Partial<SkillManifest> = {}): SkillManifest {
     content: {
       summary: 'A skill for tests.',
       body: '# Test Skill\n\nBody content.\n\n## A section\n\nMore content.',
-      references: [{ id: 'deep', title: 'Deep', answers: 'What about the details?', content: '# Deep\n\nDetail.' }],
+      references: [
+        {
+          id: 'deep',
+          title: 'Deep',
+          answers: 'What about the details?',
+          content: '# Deep\n\nDetail.',
+        },
+      ],
     },
     rules: [
       {
@@ -35,7 +42,13 @@ function makeSkill(overrides: Partial<SkillManifest> = {}): SkillManifest {
       },
     ],
     verification: [
-      { id: 'check', kind: 'self-review', description: 'Check it.', questions: ['Did you?'], blocking: true },
+      {
+        id: 'check',
+        kind: 'self-review',
+        description: 'Check it.',
+        questions: ['Did you?'],
+        blocking: true,
+      },
     ],
     ...overrides,
   }
@@ -236,7 +249,9 @@ describe('merge safety', () => {
     const result = mergeFile(sharedFile as never, existing)
 
     expect(result.action).toBe('appended-section')
-    expect(result.contents.indexOf('My project')).toBeLessThan(result.contents.indexOf('vishwakarma:begin'))
+    expect(result.contents.indexOf('My project')).toBeLessThan(
+      result.contents.indexOf('vishwakarma:begin'),
+    )
     expect(result.contents).toContain('Always use tabs.')
   })
 
@@ -252,7 +267,10 @@ describe('merge safety', () => {
     const existing = '# Mine\n\nMy rules.\n'
     const first = mergeFile(sharedFile as never, existing)
 
-    const changed = { ...(sharedFile as never), contents: '<!-- vishwakarma:begin -->\nNEW\n<!-- vishwakarma:end -->' }
+    const changed = {
+      ...(sharedFile as never),
+      contents: '<!-- vishwakarma:begin -->\nNEW\n<!-- vishwakarma:end -->',
+    }
     const second = mergeFile(changed as never, first.contents)
 
     expect(second.action).toBe('replaced-section')

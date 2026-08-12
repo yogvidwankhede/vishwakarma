@@ -94,7 +94,9 @@ export function serialiseCssValue(value: TokenValue | string, options: NamingOpt
   if (Array.isArray(value)) {
     return value
       .map((entry) =>
-        isShadowValue(entry) ? serialiseShadow(entry) : serialiseCssValue(entry as TokenValue, options),
+        isShadowValue(entry)
+          ? serialiseShadow(entry)
+          : serialiseCssValue(entry as TokenValue, options),
       )
       .join(', ')
   }
@@ -173,7 +175,9 @@ export function toCss(set: TokenSet, options: CssOptions = {}): string {
     if (includeComments && token.description) {
       lines.push(`  /* ${token.description} */`)
     }
-    lines.push(`  ${toCssVariableName(token.path, options)}: ${serialiseCssValue(token.value, options)};`)
+    lines.push(
+      `  ${toCssVariableName(token.path, options)}: ${serialiseCssValue(token.value, options)};`,
+    )
   }
   lines.push('}')
 
@@ -208,7 +212,11 @@ export function toCss(set: TokenSet, options: CssOptions = {}): string {
       // Honour the system preference too, but only when the user has not chosen
       // explicitly. Without the `:not([data-theme])` guard, a user who picked light on a
       // dark-preferring OS would be overridden by their own operating system.
-      if (includeSystemPreference && theme === 'dark' && (options.themeStrategy ?? 'attribute') === 'attribute') {
+      if (
+        includeSystemPreference &&
+        theme === 'dark' &&
+        (options.themeStrategy ?? 'attribute') === 'attribute'
+      ) {
         lines.push('')
         lines.push('@media (prefers-color-scheme: dark) {')
         lines.push(`  ${selector}:not([data-theme]) {`)

@@ -24,48 +24,67 @@
  * does not know the viewport, it knows the box it was put in.
  */
 
+// Re-exported so a consumer can reason about breakpoints without also depending on core.
 export {
-  type LayoutPrimitiveProps,
-  type Align,
-  type Justify,
-  type Length,
-  MIN_INLINE_SIZE_NOTE,
-  alignValue,
-  justifyValue,
-  withVars,
-  cx,
-  toLength,
-} from './primitive.js'
-
-export { assignRef, useMergedRef } from './refs.js'
-
+  BREAKPOINT_GUIDANCE,
+  BREAKPOINTS,
+  containerUp,
+  mediaDown,
+  mediaUp,
+} from '@vishwakarma/core'
 export {
-  type Space,
-  type SpaceStep,
-  type SpaceAlias,
-  SPACE_STEPS,
-  SPACE_ALIASES,
-  FLUID_GUTTER,
-  spaceVar,
-  resolveSpace,
-} from './space.js'
-
-export { type StackProps, Stack } from './stack.js'
-export { type ClusterProps, type RowProps, Cluster, Row } from './cluster.js'
-export { type GridFlow, type GridProps, Grid } from './grid.js'
-export { type BentoRank, type BentoFill, type BentoProps, type BentoTileProps, Bento, BentoTile, planBentoSpans } from './bento.js'
-export { type ContainerProps, type FullBleedProps, Container, FullBleed } from './container.js'
-export { type SidebarProps, type SwitcherProps, Sidebar, Switcher } from './sidebar.js'
+  Bento,
+  type BentoFill,
+  type BentoProps,
+  type BentoRank,
+  BentoTile,
+  type BentoTileProps,
+  planBentoSpans,
+} from './bento.js'
+export { Cluster, type ClusterProps, Row, type RowProps } from './cluster.js'
+export { Container, type ContainerProps, FullBleed, type FullBleedProps } from './container.js'
 export {
-  type ContainerSize,
-  type ContainerQueryState,
+  ContainerQuery,
   type ContainerQueryProps,
+  type ContainerQueryState,
+  type ContainerSize,
   type UseContainerSizeOptions,
   type UseContainerSizeResult,
-  ContainerQuery,
   useContainerSize,
 } from './container-query.js'
-export { type CenterProps, type CoverProps, type FrameProps, type SpacerProps, Center, Cover, Frame, Spacer } from './measure.js'
-
-// Re-exported so a consumer can reason about breakpoints without also depending on core.
-export { BREAKPOINTS, BREAKPOINT_GUIDANCE, mediaUp, mediaDown, containerUp } from '@vishwakarma/core'
+export { Grid, type GridFlow, type GridProps } from './grid.js'
+export {
+  Center,
+  type CenterProps,
+  Cover,
+  type CoverProps,
+  Frame,
+  type FrameProps,
+  Spacer,
+  type SpacerProps,
+} from './measure.js'
+export {
+  type Align,
+  alignValue,
+  cx,
+  type Justify,
+  justifyValue,
+  type LayoutPrimitiveProps,
+  type Length,
+  MIN_INLINE_SIZE_NOTE,
+  toLength,
+  withVars,
+} from './primitive.js'
+export { assignRef, useMergedRef } from './refs.js'
+export { Sidebar, type SidebarProps, Switcher, type SwitcherProps } from './sidebar.js'
+export {
+  FLUID_GUTTER,
+  resolveSpace,
+  SPACE_ALIASES,
+  SPACE_STEPS,
+  type Space,
+  type SpaceAlias,
+  type SpaceStep,
+  spaceVar,
+} from './space.js'
+export { Stack, type StackProps } from './stack.js'

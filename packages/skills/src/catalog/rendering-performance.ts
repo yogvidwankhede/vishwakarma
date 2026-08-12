@@ -558,7 +558,7 @@ be derived during render should be derived during render, not synchronised in an
       },
       examples: {
         language: 'js',
-        bad: 'for (const el of items) {\n  el.style.height = el.offsetHeight * 2 + \'px\'\n}',
+        bad: "for (const el of items) {\n  el.style.height = el.offsetHeight * 2 + 'px'\n}",
         good: "const heights = items.map((el) => el.offsetHeight)\nitems.forEach((el, i) => { el.style.height = heights[i] * 2 + 'px' })",
       },
       verifiedBy: 'pipeline-audit',
@@ -576,7 +576,7 @@ be derived during render should be derived during render, not synchronised in an
       examples: {
         language: 'js',
         bad: 'for (const row of rows) process(row) // 900ms, uninterruptible',
-        good: "for (const [i, row] of rows.entries()) {\n  process(row)\n  if (i % 50 === 49) await (globalThis.scheduler?.yield?.() ?? new Promise((r) => setTimeout(r, 0)))\n}",
+        good: 'for (const [i, row] of rows.entries()) {\n  process(row)\n  if (i % 50 === 49) await (globalThis.scheduler?.yield?.() ?? new Promise((r) => setTimeout(r, 0)))\n}',
       },
       verifiedBy: 'inp-review',
     },
@@ -652,8 +652,7 @@ be derived during render should be derived during render, not synchronised in an
     {
       id: 'rendering-performance/content-visibility-needs-intrinsic-size',
       strength: 'must',
-      statement:
-        'Always pair content-visibility: auto with contain-intrinsic-size.',
+      statement: 'Always pair content-visibility: auto with contain-intrinsic-size.',
       evidence: {
         rationale:
           'content-visibility: auto skips layout for off-screen subtrees, so without a declared placeholder size those subtrees measure zero height. The scroll container then reports the wrong total height, the scrollbar jumps as content enters and leaves the viewport, and scroll anchoring fights the user.',

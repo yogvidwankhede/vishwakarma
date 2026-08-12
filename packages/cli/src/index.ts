@@ -20,32 +20,30 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, join, relative, resolve } from 'node:path'
 import process from 'node:process'
-import { Command } from 'commander'
-import pc from 'picocolors'
 import {
   ADAPTER_LIST,
-  LOCKFILE_PATH,
   buildLockfile,
   classify,
   compile,
   estimateContextCost,
   getAdapter,
+  LOCKFILE_PATH,
   mergeFile,
   parseLockfile,
   removeSection,
+  type StatusReport,
   serialiseLockfile,
   summariseStatuses,
-  type StatusReport,
 } from '@vishwakarma/adapters'
 import {
+  type AgentTarget,
   catalog,
   catalogById,
   categories,
   resolveSelection,
+  type SkillManifest,
   skillCost,
   validateManifest,
-  type AgentTarget,
-  type SkillManifest,
 } from '@vishwakarma/skills'
 import {
   buildTokenSet,
@@ -57,6 +55,8 @@ import {
   toTypeScript,
   validateTokenSet,
 } from '@vishwakarma/tokens'
+import { Command } from 'commander'
+import pc from 'picocolors'
 import { detectAgents, detectStack } from './detect.js'
 import { buildProfile, profileArtifacts, summariseProfile } from './profile.js'
 
@@ -154,7 +154,8 @@ async function writeCompiled(
 
   const lockPath = resolve(root, LOCKFILE_PATH)
   const previous = parseLockfile(await readIfPresent(lockPath))
-  const written: Array<{ file: (typeof results)[number]['files'][number]; target: AgentTarget }> = []
+  const written: Array<{ file: (typeof results)[number]['files'][number]; target: AgentTarget }> =
+    []
 
   for (const result of results) {
     for (const file of result.files) {
@@ -166,7 +167,11 @@ async function writeCompiled(
       // markers, and the merge cannot touch it.
       if (file.strategy !== 'replace') {
         const merged = mergeFile(file, existing)
-        if (!options.dryRun && merged.action !== 'unchanged' && merged.action !== 'skipped-existing') {
+        if (
+          !options.dryRun &&
+          merged.action !== 'unchanged' &&
+          merged.action !== 'skipped-existing'
+        ) {
           await mkdir(dirname(absolute), { recursive: true })
           await writeFile(absolute, merged.contents, 'utf8')
         }
@@ -195,7 +200,10 @@ async function writeCompiled(
         await mkdir(dirname(absolute), { recursive: true })
         await writeFile(absolute, file.contents, 'utf8')
       }
-      reports.push({ path: file.path, action: status.status === 'new' ? 'created' : 'replaced-section' })
+      reports.push({
+        path: file.path,
+        action: status.status === 'new' ? 'created' : 'replaced-section',
+      })
       written.push({ file, target: result.target })
     }
   }
@@ -215,7 +223,9 @@ function reportConflicts(statuses: StatusReport[]): void {
   if (needsAttention.length === 0) return
 
   out()
-  out(`  ${symbols.warn} ${needsAttention.length} file(s) left untouched because you have edited them:`)
+  out(
+    `  ${symbols.warn} ${needsAttention.length} file(s) left untouched because you have edited them:`,
+  )
   for (const report of needsAttention) {
     out(`      ${pc.cyan(report.path)}`)
     out(`      ${pc.dim(report.explanation)}`)
@@ -256,7 +266,9 @@ const program = new Command()
 
 program
   .name('vishwakarma')
-  .description('Design intelligence for AI coding agents. Install skills, tokens, and components into any agent.')
+  .description(
+    'Design intelligence for AI coding agents. Install skills, tokens, and components into any agent.',
+  )
   .version(VERSION, '-v, --version')
   .option('-C, --cwd <path>', 'run as if in this directory', process.cwd())
 
@@ -276,7 +288,12 @@ program
     if (options.json) {
       out(
         JSON.stringify(
-          skills.map((s) => ({ id: s.id, name: s.name, category: s.category, description: s.description })),
+          skills.map((s) => ({
+            id: s.id,
+            name: s.name,
+            category: s.category,
+            description: s.description,
+          })),
           null,
           2,
         ),
@@ -305,7 +322,9 @@ program
         out(pc.dim(currentCategory))
       }
       const cost = skillCost(skill)
-      out(`  ${pc.cyan(skill.id.padEnd(24))} ${pc.dim(tokens(cost.activated).padStart(9))}  ${skill.name}`)
+      out(
+        `  ${pc.cyan(skill.id.padEnd(24))} ${pc.dim(tokens(cost.activated).padStart(9))}  ${skill.name}`,
+      )
       out(`  ${' '.repeat(24)} ${pc.dim(skill.description)}`)
     }
 
@@ -334,7 +353,9 @@ program
     out(`${pc.dim('id')}         ${skill.id}`)
     out(`${pc.dim('category')}   ${skill.category}`)
     out(`${pc.dim('version')}    ${skill.version}`)
-    out(`${pc.dim('cost')}       ${tokens(cost.activated)} when active, ${tokens(cost.full)} with all references`)
+    out(
+      `${pc.dim('cost')}       ${tokens(cost.activated)} when active, ${tokens(cost.full)} with all references`,
+    )
     out(`${pc.dim('rules')}      ${skill.rules?.length ?? 0}`)
     out(`${pc.dim('checks')}     ${skill.verification?.length ?? 0}`)
 
@@ -383,7 +404,9 @@ program
     }
 
     header('Detected stack')
-    out(`  framework       ${stack.framework ?? 'unknown'}${stack.nextMajor ? ` ${stack.nextMajor}` : ''}`)
+    out(
+      `  framework       ${stack.framework ?? 'unknown'}${stack.nextMajor ? ` ${stack.nextMajor}` : ''}`,
+    )
     out(`  react           ${stack.reactMajor ?? 'not found'}`)
     out(`  tailwind        ${stack.tailwindMajor ?? 'not found'}`)
     out(`  typescript      ${stack.hasTypeScript ? 'yes' : 'no'}`)
@@ -409,7 +432,13 @@ program
   .action(
     async (
       ids: string[],
-      options: { all?: boolean; target?: string[]; category?: string; dryRun?: boolean; force?: boolean },
+      options: {
+        all?: boolean
+        target?: string[]
+        category?: string
+        dryRun?: boolean
+        force?: boolean
+      },
     ) => {
       const root = program.opts().cwd as string
 
@@ -474,16 +503,22 @@ program
         )
       }
 
-      const heavy = targets.filter((target) => estimateContextCost(selected, target).alwaysLoadedTokens > 8000)
+      const heavy = targets.filter(
+        (target) => estimateContextCost(selected, target).alwaysLoadedTokens > 8000,
+      )
       if (heavy.length > 0) {
         out()
-        out(`  ${symbols.warn} ${heavy.map((t) => getAdapter(t).label).join(', ')} load everything on every request.`)
+        out(
+          `  ${symbols.warn} ${heavy.map((t) => getAdapter(t).label).join(', ')} load everything on every request.`,
+        )
         out('    Consider installing a focused subset there, or using the MCP target instead,')
         out('    which loads nothing until the agent asks for it.')
       }
 
       out()
-      out(`${symbols.ok} Done. Run ${pc.cyan('vishwakarma sync')} after editing skills to regenerate.`)
+      out(
+        `${symbols.ok} Done. Run ${pc.cyan('vishwakarma sync')} after editing skills to regenerate.`,
+      )
     },
   )
 
@@ -496,42 +531,45 @@ program
   .option('-a, --all', 'remove every installed skill')
   .option('-t, --target <targets...>', 'targets to remove from (default: detected)')
   .option('-n, --dry-run', 'report what would change without writing')
-  .action(async (ids: string[], options: { all?: boolean; target?: string[]; dryRun?: boolean }) => {
-    const root = program.opts().cwd as string
-    const selected = options.all ? catalog : resolveSelection(ids)
+  .action(
+    async (ids: string[], options: { all?: boolean; target?: string[]; dryRun?: boolean }) => {
+      const root = program.opts().cwd as string
+      const selected = options.all ? catalog : resolveSelection(ids)
 
-    const targets =
-      (options.target as AgentTarget[] | undefined) ?? (await detectAgents(root)).map((agent) => agent.target)
+      const targets =
+        (options.target as AgentTarget[] | undefined) ??
+        (await detectAgents(root)).map((agent) => agent.target)
 
-    header(`Removing ${selected.length} skill(s) from ${targets.length} target(s)`)
-    if (options.dryRun) out(pc.yellow('  Dry run — nothing will be written.\n'))
+      header(`Removing ${selected.length} skill(s) from ${targets.length} target(s)`)
+      if (options.dryRun) out(pc.yellow('  Dry run — nothing will be written.\n'))
 
-    let removed = 0
-    const results = compile(selected, { targets })
+      let removed = 0
+      const results = compile(selected, { targets })
 
-    for (const result of results) {
-      for (const file of result.files) {
-        const absolute = resolve(root, file.path)
-        const existing = await readIfPresent(absolute)
-        if (existing === null) continue
+      for (const result of results) {
+        for (const file of result.files) {
+          const absolute = resolve(root, file.path)
+          const existing = await readIfPresent(absolute)
+          if (existing === null) continue
 
-        if (file.strategy === 'merge-section') {
-          const stripped = removeSection(existing)
-          if (!options.dryRun) {
-            if (stripped === null) await rm(absolute, { force: true })
-            else await writeFile(absolute, stripped, 'utf8')
+          if (file.strategy === 'merge-section') {
+            const stripped = removeSection(existing)
+            if (!options.dryRun) {
+              if (stripped === null) await rm(absolute, { force: true })
+              else await writeFile(absolute, stripped, 'utf8')
+            }
+            out(`  ${symbols.ok} ${stripped === null ? 'removed' : 'cleaned'} ${file.path}`)
+          } else {
+            if (!options.dryRun) await rm(absolute, { force: true })
+            out(`  ${symbols.ok} removed ${file.path}`)
           }
-          out(`  ${symbols.ok} ${stripped === null ? 'removed' : 'cleaned'} ${file.path}`)
-        } else {
-          if (!options.dryRun) await rm(absolute, { force: true })
-          out(`  ${symbols.ok} removed ${file.path}`)
+          removed++
         }
-        removed++
       }
-    }
 
-    if (removed === 0) out(`  ${symbols.info} Nothing installed here.`)
-  })
+      if (removed === 0) out(`  ${symbols.info} Nothing installed here.`)
+    },
+  )
 
 /* --- sync --------------------------------------------------------------- */
 
@@ -542,25 +580,28 @@ program
   .option('-t, --target <targets...>', 'targets to sync (default: detected)')
   .option('-n, --dry-run', 'report what would change without writing')
   .option('-f, --force', 'overwrite files you have edited since they were generated')
-  .action(async (options: { all?: boolean; target?: string[]; dryRun?: boolean; force?: boolean }) => {
-    const root = program.opts().cwd as string
-    const targets =
-      (options.target as AgentTarget[] | undefined) ?? (await detectAgents(root)).map((agent) => agent.target)
+  .action(
+    async (options: { all?: boolean; target?: string[]; dryRun?: boolean; force?: boolean }) => {
+      const root = program.opts().cwd as string
+      const targets =
+        (options.target as AgentTarget[] | undefined) ??
+        (await detectAgents(root)).map((agent) => agent.target)
 
-    if (targets.length === 0) {
-      err('No agents detected and no target given. Pass --target or run `vishwakarma add` first.')
-      process.exitCode = 1
-      return
-    }
+      if (targets.length === 0) {
+        err('No agents detected and no target given. Pass --target or run `vishwakarma add` first.')
+        process.exitCode = 1
+        return
+      }
 
-    header(`Syncing ${targets.length} target(s)`)
-    const { reports, statuses } = await writeCompiled(catalog, targets, root, {
-      dryRun: options.dryRun ?? false,
-      force: options.force ?? false,
-    })
-    summariseWrites(reports, options.dryRun ?? false)
-    reportConflicts(statuses)
-  })
+      header(`Syncing ${targets.length} target(s)`)
+      const { reports, statuses } = await writeCompiled(catalog, targets, root, {
+        dryRun: options.dryRun ?? false,
+        force: options.force ?? false,
+      })
+      summariseWrites(reports, options.dryRun ?? false)
+      reportConflicts(statuses)
+    },
+  )
 
 /* --- tokens ------------------------------------------------------------- */
 
@@ -626,7 +667,9 @@ tokensCommand
       const warnings = issues.filter((issue) => issue.severity === 'warning')
       if (warnings.length > 0) {
         out()
-        out(`  ${symbols.warn} ${warnings.length} warning(s). Run \`vishwakarma tokens check\` for detail.`)
+        out(
+          `  ${symbols.warn} ${warnings.length} warning(s). Run \`vishwakarma tokens check\` for detail.`,
+        )
       }
 
       out()
@@ -677,7 +720,8 @@ program
       errors += skillErrors.length
       warnings += skillWarnings.length
 
-      const mark = skillErrors.length > 0 ? symbols.fail : skillWarnings.length > 0 ? symbols.warn : symbols.ok
+      const mark =
+        skillErrors.length > 0 ? symbols.fail : skillWarnings.length > 0 ? symbols.warn : symbols.ok
       out(`  ${mark} ${skill.id}`)
 
       for (const issue of [...skillErrors, ...skillWarnings]) {
@@ -690,7 +734,6 @@ program
     out(`  ${errors} error(s), ${warnings} warning(s)`)
     if (errors > 0) process.exitCode = 1
   })
-
 
 /* --- profile ------------------------------------------------------------ */
 
@@ -730,7 +773,7 @@ program
 
     out()
     out(pc.dim('  Both files are deterministic and safe to commit. Committing them means a'))
-    out(pc.dim('  teammate\'s agent starts from the same understanding of the codebase as yours.'))
+    out(pc.dim("  teammate's agent starts from the same understanding of the codebase as yours."))
   })
 
 /* --- doctor ------------------------------------------------------------- */
@@ -750,9 +793,13 @@ program
     out(`  ${symbols.ok} CLI version ${VERSION}`)
     out(`  ${symbols.ok} Catalog contains ${catalog.length} skill(s)`)
 
-    const invalid = catalog.filter((skill) => validateManifest(skill).some((i) => i.severity === 'error'))
+    const invalid = catalog.filter((skill) =>
+      validateManifest(skill).some((i) => i.severity === 'error'),
+    )
     if (invalid.length > 0) {
-      problems.push(`${invalid.length} skill(s) fail validation: ${invalid.map((s) => s.id).join(', ')}`)
+      problems.push(
+        `${invalid.length} skill(s) fail validation: ${invalid.map((s) => s.id).join(', ')}`,
+      )
     } else {
       out(`  ${symbols.ok} Every skill manifest is valid`)
     }
@@ -761,7 +808,9 @@ program
       advice.push('No coding agents detected. Vishwakarma works best when it can install into one.')
     } else {
       const installed = agents.filter((agent) => agent.alreadyInstalled)
-      out(`  ${symbols.ok} ${agents.length} agent(s) detected, ${installed.length} with Vishwakarma installed`)
+      out(
+        `  ${symbols.ok} ${agents.length} agent(s) detected, ${installed.length} with Vishwakarma installed`,
+      )
 
       for (const agent of agents.filter((a) => !a.alreadyInstalled)) {
         advice.push(`${agent.label} is configured here but has no Vishwakarma skills installed.`)
@@ -915,7 +964,9 @@ program
 
     header('Next steps')
     out(`  1. Browse the catalog:      ${pc.cyan('vishwakarma list')}`)
-    out(`  2. Add more skills:         ${pc.cyan('vishwakarma add motion-design scroll-experiences')}`)
+    out(
+      `  2. Add more skills:         ${pc.cyan('vishwakarma add motion-design scroll-experiences')}`,
+    )
     out(`  3. Give agents live access: ${pc.cyan('vishwakarma add --target mcp')}`)
     out(`  4. Check everything:        ${pc.cyan('vishwakarma doctor')}`)
   })

@@ -25,9 +25,7 @@ import { fluidClamp } from '@vishwakarma/core'
  * Nobody needs the difference between 116px and 120px of section spacing, and offering it
  * only invites someone to use both on the same page.
  */
-export const SPACE_STEPS = [
-  0, 0.5, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48,
-] as const
+export const SPACE_STEPS = [0, 0.5, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48] as const
 
 export type SpaceStep = (typeof SPACE_STEPS)[number]
 

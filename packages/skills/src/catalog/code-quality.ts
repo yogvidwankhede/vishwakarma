@@ -762,7 +762,8 @@ that anything was asserted about them.
     {
       id: 'gate-integrity',
       kind: 'self-review',
-      description: 'Confirm the gates you configured still carry information and stop at the right boundary.',
+      description:
+        'Confirm the gates you configured still carry information and stop at the right boundary.',
       questions: [
         'Is every gate you added able to fail the build, and is everything advisory labelled as advisory?',
         'Is any benchmark or accessibility gate tight enough to fire on noise, and is its band derived from observed CI variance rather than a guess?',

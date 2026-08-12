@@ -82,6 +82,7 @@ export function Spinner({
   if (decorative) return circle
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: role="status" on a generic element is the widely-tested live-region idiom; <output> is form-associated and would change the exported prop types.
     <span role="status" className="inline-flex items-center">
       {circle}
       <span className="sr-only">{label}</span>

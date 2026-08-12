@@ -10,12 +10,12 @@ import {
   findAccessibleLightness,
   isInSrgbGamut,
   labelRamp,
+  oklabToRgb,
   oklchToRgb,
   parseHex,
   relativeLuminance,
   rgbToOklab,
   rgbToOklch,
-  oklabToRgb,
   toCssOklch,
   toHex,
 } from './color.js'
@@ -189,7 +189,9 @@ describe('accessible lightness search', () => {
     const result = findAccessibleLightness(brand, BLACK, 4.5)
 
     expect(result).not.toBeNull()
-    expect(contrastRatio(oklchToRgb(result as NonNullable<typeof result>), BLACK)).toBeGreaterThanOrEqual(4.5)
+    expect(
+      contrastRatio(oklchToRgb(result as NonNullable<typeof result>), BLACK),
+    ).toBeGreaterThanOrEqual(4.5)
   })
 
   it('preserves hue while adjusting lightness', () => {

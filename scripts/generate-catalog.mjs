@@ -13,7 +13,7 @@
  * Run: node scripts/generate-catalog.mjs
  */
 
-import { readFile, readdir, writeFile } from 'node:fs/promises'
+import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -78,17 +78,23 @@ async function main() {
   lines.push(')')
   lines.push('')
   lines.push('/** Every category present in the catalog. */')
-  lines.push('export const categories = Array.from(new Set(catalog.map((skill) => skill.category))).sort()')
+  lines.push(
+    'export const categories = Array.from(new Set(catalog.map((skill) => skill.category))).sort()',
+  )
   lines.push('')
   lines.push('/** Skills in a given category. */')
-  lines.push('export function skillsInCategory(category: SkillManifest[\'category\']): SkillManifest[] {')
+  lines.push(
+    "export function skillsInCategory(category: SkillManifest['category']): SkillManifest[] {",
+  )
   lines.push('  return catalog.filter((skill) => skill.category === category)')
   lines.push('}')
   lines.push('')
   lines.push('/**')
   lines.push(' * Resolve a skill selection to a closed set, pulling in every dependency.')
   lines.push(' *')
-  lines.push(' * A skill that declares `requires` is useless without its dependencies, so installing')
+  lines.push(
+    ' * A skill that declares `requires` is useless without its dependencies, so installing',
+  )
   lines.push(' * it alone would produce guidance referencing rules the agent has never seen. This')
   lines.push(' * walks the graph so a selection is always internally complete.')
   lines.push(' */')
@@ -100,7 +106,9 @@ async function main() {
   lines.push('    const id = queue.shift() as string')
   lines.push('    if (selected.has(id)) continue')
   lines.push('    const skill = catalogById.get(id)')
-  lines.push('    if (!skill) throw new Error(`Unknown skill "${id}". Run \\`vishwakarma list\\` to see the catalog.`)')
+  lines.push(
+    '    if (!skill) throw new Error(`Unknown skill "${id}". Run \\`vishwakarma list\\` to see the catalog.`)',
+  )
   lines.push('    selected.set(id, skill)')
   lines.push('    for (const required of skill.activation.requires ?? []) queue.push(required)')
   lines.push('  }')

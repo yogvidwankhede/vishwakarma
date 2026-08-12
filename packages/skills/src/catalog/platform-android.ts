@@ -940,7 +940,8 @@ smaller at identical quality.
     {
       id: 'semantics-and-navigation-review',
       kind: 'self-review',
-      description: 'Confirm TalkBack, Back, and adaptive behaviour before reporting the screen done.',
+      description:
+        'Confirm TalkBack, Back, and adaptive behaviour before reporting the screen done.',
       questions: [
         'Is enableOnBackInvokedCallback set, and does the handler consume predictive back progress rather than only its commit?',
         'Is the toolbar Up action distinct from system Back on every deep-linkable screen?',

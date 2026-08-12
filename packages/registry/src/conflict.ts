@@ -37,9 +37,7 @@ import type { PlannedFile } from './resolve.js'
 export type Disposition = 'create' | 'unchanged' | 'update' | 'adopt' | 'conflict'
 
 /** Why a file was classified as a conflict. */
-export type ConflictReason =
-  | 'user-modified'
-  | 'untracked-file-exists'
+export type ConflictReason = 'user-modified' | 'untracked-file-exists'
 
 /** The verdict for one planned file. */
 export interface FileDecision {

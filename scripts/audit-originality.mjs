@@ -16,7 +16,7 @@
  * Run: node scripts/audit-originality.mjs [--json]
  */
 
-import { readFile, readdir } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import { extname, join, relative, resolve } from 'node:path'
 import process from 'node:process'
 
@@ -95,7 +95,8 @@ const RULES = [
     id: 'source-url-marker',
     severity: 'warn',
     // Links to a source repo inside code (not docs) often accompany a paste.
-    pattern: /(?:\/\/|\/\*|\*)\s*(?:source|src|origin|ref)\s*:\s*https?:\/\/(?:github|gitlab)\.com\/\S+/gi,
+    pattern:
+      /(?:\/\/|\/\*|\*)\s*(?:source|src|origin|ref)\s*:\s*https?:\/\/(?:github|gitlab)\.com\/\S+/gi,
     allow: () => false,
     message: 'A source-repository link appears in a code comment. Confirm the code is not derived.',
   },
@@ -191,7 +192,8 @@ async function findVendoredDirectories(root) {
           file: join(rel, entry.name),
           line: 1,
           excerpt: entry.name,
-          message: 'A source archive is committed to the tree. Remove it; dependencies belong in the manifest.',
+          message:
+            'A source archive is committed to the tree. Remove it; dependencies belong in the manifest.',
         })
       }
 
@@ -223,8 +225,11 @@ async function main() {
     for (const rule of RULES) {
       // Regexes carry /g, so reset lastIndex between files to avoid skipped matches.
       rule.pattern.lastIndex = 0
-      let match
-      while ((match = rule.pattern.exec(content)) !== null) {
+      for (
+        let match = rule.pattern.exec(content);
+        match !== null;
+        match = rule.pattern.exec(content)
+      ) {
         const text = match[0].trim()
         if (rule.allow(text)) continue
         findings.push({
@@ -254,9 +259,7 @@ async function main() {
       process.stdout.write(`        ${f.message}\n`)
       process.stdout.write(`        > ${f.excerpt}\n`)
     }
-    process.stdout.write(
-      `\n  ${errors.length} error(s), ${warnings.length} warning(s)\n\n`,
-    )
+    process.stdout.write(`\n  ${errors.length} error(s), ${warnings.length} warning(s)\n\n`)
   }
 
   if (errors.length > 0) {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Children, type ReactNode } from 'react'
-import { alignValue, type Align, type LayoutPrimitiveProps } from './primitive.js'
+import { type Align, alignValue, type LayoutPrimitiveProps } from './primitive.js'
 import { resolveSpace, type Space } from './space.js'
 
 export interface StackProps extends LayoutPrimitiveProps {

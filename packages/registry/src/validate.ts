@@ -18,13 +18,13 @@
  */
 
 import type { z } from 'zod'
-import { RegistryValidationError, type RegistryIssue } from './errors.js'
+import { type RegistryIssue, RegistryValidationError } from './errors.js'
 import { findCycles, similarNames } from './resolve.js'
 import {
-  registryIndexSchema,
-  registryItemSchema,
   type RegistryIndex,
   type RegistryItem,
+  registryIndexSchema,
+  registryItemSchema,
 } from './schema.js'
 
 /** A registry that parsed and passed every semantic check. */

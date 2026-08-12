@@ -17,16 +17,16 @@
  */
 
 import {
+  buildRamp,
   DURATIONS,
   EASINGS,
-  buildRamp,
   labelRamp,
+  type Oklch,
   parseHex,
   rgbToOklch,
   suggestLetterSpacing,
   suggestLineHeight,
   toCssOklch,
-  type Oklch,
 } from '@vishwakarma/core'
 import type { Token, TokenSet } from './schema.js'
 
@@ -95,7 +95,11 @@ function rampTokens(name: string, seed: Oklch, hueShift: number): Token[] {
  * transformation of the first one.
  */
 export function buildTokenSet(input: BrandInput = { primary: DEFAULT_BRAND.primary }): TokenSet {
-  const brand = { ...DEFAULT_BRAND, ...input, fontFamily: { ...DEFAULT_BRAND.fontFamily, ...input.fontFamily } }
+  const brand = {
+    ...DEFAULT_BRAND,
+    ...input,
+    fontFamily: { ...DEFAULT_BRAND.fontFamily, ...input.fontFamily },
+  }
 
   const primaryRgb = parseHex(brand.primary)
   if (!primaryRgb) throw new Error(`Invalid brand colour: ${brand.primary}`)
@@ -152,11 +156,21 @@ export function buildTokenSet(input: BrandInput = { primary: DEFAULT_BRAND.prima
   /* --- primitive: typography -------------------------------------------- */
 
   for (const [name, stack] of Object.entries(brand.fontFamily)) {
-    tokens.push({ path: `font.family.${name}`, type: 'fontFamily', tier: 'primitive', value: stack })
+    tokens.push({
+      path: `font.family.${name}`,
+      type: 'fontFamily',
+      tier: 'primitive',
+      value: stack,
+    })
   }
 
   for (const weight of [400, 500, 600, 700]) {
-    const names: Record<number, string> = { 400: 'regular', 500: 'medium', 600: 'semibold', 700: 'bold' }
+    const names: Record<number, string> = {
+      400: 'regular',
+      500: 'medium',
+      600: 'semibold',
+      700: 'bold',
+    }
     tokens.push({
       path: `font.weight.${names[weight]}`,
       type: 'fontWeight',
@@ -200,7 +214,12 @@ export function buildTokenSet(input: BrandInput = { primary: DEFAULT_BRAND.prima
   /* --- primitive: motion ------------------------------------------------ */
 
   for (const [name, ms] of Object.entries(DURATIONS)) {
-    tokens.push({ path: `motion.duration.${name}`, type: 'duration', tier: 'primitive', value: `${ms}ms` })
+    tokens.push({
+      path: `motion.duration.${name}`,
+      type: 'duration',
+      tier: 'primitive',
+      value: `${ms}ms`,
+    })
   }
   for (const [name, curve] of Object.entries(EASINGS)) {
     tokens.push({
@@ -388,12 +407,7 @@ export function buildTokenSet(input: BrandInput = { primary: DEFAULT_BRAND.prima
       '{color.danger.300}',
       'Error text. Always pair with an icon or label, since colour alone is not an accessible signal.',
     ],
-    [
-      'status.danger.bg',
-      '{color.danger.50}',
-      '{color.danger.950}',
-      'Error surface.',
-    ],
+    ['status.danger.bg', '{color.danger.50}', '{color.danger.950}', 'Error surface.'],
     ['status.success.fg', '{color.success.700}', '{color.success.300}', 'Success text.'],
     ['status.success.bg', '{color.success.50}', '{color.success.950}', 'Success surface.'],
     ['status.warning.fg', '{color.warning.800}', '{color.warning.300}', 'Warning text.'],
@@ -423,7 +437,11 @@ export function buildTokenSet(input: BrandInput = { primary: DEFAULT_BRAND.prima
       '{space.24}',
       'Vertical gap between top-level sections. Must exceed the largest within-section gap by at least 3x, or the page reads as one undifferentiated block.',
     ],
-    ['space.inset.sm', '{space.3}', 'Padding inside small components such as badges and compact buttons.'],
+    [
+      'space.inset.sm',
+      '{space.3}',
+      'Padding inside small components such as badges and compact buttons.',
+    ],
     ['space.inset.md', '{space.4}', 'Padding inside standard components.'],
     ['space.inset.lg', '{space.6}', 'Padding inside cards and panels.'],
     ['space.inset.xl', '{space.10}', 'Padding inside large surfaces and modals.'],
@@ -439,10 +457,18 @@ export function buildTokenSet(input: BrandInput = { primary: DEFAULT_BRAND.prima
       '{motion.duration.quick}',
       'Duration for elements leaving. Always shorter than enter — the user has already decided.',
     ],
-    ['motion.transform', '{motion.duration.measured}', 'Duration for an element changing between two held states.'],
+    [
+      'motion.transform',
+      '{motion.duration.measured}',
+      'Duration for an element changing between two held states.',
+    ],
     ['motion.easing.enter', '{motion.curve.entrance}', 'Decelerating curve for arrivals.'],
     ['motion.easing.exit', '{motion.curve.exit}', 'Accelerating curve for departures.'],
-    ['motion.easing.default', '{motion.curve.standard}', 'Symmetric curve for two-way state changes.'],
+    [
+      'motion.easing.default',
+      '{motion.curve.standard}',
+      'Symmetric curve for two-way state changes.',
+    ],
   ]
   for (const [path, value, description] of semanticMotion) {
     tokens.push({
@@ -461,7 +487,11 @@ export function buildTokenSet(input: BrandInput = { primary: DEFAULT_BRAND.prima
       'The default Vishwakarma token set, derived from a single brand colour and a small number of scale inputs.',
     themes: ['dark'],
     tokens,
-    meta: { generatedFrom: brand.primary, spacingUnit: brand.spacingUnit, typeRatio: brand.typeRatio },
+    meta: {
+      generatedFrom: brand.primary,
+      spacingUnit: brand.spacingUnit,
+      typeRatio: brand.typeRatio,
+    },
   }
 }
 

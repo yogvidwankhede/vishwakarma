@@ -26,7 +26,15 @@ export const designTokens: SkillManifest = {
   version: '1.0.0',
   license: 'Apache-2.0',
   category: 'foundation',
-  tags: ['tokens', 'design-system', 'dtcg', 'naming', 'build-pipeline', 'theming', 'style-dictionary'],
+  tags: [
+    'tokens',
+    'design-system',
+    'dtcg',
+    'naming',
+    'build-pipeline',
+    'theming',
+    'style-dictionary',
+  ],
 
   activation: {
     intents: [
@@ -638,7 +646,8 @@ told.`,
     {
       id: 'design-tokens/shallow-alias-chains',
       strength: 'should-not',
-      statement: 'Do not let an alias chain exceed three hops from component token to primitive value.',
+      statement:
+        'Do not let an alias chain exceed three hops from component token to primitive value.',
       evidence: {
         rationale:
           'Each hop is a level at which a value could legitimately be overridden, so a chain longer than the tier count means there are levels with no defined meaning. Nobody can then decide which link to edit, and edits land at whichever level the author happened to find first.',
@@ -761,7 +770,8 @@ told.`,
     {
       id: 'tier-integrity',
       kind: 'self-review',
-      description: 'Confirm the token tiers are intact and that consumers stay above the primitive layer.',
+      description:
+        'Confirm the token tiers are intact and that consumers stay above the primitive layer.',
       blocking: true,
       questions: [
         'Does any component, page, or utility class reference a primitive token or a raw literal value?',

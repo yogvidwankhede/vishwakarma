@@ -15,7 +15,7 @@
  * a human may have written it by hand.
  */
 
-import { access, readFile, readdir } from 'node:fs/promises'
+import { access, readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { AgentTarget } from '@vishwakarma/skills'
 
@@ -214,7 +214,10 @@ export async function detectStack(root = process.cwd()): Promise<StackDetection>
   let manifest: Record<string, unknown> = {}
 
   try {
-    manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8')) as Record<string, unknown>
+    manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8')) as Record<
+      string,
+      unknown
+    >
   } catch {
     notes.push('No package.json found, so stack detection is unavailable.')
   }
@@ -236,8 +239,14 @@ export async function detectStack(root = process.cwd()): Promise<StackDetection>
             ? 'react'
             : 'unknown'
 
-  const motionLibraries = ['motion', 'framer-motion', 'gsap', '@react-spring/web', 'three', '@react-three/fiber']
-    .filter((name) => name in deps)
+  const motionLibraries = [
+    'motion',
+    'framer-motion',
+    'gsap',
+    '@react-spring/web',
+    'three',
+    '@react-three/fiber',
+  ].filter((name) => name in deps)
 
   let packageManager: StackDetection['packageManager'] = 'unknown'
   if (await exists(join(root, 'pnpm-lock.yaml'))) packageManager = 'pnpm'
@@ -254,7 +263,9 @@ export async function detectStack(root = process.cwd()): Promise<StackDetection>
 
   const reactMajor = majorOf(deps.react)
   if (reactMajor !== undefined && reactMajor < 19) {
-    notes.push('React 18 or earlier detected. Components requiring React 19 features will need adjustment.')
+    notes.push(
+      'React 18 or earlier detected. Components requiring React 19 features will need adjustment.',
+    )
   }
 
   const result: StackDetection = {

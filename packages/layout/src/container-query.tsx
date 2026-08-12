@@ -2,7 +2,7 @@
 // Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
 // SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import type { LayoutPrimitiveProps } from './primitive.js'
 import { useMergedRef } from './refs.js'
 
@@ -126,9 +126,7 @@ export function useContainerSize<T extends Element = HTMLElement>(
         : { inlineSize: entry.contentRect.width, blockSize: entry.contentRect.height }
 
       setSize((previous) =>
-        previous &&
-        previous.inlineSize === next.inlineSize &&
-        previous.blockSize === next.blockSize
+        previous && previous.inlineSize === next.inlineSize && previous.blockSize === next.blockSize
           ? previous
           : next,
       )

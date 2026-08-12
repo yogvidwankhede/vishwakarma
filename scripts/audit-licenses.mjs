@@ -13,7 +13,7 @@
  * Run: node scripts/audit-licenses.mjs [--json] [--quiet]
  */
 
-import { readFile, readdir, stat } from 'node:fs/promises'
+import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
@@ -42,7 +42,15 @@ const PERMISSIVE = new Set([
 const DEV_ONLY_TOLERATED = new Set(['LGPL-3.0', 'LGPL-3.0-or-later', 'MPL-2.0', 'EPL-2.0'])
 
 /** Licenses that fail immediately, wherever they appear. */
-const FORBIDDEN_PATTERNS = [/GPL-2/i, /GPL-3/i, /AGPL/i, /SSPL/i, /BUSL/i, /Commons-Clause/i, /Elastic-2/i]
+const FORBIDDEN_PATTERNS = [
+  /GPL-2/i,
+  /GPL-3/i,
+  /AGPL/i,
+  /SSPL/i,
+  /BUSL/i,
+  /Commons-Clause/i,
+  /Elastic-2/i,
+]
 
 /**
  * Normalise the many shapes a license field takes in the wild into a list of SPDX-ish

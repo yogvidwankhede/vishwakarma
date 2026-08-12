@@ -106,6 +106,7 @@ export function SkeletonGroup({
   ...rest
 }: SkeletonGroupProps): ReactNode {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: role="status" on a generic element is the widely-tested live-region idiom; <output> is form-associated and would change the exported prop types.
     <div {...rest} role="status" aria-busy="true" className={cx('flex flex-col gap-2', className)}>
       <span className="sr-only">{label}</span>
       {children}

@@ -855,10 +855,16 @@ capability.`,
     {
       id: 'contract-audit',
       kind: 'contract',
-      description: 'Evaluate the interaction feedback against the project Design Contract motion section.',
+      description:
+        'Evaluate the interaction feedback against the project Design Contract motion section.',
       contractSection: 'motion',
     },
   ],
 
-  relatedSkills: ['motion-design', 'interaction-design', 'design-judgment', 'accessible-components'],
+  relatedSkills: [
+    'motion-design',
+    'interaction-design',
+    'design-judgment',
+    'accessible-components',
+  ],
 }

@@ -20,109 +20,102 @@
  */
 
 export {
+  applicableFiles,
+  type ConflictReason,
+  type ConflictReport,
+  type Disposition,
+  detectConflicts,
+  type ExistingFileReader,
+  type FileDecision,
+  formatConflicts,
+} from './conflict.js'
+export {
+  CircularDependencyError,
+  formatIssues,
   RegistryError,
+  type RegistryIssue,
+  type RegistryIssueCode,
   RegistryValidationError,
   UnknownItemError,
-  CircularDependencyError,
-  type RegistryIssueCode,
-  type RegistryIssue,
-  formatIssues,
 } from './errors.js'
-
-export { normaliseForHash, hashContent, shortHash, contentEquals } from './hash.js'
-
+export { contentEquals, hashContent, normaliseForHash, shortHash } from './hash.js'
 export {
-  type ImportAlias,
-  type TargetLayout,
-  DEFAULT_LAYOUT,
-  joinPath,
-  resolveTargetPath,
-  relativeSpecifier,
-  isInside,
+  baselineHash,
+  emptyManifest,
+  forgetItem,
+  type InstalledFile,
+  type InstalledItem,
+  installedFileSchema,
+  installedItemSchema,
+  isInstalled,
+  type Manifest,
+  manifestSchema,
+  type OutdatedItem,
+  outdatedItems,
+  recordInstall,
+  recordPlan,
+} from './manifest.js'
+export {
   aliasSpecifier,
-  stripExtension,
+  DEFAULT_LAYOUT,
+  type ImportAlias,
+  isInside,
+  joinPath,
+  relativeSpecifier,
+  resolveTargetPath,
   specifierExtension,
+  stripExtension,
+  type TargetLayout,
 } from './paths.js'
-
 export {
+  findCycles,
+  type InstallPlan,
+  type ParsedSpecifier,
+  type PlannedFile,
+  type PlanWarning,
+  type PlanWarningCode,
+  parseSpecifier,
+  type ResolvedItem,
+  type ResolveOptions,
+  resolveItem,
+  resolvePlan,
+  similarNames,
+  topologicalOrder,
+  unionSpecifiers,
+} from './resolve.js'
+export {
+  type ImportRewrite,
+  type PlanRewriteOptions,
+  type PlanRewriteResult,
+  type RewriteOptions,
+  type RewriteResult,
+  rewriteImports,
+  rewritePlanFiles,
+  type UnresolvedImport,
+  type UnresolvedReason,
+} from './rewrite-imports.js'
+export {
+  indexItems,
+  isSafeRelativePath,
   REGISTRY_ITEM_TYPES,
-  registryItemTypeSchema,
-  registryFileSchema,
-  registryItemSchema,
-  registryIndexSchema,
-  SLUG_PATTERN,
-  type RegistryItemType,
   type RegistryFile,
-  type RegistryItem,
-  type RegistryItemInput,
   type RegistryIndex,
   type RegistryIndexInput,
-  isSafeRelativePath,
-  indexItems,
+  type RegistryItem,
+  type RegistryItemInput,
+  type RegistryItemType,
+  registryFileSchema,
+  registryIndexSchema,
+  registryItemSchema,
+  registryItemTypeSchema,
+  SLUG_PATTERN,
 } from './schema.js'
 
 export {
-  type PlannedFile,
-  type PlanWarningCode,
-  type PlanWarning,
-  type InstallPlan,
-  type ResolvedItem,
-  type ResolveOptions,
-  type ParsedSpecifier,
-  topologicalOrder,
-  findCycles,
-  resolvePlan,
-  resolveItem,
-  parseSpecifier,
-  unionSpecifiers,
-  similarNames,
-} from './resolve.js'
-
-export {
-  type ImportRewrite,
-  type UnresolvedReason,
-  type UnresolvedImport,
-  type RewriteResult,
-  type RewriteOptions,
-  type PlanRewriteOptions,
-  type PlanRewriteResult,
-  rewriteImports,
-  rewritePlanFiles,
-} from './rewrite-imports.js'
-
-export {
-  type InstalledFile,
-  type InstalledItem,
-  type Manifest,
-  type OutdatedItem,
-  installedFileSchema,
-  installedItemSchema,
-  manifestSchema,
-  emptyManifest,
-  recordInstall,
-  recordPlan,
-  forgetItem,
-  baselineHash,
-  outdatedItems,
-  isInstalled,
-} from './manifest.js'
-
-export {
-  type Disposition,
-  type ConflictReason,
-  type FileDecision,
-  type ExistingFileReader,
-  type ConflictReport,
-  detectConflicts,
-  formatConflicts,
-  applicableFiles,
-} from './conflict.js'
-
-export {
-  type ValidationSuccess,
+  parseIndex,
   type ValidationFailure,
   type ValidationResult,
+  type ValidationSuccess,
   validateIndex,
   validateItem,
-  parseIndex,
 } from './validate.js'

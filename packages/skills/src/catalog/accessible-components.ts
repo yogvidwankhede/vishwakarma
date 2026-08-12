@@ -883,7 +883,9 @@ Four checks, all fast:
           'A native select delegates rendering to the operating system, which supplies platform-correct touch, keyboard, typeahead, and screen-reader behaviour on every device, including mobile pickers that no custom implementation reproduces.',
         confidence: 'strong',
       },
-      exceptions: ['Options requiring search, grouping with descriptions, images, or multi-select with tokens.'],
+      exceptions: [
+        'Options requiring search, grouping with descriptions, images, or multi-select with tokens.',
+      ],
     },
     {
       id: 'accessible-components/error-association',

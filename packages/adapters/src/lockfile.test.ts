@@ -6,10 +6,10 @@ import {
   buildLockfile,
   classify,
   hashContent,
+  type LockEntry,
   parseLockfile,
   serialiseLockfile,
   summariseStatuses,
-  type LockEntry,
 } from './lockfile.js'
 import type { EmittedFile } from './targets.js'
 
@@ -41,7 +41,11 @@ describe('content hashing', () => {
   })
 
   it('produces a fixed-width hex string', () => {
-    for (const input of ['', 'a', 'a much longer string with symbols !@#$%^&*() and numbers 12345']) {
+    for (const input of [
+      '',
+      'a',
+      'a much longer string with symbols !@#$%^&*() and numbers 12345',
+    ]) {
       expect(hashContent(input)).toMatch(/^[0-9a-f]{16}$/)
     }
   })
@@ -167,7 +171,9 @@ describe('lockfile round-tripping', () => {
 
   it('refuses a lockfile from a future version rather than guessing', () => {
     // Conservative: every file then reads as untracked, so nothing gets overwritten.
-    expect(parseLockfile(JSON.stringify({ version: 999, generator: 'x', files: {} }))).toBeUndefined()
+    expect(
+      parseLockfile(JSON.stringify({ version: 999, generator: 'x', files: {} })),
+    ).toBeUndefined()
   })
 })
 

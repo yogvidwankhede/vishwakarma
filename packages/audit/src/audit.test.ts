@@ -1,10 +1,10 @@
 // Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
 // SPDX-License-Identifier: Apache-2.0
 
-import { describe, expect, it } from 'vitest'
 import { DEFAULT_CONTRACT } from '@vishwakarma/core'
-import { extractFromSource } from './extract.js'
+import { describe, expect, it } from 'vitest'
 import { auditSource, summariseProject } from './audit.js'
+import { extractFromSource } from './extract.js'
 import { formatReport } from './format.js'
 import { parseTailwindClass, resolveTailwindSpacingPx } from './tailwind.js'
 
@@ -67,7 +67,9 @@ describe('audit', () => {
     const report = auditSource(SOURCE, 'Card.tsx', DEFAULT_CONTRACT)
     expect(report.summary.errors).toBeGreaterThan(0)
     expect(report.summary.suppressed).toBe(1)
-    expect(report.violations.every((violation) => violation.location?.file === 'Card.tsx')).toBe(true)
+    expect(report.violations.every((violation) => violation.location?.file === 'Card.tsx')).toBe(
+      true,
+    )
     const withLine = report.violations.filter((violation) => violation.location?.line !== undefined)
     expect(withLine.length).toBeGreaterThan(0)
 

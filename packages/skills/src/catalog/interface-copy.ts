@@ -513,7 +513,9 @@ its content in the same render frequently produces no announcement at all.
           'Asking for certainty tests confidence rather than comprehension and adds no information the user did not already have, so it is dismissed reflexively. Naming the object, the scope, and the reversibility supplies the fact the user is missing.',
         confidence: 'strong',
       },
-      exceptions: ['Reversible actions, where an undo affordance should replace the dialog entirely.'],
+      exceptions: [
+        'Reversible actions, where an undo affordance should replace the dialog entirely.',
+      ],
       examples: {
         language: 'text',
         bad: 'Are you sure? [Yes] [No]',
@@ -538,7 +540,7 @@ its content in the same render frequently produces no announcement at all.
       examples: {
         language: 'text',
         bad: 'Something went wrong. Please try again later.',
-        good: "report.pdf is 24 MB and the limit is 10 MB. Compress it or upload a smaller file.",
+        good: 'report.pdf is 24 MB and the limit is 10 MB. Compress it or upload a smaller file.',
       },
       verifiedBy: 'error-audit',
     },
@@ -849,5 +851,10 @@ its content in the same render frequently produces no announcement at all.
     },
   ],
 
-  relatedSkills: ['design-judgment', 'accessible-components', 'form-design', 'internationalisation'],
+  relatedSkills: [
+    'design-judgment',
+    'accessible-components',
+    'form-design',
+    'internationalisation',
+  ],
 }

@@ -546,7 +546,8 @@ there is nothing to decide.
       evidence: {
         rationale:
           'Responses under about 100ms are perceived as instantaneous, so an indicator only adds a flash; up to about a second the user stays within one flow of thought; beyond about ten seconds attention detaches from the task and only concrete progress will hold it.',
-        source: 'Classic human–computer interaction response-time limits (Miller 1968; Card, Robertson and Mackinlay 1991)',
+        source:
+          'Classic human–computer interaction response-time limits (Miller 1968; Card, Robertson and Mackinlay 1991)',
         confidence: 'established',
       },
     },
@@ -797,5 +798,11 @@ there is nothing to decide.
     },
   ],
 
-  relatedSkills: ['design-judgment', 'interface-copy', 'interaction-design', 'accessible-components', 'micro-interactions'],
+  relatedSkills: [
+    'design-judgment',
+    'interface-copy',
+    'interaction-design',
+    'accessible-components',
+    'micro-interactions',
+  ],
 }

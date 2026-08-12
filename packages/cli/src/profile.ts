@@ -23,9 +23,9 @@
  * developer.
  */
 
-import { readFile, readdir } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import { basename, extname, join, relative } from 'node:path'
-import { detectAgents, detectStack, type Detection, type StackDetection } from './detect.js'
+import { type Detection, detectAgents, detectStack, type StackDetection } from './detect.js'
 
 export interface TokenObservation {
   /** The custom property name, without the leading dashes. */
@@ -79,7 +79,16 @@ const SKIP_DIRS = new Set([
   'static',
 ])
 
-const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.jsx', '.js', '.css', '.scss', '.vue', '.svelte'])
+const SOURCE_EXTENSIONS = new Set([
+  '.ts',
+  '.tsx',
+  '.jsx',
+  '.js',
+  '.css',
+  '.scss',
+  '.vue',
+  '.svelte',
+])
 
 async function* walk(dir: string, root: string, depth = 0): AsyncGenerator<string> {
   // A depth cap keeps this fast on large repositories. Component code essentially never
@@ -87,12 +96,8 @@ async function* walk(dir: string, root: string, depth = 0): AsyncGenerator<strin
   // command slow enough that people stop running it.
   if (depth > 6) return
 
-  let entries
-  try {
-    entries = await readdir(dir, { withFileTypes: true })
-  } catch {
-    return
-  }
+  const entries = await readdir(dir, { withFileTypes: true }).catch(() => null)
+  if (entries === null) return
 
   for (const entry of entries) {
     if (entry.name.startsWith('.') && entry.name !== '.storybook') continue
@@ -117,7 +122,11 @@ async function* walk(dir: string, root: string, depth = 0): AsyncGenerator<strin
  */
 function classifyToken(name: string): TokenObservation['kind'] {
   const lower = name.toLowerCase()
-  if (/colou?r|bg|background|fg|foreground|text|border|surface|accent|brand|primary|danger|success|warning/.test(lower))
+  if (
+    /colou?r|bg|background|fg|foreground|text|border|surface|accent|brand|primary|danger|success|warning/.test(
+      lower,
+    )
+  )
     return 'colour'
   if (/space|spacing|gap|inset|margin|padding|size(?!.*font)/.test(lower)) return 'spacing'
   if (/font|type|leading|tracking|measure|text-size/.test(lower)) return 'typography'
@@ -255,7 +264,11 @@ export async function buildProfile(root: string): Promise<ProjectProfile> {
   return {
     version: 1,
     stack,
-    agents: agents.map(({ target, label, alreadyInstalled }) => ({ target, label, alreadyInstalled })),
+    agents: agents.map(({ target, label, alreadyInstalled }) => ({
+      target,
+      label,
+      alreadyInstalled,
+    })),
     styling: {
       strategy,
       hasDarkMode: darkModeStrategy !== 'none',
@@ -297,9 +310,13 @@ export function profileToMarkdown(profile: ProjectProfile): string {
   )
 
   lines.push('## Stack', '')
-  lines.push(`- Framework: ${profile.stack.framework ?? 'unknown'}${profile.stack.nextMajor ? ` ${profile.stack.nextMajor}` : ''}`)
+  lines.push(
+    `- Framework: ${profile.stack.framework ?? 'unknown'}${profile.stack.nextMajor ? ` ${profile.stack.nextMajor}` : ''}`,
+  )
   lines.push(`- React: ${profile.stack.reactMajor ?? 'not detected'}`)
-  lines.push(`- Styling: ${profile.styling.strategy}${profile.stack.tailwindMajor ? ` (Tailwind ${profile.stack.tailwindMajor})` : ''}`)
+  lines.push(
+    `- Styling: ${profile.styling.strategy}${profile.stack.tailwindMajor ? ` (Tailwind ${profile.stack.tailwindMajor})` : ''}`,
+  )
   lines.push(`- TypeScript: ${profile.stack.hasTypeScript ? 'yes' : 'no'}`)
   lines.push(`- Package manager: ${profile.stack.packageManager}`)
   if (profile.stack.motionLibraries.length) {

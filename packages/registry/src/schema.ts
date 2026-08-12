@@ -59,13 +59,10 @@ export function isSafeRelativePath(value: string): boolean {
   return value.split('/').every((segment) => segment !== '..' && segment !== '')
 }
 
-const safePath = z
-  .string()
-  .min(1)
-  .refine(isSafeRelativePath, {
-    message:
-      'must be a relative POSIX path with no "..", no leading "/", no backslashes and no empty segments',
-  })
+const safePath = z.string().min(1).refine(isSafeRelativePath, {
+  message:
+    'must be a relative POSIX path with no "..", no leading "/", no backslashes and no empty segments',
+})
 
 /**
  * A slug: lowercase, hyphen-separated, no surprises.

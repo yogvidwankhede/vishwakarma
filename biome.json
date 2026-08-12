@@ -8,11 +8,11 @@
   "files": {
     "includes": [
       "**",
-      "!**/dist/**",
-      "!**/.next/**",
-      "!**/.turbo/**",
-      "!**/node_modules/**",
-      "!**/coverage/**",
+      "!**/dist",
+      "!**/.next",
+      "!**/.turbo",
+      "!**/node_modules",
+      "!**/coverage",
       "!**/*.gen.ts"
     ]
   },

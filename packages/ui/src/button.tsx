@@ -232,6 +232,7 @@ export function Button(props: ButtonProps): ReactNode {
         screen readers, and a live region here is cheaper than asking every caller to build one.
       */}
       {loading ? (
+        // biome-ignore lint/a11y/useSemanticElements: role="status" on a generic element is the widely-tested live-region idiom; <output> is form-associated and would change the exported prop types.
         <span role="status" className="sr-only">
           {loadingLabel ?? 'Working'}
         </span>

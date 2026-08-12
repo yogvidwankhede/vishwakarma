@@ -21,41 +21,41 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { z } from 'zod'
 import {
-  DEFAULT_CONTRACT,
-  VIEWPORT_MATRIX,
+  apcaContrast,
   buildRamp,
   checkContract,
   checksFor,
   contrastRatio,
-  apcaContrast,
-  fluidClamp,
+  DEFAULT_CONTRACT,
   findAccessibleLightness,
-  labelRamp,
-  parseHex,
-  resolveMotion,
-  rgbToOklch,
-  oklchToRgb,
-  stagger,
+  fluidClamp,
   judgeProperty,
-  resolveVariation,
-  variationSpace,
-  toCssOklch,
-  toHex,
+  labelRamp,
   type MotionIntent,
   type Observation,
+  oklchToRgb,
+  parseHex,
+  resolveMotion,
+  resolveVariation,
+  rgbToOklch,
+  stagger,
+  toCssOklch,
+  toHex,
+  VIEWPORT_MATRIX,
+  variationSpace,
 } from '@vishwakarma/core'
 import { catalog, catalogById, categories, skillCost } from '@vishwakarma/skills'
 import {
-  defaultTokenSet,
   buildTokenSet,
+  defaultTokenSet,
   toCss,
   toJson,
   toMarkdown,
   toTailwindTheme,
   toTypeScript,
 } from '@vishwakarma/tokens'
+import { z } from 'zod'
 
 const VERSION = '0.1.0'
 
@@ -176,7 +176,9 @@ server.registerTool(
         }
       }
 
-      const descriptionOverlap = words.filter((word) => skill.description.toLowerCase().includes(word))
+      const descriptionOverlap = words.filter((word) =>
+        skill.description.toLowerCase().includes(word),
+      )
       score += descriptionOverlap.length
 
       return { skill, score, reasons: Array.from(new Set(reasons)) }
@@ -196,7 +198,14 @@ server.registerTool(
         matched: 0,
         note: 'No specific match. Returning the general design-judgment skill, which applies to any interface work.',
         skills: fallback
-          ? [{ id: fallback.id, name: fallback.name, description: fallback.description, why: ['default'] }]
+          ? [
+              {
+                id: fallback.id,
+                name: fallback.name,
+                description: fallback.description,
+                why: ['default'],
+              },
+            ]
           : [],
       })
     }
@@ -230,9 +239,7 @@ server.registerTool(
   ({ id, includeRules, includeChecks }) => {
     const skill = catalogById.get(id)
     if (!skill) {
-      return text(
-        `No skill with id "${id}". Available: ${catalog.map((s) => s.id).join(', ')}`,
-      )
+      return text(`No skill with id "${id}". Available: ${catalog.map((s) => s.id).join(', ')}`)
     }
 
     const parts: string[] = [skill.content.body]
@@ -246,10 +253,14 @@ server.registerTool(
           parts.push(`\nExceptions: ${rule.exceptions.join(' ')}`)
         }
         if (rule.examples?.bad) {
-          parts.push(`\nIncorrect:\n\`\`\`${rule.examples.language ?? ''}\n${rule.examples.bad}\n\`\`\``)
+          parts.push(
+            `\nIncorrect:\n\`\`\`${rule.examples.language ?? ''}\n${rule.examples.bad}\n\`\`\``,
+          )
         }
         if (rule.examples?.good) {
-          parts.push(`\nCorrect:\n\`\`\`${rule.examples.language ?? ''}\n${rule.examples.good}\n\`\`\``)
+          parts.push(
+            `\nCorrect:\n\`\`\`${rule.examples.language ?? ''}\n${rule.examples.good}\n\`\`\``,
+          )
         }
         parts.push('')
       }
@@ -294,7 +305,9 @@ server.registerTool(
     const reference = skill.content.references?.find((entry) => entry.id === referenceId)
     if (!reference) {
       const available = (skill.content.references ?? []).map((r) => r.id).join(', ')
-      return text(`No reference "${referenceId}" on skill "${skillId}". Available: ${available || 'none'}`)
+      return text(
+        `No reference "${referenceId}" on skill "${skillId}". Available: ${available || 'none'}`,
+      )
     }
 
     return text(reference.content ?? `Reference "${referenceId}" has no inline content.`)
@@ -317,7 +330,9 @@ server.registerTool(
       textSize: z
         .enum(['body', 'large', 'non-text'])
         .default('body')
-        .describe('body: normal text. large: 18.66px bold or 24px regular and above. non-text: borders, icons, focus rings.'),
+        .describe(
+          'body: normal text. large: 18.66px bold or 24px regular and above. non-text: borders, icons, focus rings.',
+        ),
     },
   },
   ({ foreground, background, textSize }) => {
@@ -327,7 +342,11 @@ server.registerTool(
     const ratio = contrastRatio(fg, bg)
     const apca = apcaContrast(fg, bg)
 
-    const requirements = { body: { aa: 4.5, aaa: 7 }, large: { aa: 3, aaa: 4.5 }, 'non-text': { aa: 3, aaa: 3 } }
+    const requirements = {
+      body: { aa: 4.5, aaa: 7 },
+      large: { aa: 3, aaa: 4.5 },
+      'non-text': { aa: 3, aaa: 3 },
+    }
     const required = requirements[textSize]
 
     const result: Record<string, unknown> = {
@@ -377,7 +396,9 @@ server.registerTool(
         .min(-40)
         .max(40)
         .default(0)
-        .describe('Degrees of hue drift across the ramp. A small value mimics how light tints highlights and reads as designed rather than computed.'),
+        .describe(
+          'Degrees of hue drift across the ramp. A small value mimics how light tints highlights and reads as designed rather than computed.',
+        ),
     },
   },
   ({ seed, steps, hueShift }) => {
@@ -428,7 +449,10 @@ server.registerTool(
         .enum(['micro', 'short', 'medium', 'long', 'full'])
         .default('medium')
         .describe('How far the element travels.'),
-      reducedMotion: z.boolean().default(false).describe('Whether the user prefers reduced motion.'),
+      reducedMotion: z
+        .boolean()
+        .default(false)
+        .describe('Whether the user prefers reduced motion.'),
     },
   },
   ({ intent, distance, reducedMotion }) => {
@@ -464,9 +488,19 @@ server.registerTool(
       'Compute per-element delays for a group reveal, with automatic compression so a long list still reads as one gesture rather than a queue.',
     inputSchema: {
       count: z.number().int().min(1).max(500).describe('Number of elements.'),
-      step: z.number().min(0).max(300).default(34).describe('Delay between consecutive elements, in ms.'),
+      step: z
+        .number()
+        .min(0)
+        .max(300)
+        .default(34)
+        .describe('Delay between consecutive elements, in ms.'),
       from: z.enum(['first', 'last', 'centre', 'edges']).default('first'),
-      maxTotal: z.number().min(50).max(2000).default(420).describe('Cap on total stagger span, in ms.'),
+      maxTotal: z
+        .number()
+        .min(50)
+        .max(2000)
+        .default(420)
+        .describe('Cap on total stagger span, in ms.'),
     },
   },
   ({ count, step, from, maxTotal }) => {
@@ -483,7 +517,6 @@ server.registerTool(
   },
 )
 
-
 server.registerTool(
   'design_direction',
   {
@@ -493,15 +526,21 @@ server.registerTool(
     inputSchema: {
       brief: z
         .string()
-        .describe("The user's brief, verbatim. Do not summarise it first — the exact text is the seed, and summarising collapses distinct briefs onto the same direction."),
+        .describe(
+          "The user's brief, verbatim. Do not summarise it first — the exact text is the seed, and summarising collapses distinct briefs onto the same direction.",
+        ),
       salt: z
         .string()
         .optional()
-        .describe('Extra seed material. Pass something new when the user asks for a different direction for the same brief.'),
+        .describe(
+          'Extra seed material. Pass something new when the user asks for a different direction for the same brief.',
+        ),
       constraints: z
         .array(z.string())
         .optional()
-        .describe('Conditions that exclude options, for when an existing brand or design system fixes a decision.'),
+        .describe(
+          'Conditions that exclude options, for when an existing brand or design system fixes a decision.',
+        ),
     },
   },
   ({ brief, salt, constraints }) => {
@@ -555,7 +594,10 @@ server.registerTool(
     description:
       'Return the viewport configurations to verify against, and exactly what to check at each. Use this instead of asking whether something "is responsive", which is not a checkable question.',
     inputSchema: {
-      requiredOnly: z.boolean().default(true).describe('Return only the release-blocking configurations.'),
+      requiredOnly: z
+        .boolean()
+        .default(true)
+        .describe('Return only the release-blocking configurations.'),
     },
   },
   ({ requiredOnly }) => {
@@ -583,7 +625,10 @@ server.registerTool(
     description:
       'Evaluate measurements taken from an interface against the project Design Contract, and return specific violations with fixes. Extract the actual values from your output and pass them here rather than judging by impression.',
     inputSchema: {
-      spacingValues: z.array(z.number()).optional().describe('Every distinct spacing value used, in px.'),
+      spacingValues: z
+        .array(z.number())
+        .optional()
+        .describe('Every distinct spacing value used, in px.'),
       fontSizesRem: z.array(z.number()).optional().describe('Every distinct font size, in rem.'),
       fontWeights: z.array(z.number()).optional(),
       durationsMs: z.array(z.number()).optional().describe('Every animation duration, in ms.'),
@@ -603,7 +648,10 @@ server.registerTool(
       touchTargetsPx: z
         .array(z.object({ width: z.number(), height: z.number(), label: z.string().optional() }))
         .optional(),
-      rawColourLiterals: z.array(z.string()).optional().describe('Hard-coded colour values found in source.'),
+      rawColourLiterals: z
+        .array(z.string())
+        .optional()
+        .describe('Hard-coded colour values found in source.'),
     },
   },
   (observation) => {
@@ -641,7 +689,12 @@ server.registerTool(
       format: z.enum(['css', 'tailwind', 'typescript', 'json', 'markdown']).default('css'),
       brandColour: z.string().optional().describe('Brand colour as hex. Omit for the default set.'),
       accentColour: z.string().optional(),
-      typeRatio: z.number().min(1.05).max(1.7).optional().describe('Modular scale ratio for the type scale.'),
+      typeRatio: z
+        .number()
+        .min(1.05)
+        .max(1.7)
+        .optional()
+        .describe('Modular scale ratio for the type scale.'),
     },
   },
   ({ format, brandColour, accentColour, typeRatio }) => {
@@ -683,7 +736,11 @@ server.registerResource(
   },
   async (uri) => ({
     contents: [
-      { uri: uri.href, mimeType: 'application/json', text: JSON.stringify(DEFAULT_CONTRACT, null, 2) },
+      {
+        uri: uri.href,
+        mimeType: 'application/json',
+        text: JSON.stringify(DEFAULT_CONTRACT, null, 2),
+      },
     ],
   }),
 )
@@ -725,7 +782,8 @@ server.registerPrompt(
   'build-interface',
   {
     title: 'Build an interface',
-    description: 'The full Vishwakarma workflow for building any UI, from brief to verified output.',
+    description:
+      'The full Vishwakarma workflow for building any UI, from brief to verified output.',
     argsSchema: {
       brief: z.string().describe('What to build.'),
     },
@@ -782,7 +840,9 @@ server.registerPrompt(
     title: 'Review an interface',
     description: 'Run the structured critique protocol against existing interface code.',
     argsSchema: {
-      target: z.string().describe('What to review — a file path, a component name, or a description.'),
+      target: z
+        .string()
+        .describe('What to review — a file path, a component name, or a description.'),
     },
   },
   ({ target }) => ({

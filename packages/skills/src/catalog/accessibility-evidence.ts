@@ -198,7 +198,8 @@ as supporting evidence. Citing the deterministic half does not license upgrading
     references: [
       {
         id: 'grading-and-conformance',
-        title: 'Evidence grades, severity, coverage, scan versus audit, conformance states, and a worked grading example',
+        title:
+          'Evidence grades, severity, coverage, scan versus audit, conformance states, and a worked grading example',
         answers:
           'How do I grade a finding on evidence and severity separately, what may a scan claim that an audit can, when is a criterion Pass rather than Undetermined, how much evidence is a finding worth, and how do I report one finding that spans two criteria at two grades?',
         content: `# Evidence grades, severity, coverage, scan versus audit, and conformance states
@@ -424,7 +425,8 @@ license upgrading the whole. Two criteria, two grades, one finding.
       },
       {
         id: 'checkpoints-and-reporting',
-        title: 'The seven checkpoint groups with criterion numbers, high-risk widget patterns, fix discipline, and report discipline',
+        title:
+          'The seven checkpoint groups with criterion numbers, high-risk widget patterns, fix discipline, and report discipline',
         answers:
           'Which success criteria belong to which checkpoint group and what grade does each group default to, how do I review a combobox or data grid without guessing, which fixes may I apply directly, and what shape should the report take?',
         content: `# Checkpoint groups, high-risk patterns, fix discipline, and report discipline
@@ -657,8 +659,7 @@ technology baseline, coverage ceiling. Four lines that prevent every subsequent 
     {
       id: 'accessibility-evidence/fill-based-markers',
       strength: 'must',
-      statement:
-        'Grade evidence with the fill-based markers ●, ◐ and ○, never with colour alone.',
+      statement: 'Grade evidence with the fill-based markers ●, ◐ and ○, never with colour alone.',
       evidence: {
         rationale:
           'A report that grades its own findings by red, amber and green fails SC 1.4.1 — the criterion it is auditing — and a reviewer with deuteranopia cannot extract the grades at all. Fill is a shape difference, so filled, half-filled and hollow survive greyscale printing, monochrome terminals, and colour vision deficiency.',
@@ -804,7 +805,8 @@ technology baseline, coverage ceiling. Four lines that prevent every subsequent 
     {
       id: 'grading-integrity',
       kind: 'self-review',
-      description: 'Confirm each finding is graded on two axes, at the grade its evidence supports.',
+      description:
+        'Confirm each finding is graded on two axes, at the grade its evidence supports.',
       blocking: true,
       questions: [
         'Does every finding in the output carry an evidence marker and a severity as two separate fields, with no merged priority score anywhere?',
@@ -817,7 +819,8 @@ technology baseline, coverage ceiling. Four lines that prevent every subsequent 
     {
       id: 'conformance-bucket-audit',
       kind: 'self-review',
-      description: 'Confirm every in-scope criterion is bucketed and nothing unexercised reads as a pass.',
+      description:
+        'Confirm every in-scope criterion is bucketed and nothing unexercised reads as a pass.',
       questions: [
         'List every in-scope criterion: is each one in exactly one of verified, flagged, engine-owned, not applicable, or not exercised?',
         'Is any criterion sitting in the Pass column purely because a rule engine raised no violation for it?',
@@ -828,7 +831,8 @@ technology baseline, coverage ceiling. Four lines that prevent every subsequent 
     {
       id: 'report-shape-review',
       kind: 'self-review',
-      description: 'Confirm the report opens with its method and spends its words where a reader can act.',
+      description:
+        'Confirm the report opens with its method and spends its words where a reader can act.',
       questions: [
         'Does the first paragraph say scan or audit, and for an audit give scope, conformance target, assistive-technology baseline, and sampling method?',
         'Is a coverage ceiling stated with its denominator named in the same sentence rather than a bare percentage?',
@@ -839,7 +843,8 @@ technology baseline, coverage ceiling. Four lines that prevent every subsequent 
     {
       id: 'fix-and-scope-review',
       kind: 'self-review',
-      description: 'Confirm only mechanical fixes were applied and nothing was invented or silently retried.',
+      description:
+        'Confirm only mechanical fixes were applied and nothing was invented or silently retried.',
       questions: [
         'Read the diff: is every change mechanical with one correct answer, or did a fix requiring knowledge of intent get applied anyway?',
         'Does the diff contain any alt text, accessible name, label, or link text that you supplied rather than found — including an empty alt on a meaningful image?',
@@ -850,5 +855,10 @@ technology baseline, coverage ceiling. Four lines that prevent every subsequent 
     },
   ],
 
-  relatedSkills: ['accessible-components', 'design-review', 'interface-states', 'engineering-discipline'],
+  relatedSkills: [
+    'accessible-components',
+    'design-review',
+    'interface-states',
+    'engineering-discipline',
+  ],
 }

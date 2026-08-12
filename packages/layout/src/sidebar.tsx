@@ -4,11 +4,11 @@
 
 import { Children, isValidElement, type ReactNode } from 'react'
 import {
-  alignValue,
-  toLength,
   type Align,
+  alignValue,
   type LayoutPrimitiveProps,
   type Length,
+  toLength,
 } from './primitive.js'
 import { resolveSpace, type Space } from './space.js'
 
@@ -76,10 +76,7 @@ export function Sidebar({
   ...rest
 }: SidebarProps): ReactNode {
   const asideRegion = (
-    <div
-      key="aside"
-      style={{ flexGrow: 1, flexBasis: toLength(sideWidth), minInlineSize: 0 }}
-    >
+    <div key="aside" style={{ flexGrow: 1, flexBasis: toLength(sideWidth), minInlineSize: 0 }}>
       {aside}
     </div>
   )

@@ -142,7 +142,12 @@ export const oklchToRgb = (oklch: Oklch): Rgb => oklabToRgb(oklchToOklab(oklch))
 /** True when every channel lands inside the displayable sRGB cube. */
 export function isInSrgbGamut({ r, g, b }: Rgb, epsilon = 1e-5): boolean {
   return (
-    r >= -epsilon && r <= 1 + epsilon && g >= -epsilon && g <= 1 + epsilon && b >= -epsilon && b <= 1 + epsilon
+    r >= -epsilon &&
+    r <= 1 + epsilon &&
+    g >= -epsilon &&
+    g <= 1 + epsilon &&
+    b >= -epsilon &&
+    b <= 1 + epsilon
   )
 }
 
@@ -274,7 +279,9 @@ export function contrastRatio(foreground: Rgb, background: Rgb): number {
 export function apcaContrast(text: Rgb, background: Rgb): number {
   const TRC = 2.4
   const luminance = ({ r, g, b }: Rgb): number =>
-    0.2126729 * clamp(r, 0, 1) ** TRC + 0.7151522 * clamp(g, 0, 1) ** TRC + 0.072175 * clamp(b, 0, 1) ** TRC
+    0.2126729 * clamp(r, 0, 1) ** TRC +
+    0.7151522 * clamp(g, 0, 1) ** TRC +
+    0.072175 * clamp(b, 0, 1) ** TRC
 
   // Very dark colours are perceptually flatter than their luminance suggests; the soft
   // clamp compensates so near-blacks do not read as infinitely contrasty.
@@ -317,8 +324,7 @@ export function findAccessibleLightness(
   const { prefer = 'auto', iterations = 30 } = options
   const bgLuminance = relativeLuminance(background)
 
-  const direction =
-    prefer === 'auto' ? (bgLuminance > 0.35 ? 'darker' : 'lighter') : prefer
+  const direction = prefer === 'auto' ? (bgLuminance > 0.35 ? 'darker' : 'lighter') : prefer
 
   const ratioAt = (L: number): number =>
     contrastRatio(oklchToRgb(clampChromaToSrgb({ ...base, L })), background)

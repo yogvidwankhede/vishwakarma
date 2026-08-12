@@ -4,10 +4,10 @@
 
 import type { ReactNode } from 'react'
 import {
-  alignValue,
-  justifyValue,
   type Align,
+  alignValue,
   type Justify,
+  justifyValue,
   type LayoutPrimitiveProps,
 } from './primitive.js'
 import { resolveSpace, type Space } from './space.js'

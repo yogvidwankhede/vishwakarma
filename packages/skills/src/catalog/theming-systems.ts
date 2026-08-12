@@ -694,7 +694,9 @@ different and worse failure than looking dim.`,
           'Hundreds of independent colour transitions starting at once composite unevenly, so the page appears to melt rather than switch, and any element that mounts during the transition arrives part-way through its own fade. A view transition cross-fades one snapshot instead, which is a single coherent animation.',
         confidence: 'strong',
       },
-      exceptions: ['A scoped transition on a small number of large surfaces, gated behind prefers-reduced-motion.'],
+      exceptions: [
+        'A scoped transition on a small number of large surfaces, gated behind prefers-reduced-motion.',
+      ],
     },
     {
       id: 'theming-systems/orthogonal-brand-axis',
@@ -853,7 +855,8 @@ different and worse failure than looking dim.`,
     {
       id: 'contract-audit',
       kind: 'contract',
-      description: 'Evaluate the token set and theme machinery against the project Design Contract.',
+      description:
+        'Evaluate the token set and theme machinery against the project Design Contract.',
       contractSection: 'theming',
     },
   ],

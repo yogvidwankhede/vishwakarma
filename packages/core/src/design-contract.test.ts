@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_CONTRACT, checkContract, extendContract } from './design-contract.js'
+import { checkContract, DEFAULT_CONTRACT, extendContract } from './design-contract.js'
 
 describe('spacing checks', () => {
   it('accepts values on the scale', () => {
@@ -38,7 +38,9 @@ describe('spacing checks', () => {
 describe('typography checks', () => {
   it('flags sizes below the readable minimum as errors', () => {
     const report = checkContract(DEFAULT_CONTRACT, { fontSizesRem: [0.625] })
-    expect(report.violations.some((v) => v.rule === 'typography/too-small' && v.severity === 'error')).toBe(true)
+    expect(
+      report.violations.some((v) => v.rule === 'typography/too-small' && v.severity === 'error'),
+    ).toBe(true)
   })
 
   it('flags too many distinct sizes in one view', () => {
@@ -192,7 +194,10 @@ describe('scoring', () => {
 
 describe('contract customisation', () => {
   it('honours severity overrides', () => {
-    const relaxed = { ...DEFAULT_CONTRACT, severityOverrides: { 'spacing/off-grid': 'warning' as const } }
+    const relaxed = {
+      ...DEFAULT_CONTRACT,
+      severityOverrides: { 'spacing/off-grid': 'warning' as const },
+    }
     const report = checkContract(relaxed, { spacingValues: [13] })
     expect(report.violations[0]?.severity).toBe('warning')
     expect(report.passed).toBe(true)

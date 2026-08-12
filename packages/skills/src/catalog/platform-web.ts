@@ -495,7 +495,8 @@ the browser promote on its own, as it does for running compositor animations.
       },
       {
         id: 'colour-preferences-and-semantics',
-        title: 'OKLCh colour and theming, preference queries, semantic HTML, and progressive enhancement',
+        title:
+          'OKLCh colour and theming, preference queries, semantic HTML, and progressive enhancement',
         answers:
           'How do I define a colour system that holds contrast across hues, switch themes without a flash, honour the operating-system preference settings, and build markup and modern-CSS enhancements that degrade correctly?',
         content: `# OKLCh colour and theming, preference queries, semantic HTML, and progressive enhancement
@@ -819,7 +820,8 @@ already faded in.
     {
       id: 'viewport-and-input-review',
       kind: 'self-review',
-      description: 'Confirm the layout negotiates viewport, insets, and input modality rather than assuming them.',
+      description:
+        'Confirm the layout negotiates viewport, insets, and input modality rather than assuming them.',
       blocking: true,
       questions: [
         'Does any full-height element use 100vh rather than 100dvh or 100svh, and is viewport-fit=cover present wherever env(safe-area-inset-*) is used?',
@@ -832,7 +834,8 @@ already faded in.
     {
       id: 'performance-and-font-review',
       kind: 'self-review',
-      description: 'Confirm fonts, vitals, and animation work are measured against the field rather than the dev machine.',
+      description:
+        'Confirm fonts, vitals, and animation work are measured against the field rather than the dev machine.',
       blocking: true,
       questions: [
         'Is exactly one face preloaded with crossorigin, does every @font-face declare swap or optional, and does each family have a metric-matched fallback with size-adjust and ascent-override?',
@@ -844,7 +847,8 @@ already faded in.
     {
       id: 'preferences-and-semantics-review',
       kind: 'self-review',
-      description: 'Confirm user preferences are honoured and the markup carries its own accessibility.',
+      description:
+        'Confirm user preferences are honoured and the markup carries its own accessibility.',
       questions: [
         'Does each of prefers-reduced-motion, prefers-reduced-transparency, prefers-contrast, prefers-color-scheme and forced-colors have a handled branch, and is the reduced-motion branch an explicit rule rather than a global animation: none?',
         'Does the theme resolve in a synchronous head script before first paint, wrapped in try/catch, setting color-scheme alongside the theme attribute?',
@@ -862,5 +866,10 @@ already faded in.
     },
   ],
 
-  relatedSkills: ['colour-systems', 'responsive-architecture', 'rendering-performance', 'accessible-components'],
+  relatedSkills: [
+    'colour-systems',
+    'responsive-architecture',
+    'rendering-performance',
+    'accessible-components',
+  ],
 }

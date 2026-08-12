@@ -15,7 +15,7 @@
  * Run: node scripts/scaffold-packages.mjs
  */
 
-import { mkdir, writeFile, readFile, access } from 'node:fs/promises'
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -67,14 +67,16 @@ const PACKAGES = [
   {
     name: 'tokens',
     kind: 'lib',
-    description: 'Design token schema, the default token set, and transforms to CSS, Tailwind, and TypeScript.',
+    description:
+      'Design token schema, the default token set, and transforms to CSS, Tailwind, and TypeScript.',
     keywords: ['design-tokens', 'css-variables', 'theming'],
     deps: { '@vishwakarma/core': 'workspace:*' },
   },
   {
     name: 'theme',
     kind: 'react',
-    description: 'Runtime theme engine: flash-free theme switching, density and contrast modes, multi-brand support.',
+    description:
+      'Runtime theme engine: flash-free theme switching, density and contrast modes, multi-brand support.',
     keywords: ['theming', 'dark-mode', 'css-variables'],
     deps: { '@vishwakarma/tokens': 'workspace:*' },
     peers: { react: V.react, 'react-dom': V.reactDom },
@@ -82,7 +84,8 @@ const PACKAGES = [
   {
     name: 'motion',
     kind: 'react',
-    description: 'Motion primitives implementing the Vishwakarma Motion Grammar, with reduced-motion built in.',
+    description:
+      'Motion primitives implementing the Vishwakarma Motion Grammar, with reduced-motion built in.',
     keywords: ['animation', 'motion', 'framer-motion', 'react', 'reduced-motion'],
     deps: { '@vishwakarma/core': 'workspace:*' },
     peers: { react: V.react, 'react-dom': V.reactDom, motion: V.motion },
@@ -91,7 +94,8 @@ const PACKAGES = [
   {
     name: 'layout',
     kind: 'react',
-    description: 'Composition primitives: intrinsic layouts, bento grids, container-query components, and full-bleed sections.',
+    description:
+      'Composition primitives: intrinsic layouts, bento grids, container-query components, and full-bleed sections.',
     keywords: ['layout', 'css-grid', 'container-queries', 'responsive', 'bento'],
     deps: { '@vishwakarma/core': 'workspace:*' },
     peers: { react: V.react, 'react-dom': V.reactDom },
@@ -99,21 +103,24 @@ const PACKAGES = [
   {
     name: 'skills',
     kind: 'node',
-    description: 'The Vishwakarma skill catalog and the VSM manifest format, schema, and validator.',
+    description:
+      'The Vishwakarma skill catalog and the VSM manifest format, schema, and validator.',
     keywords: ['ai', 'agent-skills', 'claude-code', 'cursor', 'prompt-engineering'],
     deps: { '@vishwakarma/core': 'workspace:*', yaml: V.yaml },
   },
   {
     name: 'adapters',
     kind: 'node',
-    description: 'Compiles Vishwakarma skills to every agent’s native format: Claude Code, Cursor, Windsurf, Codex, Gemini CLI and more.',
+    description:
+      'Compiles Vishwakarma skills to every agent’s native format: Claude Code, Cursor, Windsurf, Codex, Gemini CLI and more.',
     keywords: ['ai', 'agents', 'claude-code', 'cursor', 'windsurf', 'agents-md'],
     deps: { '@vishwakarma/skills': 'workspace:*', yaml: V.yaml },
   },
   {
     name: 'mcp',
     kind: 'node',
-    description: 'Model Context Protocol server exposing Vishwakarma skills, tokens, components, and audits to any MCP client.',
+    description:
+      'Model Context Protocol server exposing Vishwakarma skills, tokens, components, and audits to any MCP client.',
     keywords: ['mcp', 'model-context-protocol', 'ai', 'agents'],
     deps: {
       '@vishwakarma/skills': 'workspace:*',
@@ -127,7 +134,8 @@ const PACKAGES = [
   {
     name: 'primitives',
     kind: 'react',
-    description: 'Headless, accessibility-first React primitives implementing the ARIA authoring patterns.',
+    description:
+      'Headless, accessibility-first React primitives implementing the ARIA authoring patterns.',
     keywords: ['headless-ui', 'accessibility', 'aria', 'react', 'primitives'],
     deps: { '@vishwakarma/core': 'workspace:*' },
     peers: { react: V.react, 'react-dom': V.reactDom },
@@ -147,7 +155,8 @@ const PACKAGES = [
   {
     name: 'scroll',
     kind: 'react',
-    description: 'Scroll experiences: reveals, scroll-linked animation, pinned sequences, and parallax that degrades safely.',
+    description:
+      'Scroll experiences: reveals, scroll-linked animation, pinned sequences, and parallax that degrades safely.',
     keywords: ['scroll', 'animation', 'intersection-observer', 'gsap', 'scrolltrigger'],
     deps: { '@vishwakarma/core': 'workspace:*', '@vishwakarma/motion': 'workspace:*' },
     peers: { react: V.react, 'react-dom': V.reactDom, gsap: V.gsap },
@@ -156,7 +165,8 @@ const PACKAGES = [
   {
     name: 'three',
     kind: 'react',
-    description: 'React Three Fiber helpers with performance budgets, lazy loading, and reduced-motion handling.',
+    description:
+      'React Three Fiber helpers with performance budgets, lazy loading, and reduced-motion handling.',
     keywords: ['threejs', 'react-three-fiber', 'webgl', '3d'],
     deps: { '@vishwakarma/core': 'workspace:*' },
     peers: {
@@ -179,7 +189,8 @@ const PACKAGES = [
   {
     name: 'audit',
     kind: 'node',
-    description: 'Static and runtime auditors that evaluate generated UI against a Design Contract.',
+    description:
+      'Static and runtime auditors that evaluate generated UI against a Design Contract.',
     keywords: ['audit', 'design-system', 'accessibility', 'linting'],
     deps: { '@vishwakarma/core': 'workspace:*', 'fast-glob': V.fastGlob },
   },
@@ -193,7 +204,8 @@ const PACKAGES = [
   {
     name: 'testing',
     kind: 'node',
-    description: 'Test utilities for accessibility, motion, contract conformance, and viewport sweeps.',
+    description:
+      'Test utilities for accessibility, motion, contract conformance, and viewport sweeps.',
     keywords: ['testing', 'accessibility', 'axe', 'vitest'],
     deps: { '@vishwakarma/core': 'workspace:*' },
     devDeps: { '@testing-library/react': V.testingLibrary, 'axe-core': V.axeCore, jsdom: V.jsdom },
@@ -201,14 +213,16 @@ const PACKAGES = [
   {
     name: 'registry',
     kind: 'node',
-    description: 'Component registry: schema, resolution, and dependency graph for copy-in source distribution.',
+    description:
+      'Component registry: schema, resolution, and dependency graph for copy-in source distribution.',
     keywords: ['registry', 'components', 'cli', 'scaffolding'],
     deps: { zod: V.zod },
   },
   {
     name: 'cli',
     kind: 'cli',
-    description: 'The Vishwakarma CLI: install skills into any agent, add components, generate themes, and audit output.',
+    description:
+      'The Vishwakarma CLI: install skills into any agent, add components, generate themes, and audit output.',
     keywords: ['cli', 'ai', 'agent-skills', 'scaffolding'],
     deps: {
       '@vishwakarma/skills': 'workspace:*',
@@ -312,8 +326,7 @@ function tsconfig(pkg) {
 function tsupConfig(pkg) {
   const isReact = pkg.kind === 'react'
   const isNodeOnly = pkg.kind === 'node' || pkg.kind === 'cli'
-  const entry =
-    pkg.name === 'mcp' ? "['src/index.ts', 'src/server.ts']" : "['src/index.ts']"
+  const entry = pkg.name === 'mcp' ? "['src/index.ts', 'src/server.ts']" : "['src/index.ts']"
 
   return `import { defineConfig } from 'tsup'
 
@@ -409,11 +422,7 @@ async function main() {
         continue
       }
     }
-    await writeFile(
-      indexPath,
-      `export {}\n`,
-      'utf8',
-    )
+    await writeFile(indexPath, `export {}\n`, 'utf8')
   }
 
   process.stdout.write(

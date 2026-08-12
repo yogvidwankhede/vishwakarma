@@ -532,7 +532,8 @@ exit — which reads as the page being broken rather than as being rich.`,
     {
       id: 'scroll-experiences/clamp-progress',
       strength: 'should',
-      statement: 'Clamp computed scroll progress to the range 0 to 1 before applying it to any transform.',
+      statement:
+        'Clamp computed scroll progress to the range 0 to 1 before applying it to any transform.',
       evidence: {
         rationale:
           'Rubber-band overscroll on iOS and macOS reports negative scroll offsets and offsets beyond the maximum, so an unclamped progress value drives transforms past their intended range and exposes the edges of a pinned stage.',
@@ -668,7 +669,8 @@ exit — which reads as the page being broken rather than as being rich.`,
     {
       id: 'scroll-experiences/one-pin-per-page',
       strength: 'should-not',
-      statement: 'Do not place more than one pinned or horizontally scrolling sequence on a single page.',
+      statement:
+        'Do not place more than one pinned or horizontally scrolling sequence on a single page.',
       evidence: {
         rationale:
           'Pinning changes the relationship between gesture distance and page movement. Two different mappings on one page leave the user unable to predict what a scroll will do, and the second pin typically begins before the first has resolved its exit.',
@@ -693,7 +695,8 @@ exit — which reads as the page being broken rather than as being rich.`,
     {
       id: 'no-js-content-check',
       kind: 'self-review',
-      description: 'Confirm no content depends on JavaScript or an unsupported CSS feature to be visible.',
+      description:
+        'Confirm no content depends on JavaScript or an unsupported CSS feature to be visible.',
       blocking: true,
       questions: [
         'With JavaScript disabled, is every piece of text and every image on this page visible?',
@@ -769,5 +772,10 @@ exit — which reads as the page being broken rather than as being rich.`,
     },
   ],
 
-  relatedSkills: ['motion-design', 'interaction-design', 'responsive-architecture', 'accessible-components'],
+  relatedSkills: [
+    'motion-design',
+    'interaction-design',
+    'responsive-architecture',
+    'accessible-components',
+  ],
 }

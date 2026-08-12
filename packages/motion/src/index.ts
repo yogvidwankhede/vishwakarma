@@ -13,45 +13,42 @@
  * zero and a heavier library remains an optional upgrade rather than a prerequisite.
  */
 
+// Re-exported so consumers can reason about motion without also depending on core.
 export {
-  useReducedMotion,
-  useMediaQuery,
-  useCoarsePointer,
-  useHoverCapable,
-} from './use-reduced-motion.js'
-
+  DURATIONS,
+  type DurationName,
+  EASINGS,
+  type EasingName,
+  INTENT_PROFILES,
+  judgeProperty,
+  type MotionDistance,
+  type MotionIntent,
+  needsReducedMotionGuard,
+  SPRINGS,
+  type SpringName,
+  toCssEasing,
+} from '@vishwakarma/core'
 export {
-  type UseMotionOptions,
+  Reveal,
+  RevealGroup,
+  type RevealGroupProps,
+  type RevealProps,
+  RevealStyles,
+  Transition,
+  type TransitionProps,
+} from './reveal.js'
+export {
   type MotionStyle,
+  type UseMotionOptions,
   type UseStaggerOptions,
   useMotion,
   useMotionStyle,
-  useStagger,
   useSpring,
+  useStagger,
 } from './use-motion.js'
-
 export {
-  type RevealProps,
-  type RevealGroupProps,
-  type TransitionProps,
-  RevealStyles,
-  Reveal,
-  RevealGroup,
-  Transition,
-} from './reveal.js'
-
-// Re-exported so consumers can reason about motion without also depending on core.
-export {
-  type MotionIntent,
-  type MotionDistance,
-  type EasingName,
-  type DurationName,
-  type SpringName,
-  EASINGS,
-  DURATIONS,
-  SPRINGS,
-  INTENT_PROFILES,
-  judgeProperty,
-  needsReducedMotionGuard,
-  toCssEasing,
-} from '@vishwakarma/core'
+  useCoarsePointer,
+  useHoverCapable,
+  useMediaQuery,
+  useReducedMotion,
+} from './use-reduced-motion.js'

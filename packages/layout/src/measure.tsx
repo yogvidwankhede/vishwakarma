@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ReactNode } from 'react'
-import { cx, toLength, type LayoutPrimitiveProps } from './primitive.js'
+import { cx, type LayoutPrimitiveProps, toLength } from './primitive.js'
 import { resolveSpace, type Space } from './space.js'
 
 /**
@@ -160,7 +160,14 @@ export function Cover({
       {/* The empty divs keep the three-row structure stable, so the centred row stays
           centred whether or not the pinned regions are present. */}
       <div style={{ minInlineSize: 0 }}>{top}</div>
-      <div style={{ minInlineSize: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div
+        style={{
+          minInlineSize: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+        }}
+      >
         {children}
       </div>
       <div style={{ minInlineSize: 0 }}>{bottom}</div>
@@ -223,8 +230,8 @@ export function Frame({
       {...rest}
     >
       {children}
-      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: a fixed literal with no interpolation; a scoped rule is the only way to reach the media child without requiring the caller to add a class. */}
       <style
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: a fixed literal with no interpolation; a scoped rule is the only way to reach the media child without requiring the caller to add a class.
         dangerouslySetInnerHTML={{
           __html:
             '.vk-frame > img, .vk-frame > video, .vk-frame > canvas, .vk-frame > svg { inline-size: 100%; block-size: 100%; object-fit: var(--vk-frame-fit); object-position: var(--vk-frame-position); display: block; }',

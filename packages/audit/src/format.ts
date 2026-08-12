@@ -75,7 +75,11 @@ const ANSI: Record<string, string> = {
   green: '\u001b[32m',
 }
 
-const SEVERITY_COLOUR: Record<Severity, string> = { error: 'red', warning: 'yellow', suggestion: 'blue' }
+const SEVERITY_COLOUR: Record<Severity, string> = {
+  error: 'red',
+  warning: 'yellow',
+  suggestion: 'blue',
+}
 
 function paint(text: string, colour: string, enabled: boolean): string {
   if (!enabled) return text
@@ -126,7 +130,8 @@ function formatText(report: ProjectAuditReport, options: FormatOptions): string 
 
     const limit = options.maxPerFile ?? violations.length
     for (const violation of violations.slice(0, limit)) {
-      const position = violation.location?.line === undefined ? '—' : String(violation.location.line)
+      const position =
+        violation.location?.line === undefined ? '—' : String(violation.location.line)
       const severity = paint(
         // Padded past the longest severity name, so the rule column stays aligned and the
         // report can be scanned down rather than read across.
@@ -145,7 +150,9 @@ function formatText(report: ProjectAuditReport, options: FormatOptions): string 
     }
 
     if (violations.length > limit) {
-      lines.push(paint(`         … and ${violations.length - limit} more in this file`, 'dim', colour))
+      lines.push(
+        paint(`         … and ${violations.length - limit} more in this file`, 'dim', colour),
+      )
     }
     lines.push('')
   }
@@ -304,7 +311,12 @@ function formatMarkdown(report: ProjectAuditReport, options: FormatOptions): str
   if (active.length > 0) {
     // Listed in full rather than counted, because the whole point of demanding a reason is
     // that somebody reads the reasons occasionally.
-    lines.push('### Suppressions in force', '', '| File | Line | Rules | Reason |', '| --- | ---: | --- | --- |')
+    lines.push(
+      '### Suppressions in force',
+      '',
+      '| File | Line | Rules | Reason |',
+      '| --- | ---: | --- | --- |',
+    )
     for (const suppression of active) {
       lines.push(
         `| \`${withPrefix(suppression.file, options.pathPrefix)}\` | ${suppression.line} | ${escapeCell(suppression.rules.join(', '))} | ${escapeCell(suppression.reason ?? '')} |`,
@@ -383,7 +395,9 @@ function formatGithub(report: ProjectAuditReport, options: FormatOptions): strin
   }
 
   if (sorted.length > cap) {
-    lines.push(`::notice::${escapeData(`${sorted.length - cap} further violations were not annotated. Run the audit locally for the full report.`)}`)
+    lines.push(
+      `::notice::${escapeData(`${sorted.length - cap} further violations were not annotated. Run the audit locally for the full report.`)}`,
+    )
   }
 
   const { errors, warnings, suggestions, suppressed } = report.summary
@@ -392,7 +406,8 @@ function formatGithub(report: ProjectAuditReport, options: FormatOptions): strin
 
   if (options.includeLimits ?? true) {
     const blind = countBlindSpots(report)
-    const caveat = blind > 0 ? `${LIMITS_SUMMARY} ${blind} expressions were left unjudged.` : LIMITS_SUMMARY
+    const caveat =
+      blind > 0 ? `${LIMITS_SUMMARY} ${blind} expressions were left unjudged.` : LIMITS_SUMMARY
     lines.push(`::notice::${escapeData(caveat)}`)
   }
 

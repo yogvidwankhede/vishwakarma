@@ -19,84 +19,76 @@
  */
 
 export {
-  type Position,
-  type Locator,
-  createLocator,
-  lineTextAt,
-} from './locate.js'
-
-export {
-  type UnitOptions,
-  DEFAULT_ROOT_FONT_SIZE_PX,
-  lengthToPx,
-  lengthToRem,
-  isRelativeLength,
-  timeToMs,
-  pxToRem,
-} from './units.js'
-
-export {
-  type StringLiteral,
-  matchDelimiter,
-  skipStringLiteral,
-  collectStringLiterals,
-  findTagEnd,
-  findClosingTag,
-  toCamelCase,
-  escapeRegExp,
-} from './scan.js'
-
-export {
-  type TailwindUtility,
-  type TailwindTheme,
-  TAILWIND_FONT_SIZES_REM,
-  TAILWIND_RADII_PX,
-  SPACING_PREFIXES,
-  RADIUS_PREFIXES,
-  tokenizeClassList,
-  parseTailwindClass,
-  splitUtility,
-  resolveTailwindSpacingPx,
-  resolveTailwindFontSizeRem,
-  resolveTailwindRadiusPx,
-  resolveTailwindDurationMs,
-  resolveTailwindAnimatedProperties,
-} from './tailwind.js'
-
-export {
-  type Suppression,
-  parseSuppressions,
-  suppressionCovers,
-} from './suppressions.js'
-
-export {
-  type EvidenceKind,
-  type EvidenceOrigin,
-  type Evidence,
-  type UnresolvedKind,
-  type Unresolved,
-  type SourceExtraction,
-  type ExtractOptions,
-  extractFromSource,
-} from './extract.js'
-
-export {
-  type LocatedViolation,
-  type AuditSummary,
-  type FileAuditReport,
-  type ProjectAuditReport,
-  type AuditOptions,
-  DEFAULT_IGNORE,
   AUDIT_RULES,
-  auditSource,
+  type AuditOptions,
+  type AuditSummary,
   auditProject,
+  auditSource,
+  DEFAULT_IGNORE,
+  type FileAuditReport,
+  type LocatedViolation,
+  type ProjectAuditReport,
   summariseProject,
 } from './audit.js'
-
 export {
-  type ReportFormat,
+  type Evidence,
+  type EvidenceKind,
+  type EvidenceOrigin,
+  type ExtractOptions,
+  extractFromSource,
+  type SourceExtraction,
+  type Unresolved,
+  type UnresolvedKind,
+} from './extract.js'
+export {
   type FormatOptions,
   formatReport,
+  type ReportFormat,
 } from './format.js'
-
-export { STATIC_ANALYSIS_LIMITS, LIMITS_SUMMARY } from './limits.js'
+export { LIMITS_SUMMARY, STATIC_ANALYSIS_LIMITS } from './limits.js'
+export {
+  createLocator,
+  type Locator,
+  lineTextAt,
+  type Position,
+} from './locate.js'
+export {
+  collectStringLiterals,
+  escapeRegExp,
+  findClosingTag,
+  findTagEnd,
+  matchDelimiter,
+  type StringLiteral,
+  skipStringLiteral,
+  toCamelCase,
+} from './scan.js'
+export {
+  parseSuppressions,
+  type Suppression,
+  suppressionCovers,
+} from './suppressions.js'
+export {
+  parseTailwindClass,
+  RADIUS_PREFIXES,
+  resolveTailwindAnimatedProperties,
+  resolveTailwindDurationMs,
+  resolveTailwindFontSizeRem,
+  resolveTailwindRadiusPx,
+  resolveTailwindSpacingPx,
+  SPACING_PREFIXES,
+  splitUtility,
+  TAILWIND_FONT_SIZES_REM,
+  TAILWIND_RADII_PX,
+  type TailwindTheme,
+  type TailwindUtility,
+  tokenizeClassList,
+} from './tailwind.js'
+export {
+  DEFAULT_ROOT_FONT_SIZE_PX,
+  isRelativeLength,
+  lengthToPx,
+  lengthToRem,
+  pxToRem,
+  timeToMs,
+  type UnitOptions,
+} from './units.js'
