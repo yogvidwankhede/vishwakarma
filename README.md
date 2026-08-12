@@ -8,8 +8,8 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-22c55e.svg?style=for-the-badge)](LICENSE)
 [![Packages](https://img.shields.io/badge/packages-18-3d5afe.svg?style=for-the-badge)](#-the-packages)
-[![Skills](https://img.shields.io/badge/skills-23-8b5cf6.svg?style=for-the-badge)](#-the-skill-catalog)
-[![Rules](https://img.shields.io/badge/rules-406-ec4899.svg?style=for-the-badge)](#-the-skill-catalog)
+[![Skills](https://img.shields.io/badge/skills-32-8b5cf6.svg?style=for-the-badge)](#-the-skill-catalog)
+[![Rules](https://img.shields.io/badge/rules-515-ec4899.svg?style=for-the-badge)](#-the-skill-catalog)
 [![Tests](https://img.shields.io/badge/tests-217%20passing-22c55e.svg?style=for-the-badge)](#)
 
 **Teach any coding agent to build interfaces that look _designed_ — not _generated_ — and give it the tools to prove it.**
@@ -86,7 +86,7 @@ The fastest path. In any Claude Code session, just tell it where to look:
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
-Claude fetches the compiled catalog from `.claude/skills/` in the repository and copies all 23 skills into your project. No commands, no build, no npm.
+Claude fetches the compiled catalog from `.claude/skills/` in the repository and copies all 32 skills into your project. No commands, no build, no npm.
 
 ### Claude Code plugin — two commands
 
@@ -97,7 +97,7 @@ The repository also ships as a **Claude Code plugin marketplace**, which gives y
 /plugin install vishwakarma@vishwakarma
 ```
 
-All 23 skills load with progressive disclosure — descriptions always visible, full guidance and references only when relevant.
+All 32 skills load with progressive disclosure — descriptions always visible, full guidance and references only when relevant.
 
 ### Every other agent — the CLI
 
@@ -166,7 +166,9 @@ check_contrast(foreground: "#8a8a8a", background: "#ffffff")
 
 ## 📚 The skill catalog
 
-**23 skills**, carrying **406 rules** (every single one with its mechanism stated), **143 self-review checks**, and **42 deep references** loaded only when needed.
+**32 skills**, carrying **515 rules** (every single one with its mechanism stated), **184 self-review checks**, and **67 deep references** loaded only when needed.
+
+Two of those skills change how the rest behave. **Engineering Discipline** is always on: it governs how any task is approached — resolving ambiguity out loud, measuring before changing, restating work as something checkable, keeping diffs scoped. And the three **platform** skills are resolved *before* any value is chosen, because roughly half the constants in the catalog are mutually exclusive between platforms: 44pt is right on Apple and wrong on Android, 48dp is right on Android and not the Apple minimum, and a 46pt compromise is native to neither.
 
 | | | |
 |---|---|---|
@@ -177,7 +179,10 @@ check_contrast(foreground: "#8a8a8a", background: "#ffffff")
 | 🗺️ **Information Architecture** | 🎬 **Motion Design** | 📜 **Scroll Experiences** |
 | ✨ **Micro-interactions** | 🧩 **Component Architecture** | 🎟️ **Design Tokens** |
 | 🌓 **Theming Systems** | ⚡ **Rendering Performance** | 🔎 **SEO & Metadata** |
-| 🎮 **Multiplayer Game Publishing** | 🧊 **3D Game Assets** | |
+| 🎮 **Multiplayer Game Publishing** | 🧊 **3D Game Assets** | 🧭 **Engineering Discipline** |
+| 🌐 **Web Platform** | 🤖 **Android Platform** | 🍎 **Apple Platform** |
+| 🌀 **Motion Physics** | 📊 **Mobile Performance** | 🔬 **Accessibility Evidence** |
+| 🧪 **Code Quality** | 🧬 **Reverse Engineering** | |
 
 ```bash
 vishwakarma show motion-design   # read any skill in full
@@ -217,7 +222,7 @@ vishwakarma show motion-design   # read any skill in full
 ### 🚚 Distribution — *gets the intelligence into any agent*
 | Package | What it does |
 |---|---|
-| [`@vishwakarma/skills`](packages/skills) | The skill format, validator & 23-skill catalog |
+| [`@vishwakarma/skills`](packages/skills) | The skill format, validator & 32-skill catalog |
 | [`@vishwakarma/adapters`](packages/adapters) | Compiles one skill into **13 agent formats**, with the install lockfile |
 | [`@vishwakarma/mcp`](packages/mcp) | The MCP server — 14 tools, 2 prompts, 2 resources |
 | [`@vishwakarma/registry`](packages/registry) | Copy-in component distribution with dependency resolution |

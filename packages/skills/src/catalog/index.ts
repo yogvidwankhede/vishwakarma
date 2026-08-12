@@ -10,21 +10,32 @@
 
 import type { SkillManifest } from '../manifest.js'
 
+export { threeDGameAssets } from './3d-game-assets.js'
+export { accessibilityEvidence } from './accessibility-evidence.js'
 export { accessibleComponents } from './accessible-components.js'
+export { codeQuality } from './code-quality.js'
 export { colourSystems } from './colour-systems.js'
 export { componentArchitecture } from './component-architecture.js'
 export { designJudgment } from './design-judgment.js'
 export { designReview } from './design-review.js'
 export { designTokens } from './design-tokens.js'
+export { engineeringDiscipline } from './engineering-discipline.js'
 export { informationArchitecture } from './information-architecture.js'
 export { interactionDesign } from './interaction-design.js'
 export { interfaceCopy } from './interface-copy.js'
 export { interfaceStates } from './interface-states.js'
 export { layoutComposition } from './layout-composition.js'
 export { microInteractions } from './micro-interactions.js'
+export { mobilePerformance } from './mobile-performance.js'
 export { motionDesign } from './motion-design.js'
+export { motionPhysics } from './motion-physics.js'
+export { multiplayerGamePublishing } from './multiplayer-game-publishing.js'
+export { platformAndroid } from './platform-android.js'
+export { platformApple } from './platform-apple.js'
+export { platformWeb } from './platform-web.js'
 export { renderingPerformance } from './rendering-performance.js'
 export { responsiveArchitecture } from './responsive-architecture.js'
+export { reverseEngineering } from './reverse-engineering.js'
 export { scrollExperiences } from './scroll-experiences.js'
 export { seoAndMetadata } from './seo-and-metadata.js'
 export { surfaceAndDepth } from './surface-and-depth.js'
@@ -32,21 +43,32 @@ export { themingSystems } from './theming-systems.js'
 export { typographicSystems } from './typographic-systems.js'
 export { uiGenerationWorkflow } from './ui-generation-workflow.js'
 
+import { threeDGameAssets } from './3d-game-assets.js'
+import { accessibilityEvidence } from './accessibility-evidence.js'
 import { accessibleComponents } from './accessible-components.js'
+import { codeQuality } from './code-quality.js'
 import { colourSystems } from './colour-systems.js'
 import { componentArchitecture } from './component-architecture.js'
 import { designJudgment } from './design-judgment.js'
 import { designReview } from './design-review.js'
 import { designTokens } from './design-tokens.js'
+import { engineeringDiscipline } from './engineering-discipline.js'
 import { informationArchitecture } from './information-architecture.js'
 import { interactionDesign } from './interaction-design.js'
 import { interfaceCopy } from './interface-copy.js'
 import { interfaceStates } from './interface-states.js'
 import { layoutComposition } from './layout-composition.js'
 import { microInteractions } from './micro-interactions.js'
+import { mobilePerformance } from './mobile-performance.js'
 import { motionDesign } from './motion-design.js'
+import { motionPhysics } from './motion-physics.js'
+import { multiplayerGamePublishing } from './multiplayer-game-publishing.js'
+import { platformAndroid } from './platform-android.js'
+import { platformApple } from './platform-apple.js'
+import { platformWeb } from './platform-web.js'
 import { renderingPerformance } from './rendering-performance.js'
 import { responsiveArchitecture } from './responsive-architecture.js'
+import { reverseEngineering } from './reverse-engineering.js'
 import { scrollExperiences } from './scroll-experiences.js'
 import { seoAndMetadata } from './seo-and-metadata.js'
 import { surfaceAndDepth } from './surface-and-depth.js'
@@ -56,21 +78,32 @@ import { uiGenerationWorkflow } from './ui-generation-workflow.js'
 
 /** Every skill in the catalog, in stable order. */
 export const catalog: SkillManifest[] = [
+  threeDGameAssets,
+  accessibilityEvidence,
   accessibleComponents,
+  codeQuality,
   colourSystems,
   componentArchitecture,
   designJudgment,
   designReview,
   designTokens,
+  engineeringDiscipline,
   informationArchitecture,
   interactionDesign,
   interfaceCopy,
   interfaceStates,
   layoutComposition,
   microInteractions,
+  mobilePerformance,
   motionDesign,
+  motionPhysics,
+  multiplayerGamePublishing,
+  platformAndroid,
+  platformApple,
+  platformWeb,
   renderingPerformance,
   responsiveArchitecture,
+  reverseEngineering,
   scrollExperiences,
   seoAndMetadata,
   surfaceAndDepth,

@@ -1,0 +1,277 @@
+# Planning and decomposition
+
+The distance between a request and a plan is where most of the cost of a task is decided.
+This file covers the whole span: enumerating the readings of an ambiguous request with prices
+attached, establishing the baseline that makes "better" falsifiable, converting an imperative
+into a condition you can check, pairing every step with its verification, looking at the real
+data before designing against it, slicing the work so each slice is separately deployable and
+separately checkable, pushing back when a simpler route exists or the requirements contradict
+each other, and calibrating how much of this ceremony the stakes actually justify.
+
+---
+
+## 1. Resolve ambiguity out loud
+
+When a request admits more than one reasonable reading, enumerate the readings, attach an effort
+estimate and a consequence to each, state which you would choose and why, then wait. **The failure
+is silent selection, not wrong selection.** Choosing the wrong branch after showing the fork is a
+recoverable disagreement; choosing it invisibly means the person only discovers the fork existed
+when the finished work does not match what they pictured, at which point the cost of the mistake is
+the entire build rather than one sentence.
+
+"Make the search faster" is the canonical example, because it is not one project but three, and they
+share almost nothing.
+
+| Reading | What you would actually do | Rough effort | What improves | What does not |
+|---|---|---|---|---|
+| Reduce p95 query latency | Index the hot columns, kill the N+1, cache the top queries | Half a day | Time-to-first-result on a cold query | Behaviour under load; the spinner still shows |
+| Raise throughput under concurrency | Connection pooling, queue the expensive path, add read replicas | Several days | Stability at peak; p99 under load | Single-user latency, possibly worsened by queueing |
+| Improve *perceived* speed | Optimistic rendering, skeletons, debounced incremental results, prefetch on intent | A day, mostly front-end | How fast it feels; abandonment rate | Every server-side number stays exactly where it was |
+
+Different techniques, different costs, different success measures — and a fix for one can measurably
+worsen another, since queueing to protect throughput adds latency and prefetching to improve
+perceived speed adds load.
+
+Present this as a **costed menu, not a question**. A question ("did you mean latency or
+throughput?") invites a one-word answer that resolves nothing, because the person answering has
+usually not costed the options either — they pick the word that sounds right and you both discover
+the mismatch later. A menu with effort and consequence attached lets them choose with the tradeoff
+visible, and it does the analytical work for them. Add your recommendation: "I would start with
+perceived speed — it is a day, it does not touch the data layer, and the abandonment metric suggests
+that is where the pain is" beats neutrality.
+
+The same discipline applies to design requests, which are ambiguous more often than technical ones.
+"Make it feel more premium" could mean tighter type, calmer colour, slower motion, more generous
+spacing, better photography, or fewer elements — and those pull against each other.
+
+---
+
+## 2. Measure before you change
+
+Report the present number before proposing a change to it. Current p95, current coverage percentage,
+current bundle size in kilobytes over the wire, current error rate per thousand requests, current
+contrast ratio, current frame time on the target device. State the number, state how you obtained
+it, then propose.
+
+The mechanism is that **without a baseline, "better" is unfalsifiable**. Work with no measured
+starting point has no defined end — there is always another optimisation available, and no signal
+that says stop. Worse, it has no way to detect a regression. A change that improves the number you
+did not measure while worsening the one you did is indistinguishable from success, and you will
+report it as success in perfect good faith.
+
+The failure is concrete and common. Asked for a smaller bundle, you lazy-load three routes, the main
+chunk drops by 180KB, and you report a win. What you did not measure is that the deferred chunks are
+now fetched on navigation over a previously idle connection, so time-to-interactive on the second
+page went from 400ms to 1.9s. The number you optimised got better and the experience got worse. Had
+both been recorded first, the tradeoff would have been visible in the same breath as the change.
+
+A baseline needs three properties. It must be **taken under conditions you can reproduce** — a
+latency figure from your laptop on a warm cache is not a baseline, it is a mood. It must be **the
+number that matters to the person asking**, usually a percentile rather than a mean, because a mean
+hides exactly the tail people complain about. And it must be **recorded, not remembered**, because a
+number held in working memory drifts toward whatever makes the result look good.
+
+When a number genuinely cannot be obtained, say so and name the substitute. "I cannot measure
+production latency from here; I am using local timings on a throttled connection as a proxy, which
+will understate network cost" is honest and still useful. Silently proceeding without either is not.
+
+---
+
+## 3. Restate every task as a checkable condition
+
+Convert imperatives into observable outcomes before writing anything. The restatement is not
+ceremony — it is where you find out whether you understand the request.
+
+"Add validation" becomes: *these specific invalid inputs are rejected with these specific errors,
+proven by these tests.* Naming the inputs forces the questions that would otherwise surface in
+review — is an empty string invalid, is whitespace trimmed first, is the rejection client-side,
+server-side or both.
+
+"Refactor this" becomes: *the existing tests pass before and after, and the public surface is
+unchanged.* That is not a paraphrase, it is a genuinely good operational definition of refactoring,
+and it has teeth. If the tests do not pass afterwards, it was not a refactor. If the public surface
+changed, it was not a refactor either — it was a redesign wearing a refactor's clothes, and it needs
+to be discussed rather than merged.
+
+"Make it accessible" becomes named criteria with thresholds: *every interactive element reachable by
+keyboard in a sensible order, visible focus at 3:1 against its adjacent colour, text at 4.5:1, form
+fields with programmatically associated labels, no keyboard trap in the modal.* Six checkable
+statements instead of one aspiration.
+
+The mechanism is that **crisp success criteria are what make unsupervised iteration possible**. An
+agent with a checkable condition can loop — attempt, check, adjust, check again — until the
+condition holds, without asking anyone anything. An agent with a vague goal must return to a human
+after every step to ask whether this counts as done yet, which is expensive and, in practice, where
+most abandoned tasks die. The restatement is what buys you autonomy.
+
+And if you cannot state what would prove the task complete, **that inability is the finding**. "I
+cannot write a success condition for 'clean up the API layer' — success might mean fewer endpoints,
+consistent error shapes, or better types, and those are three different weeks" is a useful message.
+Guessing which one and building it is not.
+
+---
+
+## 4. Every plan step carries its verification
+
+Write the plan as `step → verification` pairs before execution begins, not as a list of intentions.
+A step whose check is "it should work" is not a step; it is a wish with a bullet point.
+
+A real plan looks like this:
+
+| Step | Verification |
+|---|---|
+| Add a `rate_limit` middleware at 10 req/min per key | `curl` the endpoint eleven times in a minute; the eleventh returns 429 with a `Retry-After` header |
+| Persist the counter in Redis rather than memory | Restart the process mid-window; the count survives, the eleventh request still fails |
+| Exempt the health check path | 200 health checks in a minute all return 200 |
+| Emit a metric on every rejection | The counter appears in `/metrics` and increments by exactly one per 429 |
+
+Note that none of these are automated tests and all of them are checks. **Manual verification is
+legitimate when it is specific enough to fail** — the eleventh-request check names the input, names
+the expected output, and would visibly not happen if the middleware were misconfigured. "Verify rate
+limiting works" is not specific enough to fail, because whoever performs it will find some sense in
+which it worked.
+
+The mechanism is that **verification written after the fact is written to pass**. Once the code
+exists, the check you invent is shaped by what the code does — you unconsciously pick the input that
+works, the assertion that holds, the path you happened to exercise while developing. Writing the
+check first shapes it by the requirement instead, and requires the code to come to it. This is the
+same reason test-first has value, generalised to steps that have no tests. A plan with verifications
+attached is also honest about its own size: a step taking one line to describe and eight to verify
+was probably three steps.
+
+---
+
+## 5. Look at the data before you design against it
+
+Inspect actual values before writing the code that consumes them. Real field names with real
+capitalisation. Real nulls, in the fields the schema said were required. Real encodings, including
+the ones that are not UTF-8 because a spreadsheet touched the file in 2019. Real cardinality — is
+this enum five values or five thousand. Real distribution, because the mean says nothing about the
+row that breaks the layout. Real edge rows, first and last and the odd ones between.
+
+The mechanism is that **a schema you imagined is a schema you will debug at runtime.** The common
+shape of this failure is code written to handle the example in the ticket, which breaks on the shape
+in production — the ticket showed one clean record, and production has the record where
+`user.profile` is `null` rather than an empty object, the one where the timestamp is a string in one
+API version and an integer in another, the one where a name field contains a newline. None of these
+are exotic. All are invisible until you look.
+
+The practice is short: print a sample of ten, not one. Count the nulls per column. Check the
+extremes — longest string, largest number, earliest and latest date, most and fewest child records.
+Look for values that should not exist and usually do: empty strings distinct from nulls, sentinel
+dates like 1970-01-01, negative quantities, duplicate keys in the column you assumed was unique.
+
+**This applies as much to design work as to data work.** A card designed around a seven-character
+title breaks on the ninety-character one, and product catalogues are full of ninety-character
+titles. Before designing the container, look at the real content at real lengths: the longest
+product name, the user with no avatar, the notification list with one item and the one with four
+hundred, the currency needing four digits before the decimal, the language that runs 40% longer than
+English. Designing against the friendly sample and meeting the real distribution in QA is the same
+failure as trusting the schema, with the same result — a rebuild after the work looked finished.
+
+---
+
+## 6. Ship in independently verifiable slices
+
+Build in this order: **naive and correct first, generalise second, swap in the production backend
+third, add configurability last.** Each slice should be deployable on its own and checkable on its
+own, which means each one ends with something that runs and something that proves it ran correctly.
+
+Concretely, for a feature importing records from a third-party API into a queue-backed pipeline:
+first, a synchronous function that fetches one record and writes it to the database, verified by
+reading that record back. Then the same function over a list, verified on ten. Then the queue,
+verified by enqueuing ten and confirming ten rows appear. Then retry and backoff, verified by forcing
+a failure. Then configuration for batch size and concurrency, verified at two settings. Five slices,
+five checks, a working system at every point.
+
+The mechanism is that **a large change that fails gives you no information about which part failed.**
+Debugging cost scales with the size of the slice, not the size of the bug — a one-character mistake
+inside a two-thousand-line change costs a search over two thousand lines; the same mistake in a
+fifty-line slice costs a glance. Naive-first compounds the benefit, because the naive version doubles
+as an oracle: when the optimised version disagrees with it, you have a differential test with a
+known-good side, the cheapest debugging position available.
+
+The ordering also protects against building the wrong thing well. The naive slice is the earliest
+point at which someone can look at real behaviour and say "that is not what I meant", at a fraction
+of the full cost. Generalisation and configurability assume the requirement is settled, which is why
+they come last. Resist the pull toward the interesting part first: starting with the production
+backend means the boring, load-bearing correctness question gets answered last, under time pressure,
+if at all.
+
+---
+
+## 7. Push back, and stop when confused
+
+If a simpler approach than the one requested exists, **name it before implementing the requested
+one**. Not instead of — before. "You asked for a caching layer here; a compound index on
+`(tenant_id, created_at)` may make this query fast enough with no invalidation surface to maintain.
+Want me to measure that first, or proceed with the cache?" That is thirty seconds of attention
+against a week of infrastructure they may not need. Requests are usually written by someone who
+already picked a solution, often the first one they thought of rather than the best — they may not
+have known about the index, and they are not offended to hear about it.
+
+If something does not make sense, state **precisely what does not make sense** and ask. Precision is
+what separates a useful stop from an unhelpful one. "The spec says the archive endpoint is
+idempotent, but it also says each call appends an audit row — those cannot both be true unless the
+audit row is exempt from the idempotency guarantee. Which is it?" identifies the exact contradiction
+and can be answered in one line. "I'm confused about the archive endpoint" cannot.
+
+**Continuing while confused is the expensive failure.** Work built on a misunderstanding does not
+need correcting, it needs discarding — the misunderstanding sits upstream of every decision made
+after it, so the structure that grew from it is shaped wrong throughout rather than wrong in one
+place. Two hours of confused work is rarely two hours from being right; it is usually two hours to
+be thrown away, plus the sunk-cost pressure that makes throwing it away harder.
+
+**Surface inconsistencies rather than silently reconciling them.** When two stated requirements
+conflict, the conflict is the finding. The temptation is to pick the reading that makes both
+approximately true and proceed, which feels accommodating and is the worst option available: the
+person never learns their requirements conflict, the reconciliation is invisible, and the resulting
+behaviour matches neither thing they asked for. The same applies when a requirement conflicts with
+the code — "the ticket says users can have multiple active sessions, but there is a unique constraint
+on `(user_id, active)` added six months ago" is exactly the observation that saves a rewrite.
+
+---
+
+## 8. Calibrate to the stakes
+
+This discipline biases toward caution, and caution has a cost. Every clarification is an interrupted
+person, every baseline a delay before work starts, every costed menu a paragraph someone has to read.
+Applied uniformly, these practices would turn a two-minute task into a twenty-minute negotiation —
+a different failure from confident motion in the wrong direction, but a failure all the same.
+
+A typo fix does not need a costed menu of interpretations. A copy change to a single string does not
+need a baseline. A one-line null check with an obvious cause does not need a plan with verification
+pairs. Fix it, say what you did, move on.
+
+Apply the full ceremony when at least one of these holds:
+
+| Condition | Why it raises the bar |
+|---|---|
+| The change is **irreversible** | Migrations, deletions, sent emails, published packages, anything writing to production data — the recovery path is expensive or nonexistent, so verification has to come before rather than after |
+| It touches **shared state** | Schemas, shared config, common utilities, public API surface — the blast radius extends past the thing you were asked about, to callers you have not read |
+| The **cost of being wrong is high** | Payments, authentication, permissions, anything user-visible at scale, anything with a legal or safety dimension |
+| The request is **genuinely ambiguous** | More than one reasonable reading with materially different cost or outcome — not merely underspecified in ways any reading would resolve identically |
+| You have **already been wrong here** | A retry after a failed attempt earns more rigour than the first attempt did, because the evidence now says your model of this area is unreliable |
+
+Otherwise, use judgment, and let the judgment be visible in the output rather than the process. A
+short task can carry a one-line version: state the assumption you made instead of asking about it,
+name the number instead of building a harness for it, mention the thing you noticed instead of filing
+it formally. This is a set of mechanisms for avoiding specific failures, not a checklist to be
+executed at full weight regardless of context.
+
+**A skill that turns a one-line fix into a clarification interview has failed differently, but it
+has still failed.**
+
+---
+
+## Pass conditions
+
+- For every request admitting more than one reasonable reading, were the readings enumerated with an effort estimate and a consequence each, a recommendation stated, and execution paused — rather than one reading silently selected?
+- Was the current value of every metric proposed for change reported first, with measurement conditions named — and where a baseline could not be obtained, was the substitute proxy and its bias stated explicitly?
+- Was every task restated as an observable condition — specific inputs, specific outputs, named thresholds — before any code was written, and where no such condition could be written, was that inability reported as the finding rather than resolved by guessing?
+- Does every plan step have a paired verification naming an input and an expected result, written before execution rather than after the code existed, with no step checked by "it should work"?
+- Were real values inspected before code was written against them — sample printed, nulls counted, extremes and cardinality checked — and for design work, was the component checked against real content at real lengths, including the longest and the empty case?
+- Was the work delivered as slices that are each independently deployable and independently checkable, in the order naive, generalised, production backend, configurable?
+- Where a simpler approach than the one requested exists, was it named before the requested one was implemented?
+- Was every conflict between stated requirements, or between a requirement and the existing code, surfaced rather than silently reconciled?
+- Was the level of ceremony matched to reversibility, blast radius, cost of error and genuine ambiguity — with low-stakes changes handled directly rather than escalated into clarification?
