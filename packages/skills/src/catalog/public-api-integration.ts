@@ -340,12 +340,12 @@ provider's own docs, and none of them by the row.
       evidence: {
         rationale:
           'Build-time inlining means a prefixed variable is a literal string in the shipped bundle, readable by anyone who opens the network tab — the prefix is an explicit declaration that the value is public, not a naming convention. A committed key stays in git history after deletion, so the only real remediation is rotation, and that is a task nobody schedules until the quota is already exhausted by someone else.',
-          confidence: 'established',
+        confidence: 'established',
       },
       examples: {
         language: 'ts',
-        bad: "const key = process.env.NEXT_PUBLIC_WEATHER_KEY  // shipped to the browser",
-        good: "// app/api/weather/route.ts — server only\nconst key = process.env.WEATHER_API_KEY",
+        bad: 'const key = process.env.NEXT_PUBLIC_WEATHER_KEY  // shipped to the browser',
+        good: '// app/api/weather/route.ts — server only\nconst key = process.env.WEATHER_API_KEY',
       },
       verifiedBy: 'security-review',
     },
@@ -362,7 +362,7 @@ provider's own docs, and none of them by the row.
       examples: {
         language: 'ts',
         bad: "<span>{data.main.temp}</span>  // OpenWeather's shape, in a component",
-        good: "const weather = await getWeather(city)   // Weather { tempC, condition, observedAt }\n<span>{weather.tempC}</span>",
+        good: 'const weather = await getWeather(city)   // Weather { tempC, condition, observedAt }\n<span>{weather.tempC}</span>',
       },
       verifiedBy: 'resilience-review',
     },
