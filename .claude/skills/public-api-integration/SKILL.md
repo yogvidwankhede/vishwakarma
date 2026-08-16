@@ -213,13 +213,13 @@ const r = await fetch(url, { signal: AbortSignal.timeout(5000) })
 
 *Why:* The catalog has no licence or rate-limit column, so a row cannot tell you whether commercial use is permitted, whether attribution is required, or how many requests a day are free. Discovering any of those after launch means either a takedown or an unplanned migration, and both cost more than the ten minutes the check takes.
 
-### SHOULD — Carry three candidates through the probe rather than committing to the first matching row.
-
-*Why:* Probes fail often enough on a directory with no liveness checking that a single candidate turns a routine step into a restart of the whole selection. The marginal cost of two extra probes is seconds; the cost of re-deriving the shortlist later is the whole task.
-
 ### SHOULD NOT — Treat the Auth, HTTPS, or CORS columns as authoritative once a live response contradicts them.
 
 *Why:* The table is community-maintained with no automated re-verification, so its columns record what was true when a contributor last looked. Where the observed response and the row disagree, the response is the current fact and the row is history.
+
+### SHOULD — Carry three candidates through the probe rather than committing to the first matching row.
+
+*Why:* Probes fail often enough on a directory with no liveness checking that a single candidate turns a routine step into a restart of the whole selection. The marginal cost of two extra probes is seconds; the cost of re-deriving the shortlist later is the whole task.
 
 ## Before reporting completion
 
@@ -233,7 +233,7 @@ notice while building.
 - Did the probe show an Access-Control-Allow-Origin header, and does that agree with the CORS column? If they disagree, which one did the architecture follow?
 - Is the HTTPS column `Yes` for the chosen API, and does the endpoint refuse plaintext?
 - Were three candidates shortlisted, and is it written down which two were rejected and why?
-- Have the provider's terms, quota, and attribution requirements been read, and is what they say recorded somewhere the next person will find it?
+- Have the provider’s terms, quota, and attribution requirements been read, and is what they say recorded somewhere the next person will find it?
 
 ### Confirm no credential reaches the client and the call path is deliberate. (blocking)
 
