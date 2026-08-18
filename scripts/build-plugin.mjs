@@ -33,7 +33,7 @@
  * CI guarantees the plugin can never drift from the catalog.
  */
 
-import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { chmod, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -60,9 +60,13 @@ function planFiles(catalog, claudeCodeAdapter) {
     // The adapter emits .claude/skills/… paths — exactly where Claude Code looks for
     // skills both when installing via /plugin and when installing from a GitHub URL.
     desired.set(file.path, file.contents)
+    if (file.executable) executables.add(file.path)
   }
   return desired
 }
+
+/** Paths the adapter marked executable, so the write step can chmod them. */
+const executables = new Set()
 
 async function currentFiles() {
   const found = new Map()
@@ -113,6 +117,8 @@ async function main() {
     const full = join(ROOT, path)
     await mkdir(dirname(full), { recursive: true })
     await writeFile(full, contents, 'utf8')
+    // 0o755, not 0o777: the agent must run it, nobody else needs to write it.
+    if (executables.has(path)) await chmod(full, 0o755)
   }
 
   process.stdout.write(

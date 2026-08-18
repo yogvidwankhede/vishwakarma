@@ -101,7 +101,31 @@ tried.
 
 ---
 
-## 3. Secrets
+## 3. Running it
+
+The three steps above ship as scripts, so this is a pipeline rather than a reading
+exercise. Run them; do not reimplement them.
+
+```bash
+python3 scripts/find_api.py --need "weather forecast" --no-auth
+python3 scripts/probe_api.py --url '<endpoint from the shortlist>' --name weather \
+  --out probe-report.json
+python3 scripts/scaffold_client.py --report probe-report.json --out ./src \
+  --env-key WEATHER_API_KEY
+```
+
+`find_api.py` returns candidates, never a decision — it filters HTTPS hard, ranks
+relevance from term hits alone, and refuses to let a key-free API look like a match
+just because it is convenient. `probe_api.py` answers what the table cannot and
+writes the report. `scaffold_client.py` builds the client from the payload that was
+actually observed, so the types describe the response rather than the documentation.
+
+Scaffolding refuses to overwrite without `--force`, and `--dry-run` prints the plan
+first. When the probe verdict is `server-side-only` the generated client points at a
+route handler rather than the third party, because that is the only arrangement in
+which the credential stays off the client.
+
+## 4. Secrets
 
 An `apiKey` entry means a secret exists from that moment. It goes in `.env.local`,
 is read **only** in server code, and `.env*` is in `.gitignore` before the key is pasted
@@ -226,6 +250,18 @@ const r = await fetch(url, { signal: AbortSignal.timeout(5000) })
 Run these checks against your own output. Answer each question explicitly rather than
 assuming the answer, because the point of the exercise is to notice what you did not
 notice while building.
+
+### Probe the endpoint and fail if it is unreachable, non-2xx, or not JSON. Writes the report the scaffolder needs. (blocking)
+
+```bash
+python3 scripts/probe_api.py --url '<endpoint>' --name '<name>' --out probe-report.json
+```
+
+### Show every file the scaffolder would write, before it writes any of them.
+
+```bash
+python3 scripts/scaffold_client.py --report probe-report.json --out ./src --dry-run
+```
 
 ### Confirm the API was chosen from evidence rather than from the first matching row. (blocking)
 

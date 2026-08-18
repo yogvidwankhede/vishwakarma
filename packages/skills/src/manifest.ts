@@ -192,10 +192,17 @@ export interface SkillContent {
     answers: string
   }>
 
-  /** Runnable assets the skill ships: scripts, templates, schemas. */
+  /**
+   * Runnable assets the skill ships: scripts, templates, schemas.
+   *
+   * `content` is inline for the same reason reference bodies are: an adapter is a
+   * pure function of the manifest, so anything it must emit has to travel inside
+   * the manifest rather than being read from disk at emit time.
+   */
   assets?: Array<{
     path: string
     description: string
+    content?: string
     executable?: boolean
   }>
 }

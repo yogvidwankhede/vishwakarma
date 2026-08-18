@@ -29,6 +29,11 @@ export interface EmittedFile {
    * written their own content that must survive.
    */
   strategy: 'replace' | 'merge-section' | 'create-if-absent'
+  /**
+   * Whether the writer should set the executable bit. A script emitted without it
+   * is documentation: the agent is told to run something it cannot run.
+   */
+  executable?: boolean
 }
 
 export interface AdapterContext {
@@ -127,6 +132,19 @@ export const claudeCodeAdapter: Adapter = {
           path: `${root}/${skill.id}/references/${reference.id}.md`,
           strategy: 'replace',
           contents: `${reference.content.trim()}\n`,
+        })
+      }
+
+      // Assets are the skills that *do* something rather than say something. A
+      // skill whose body says "run scripts/probe.py" and ships no such file has
+      // instructed the agent to run nothing.
+      for (const asset of skill.content.assets ?? []) {
+        if (!asset.content) continue
+        files.push({
+          path: `${root}/${skill.id}/${asset.path}`,
+          strategy: 'replace',
+          contents: asset.content,
+          executable: asset.executable,
         })
       }
     }

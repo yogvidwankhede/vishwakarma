@@ -175,7 +175,31 @@ tried.
 
 ---
 
-## 3. Secrets
+## 3. Running it
+
+The three steps above ship as scripts, so this is a pipeline rather than a reading
+exercise. Run them; do not reimplement them.
+
+\`\`\`bash
+python3 scripts/find_api.py --need "weather forecast" --no-auth
+python3 scripts/probe_api.py --url '<endpoint from the shortlist>' --name weather \\
+  --out probe-report.json
+python3 scripts/scaffold_client.py --report probe-report.json --out ./src \\
+  --env-key WEATHER_API_KEY
+\`\`\`
+
+\`find_api.py\` returns candidates, never a decision — it filters HTTPS hard, ranks
+relevance from term hits alone, and refuses to let a key-free API look like a match
+just because it is convenient. \`probe_api.py\` answers what the table cannot and
+writes the report. \`scaffold_client.py\` builds the client from the payload that was
+actually observed, so the types describe the response rather than the documentation.
+
+Scaffolding refuses to overwrite without \`--force\`, and \`--dry-run\` prints the plan
+first. When the probe verdict is \`server-side-only\` the generated client points at a
+route handler rather than the third party, because that is the only arrangement in
+which the credential stays off the client.
+
+## 4. Secrets
 
 An \`apiKey\` entry means a secret exists from that moment. It goes in \`.env.local\`,
 is read **only** in server code, and \`.env*\` is in \`.gitignore\` before the key is pasted
@@ -277,6 +301,827 @@ def shortlist(rows, category=None, query=None, allow_key=True):
 Rate limits, quotas, uptime, licence and terms of use, response schema, pagination style,
 whether the service still exists. Every one of those is answered by the probe or by the
 provider's own docs, and none of them by the row.
+`,
+      },
+    ],
+    assets: [
+      {
+        path: 'scripts/find_api.py',
+        description:
+          'Fetch and parse the public-apis catalog, filter by need, auth, HTTPS and CORS, and rank the survivors. Emits a shortlist as JSON; never an integration decision.',
+        executable: true,
+        content: `#!/usr/bin/env python3
+"""
+Shortlist candidate APIs from the public-apis catalog.
+
+Fetches the catalog README, parses its Markdown tables, filters by your
+constraints, and ranks what survives. The output is a shortlist, never an
+integration decision: the catalog has no rate-limit, uptime, licence, or
+last-verified column, so a row can be years stale while still reading \`Yes\`.
+Every candidate must go through probe_api.py before any code is written.
+
+Usage
+  find_api.py --need "weather forecast"
+  find_api.py --need "currency rates" --no-auth --cors --json
+  find_api.py --category Weather --limit 20
+
+Exit codes
+  0  candidates found
+  1  nothing matched the constraints
+  2  catalog could not be fetched or parsed
+
+Machine-readable JSON on stdout; human status on stderr.
+
+Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+SPDX-License-Identifier: Apache-2.0
+"""
+
+import argparse
+import json
+import re
+import sys
+import urllib.error
+import urllib.request
+
+CATALOG_URL = "https://raw.githubusercontent.com/public-apis/public-apis/master/README.md"
+
+# A catalog row is: | [Name](url) | Description | Auth | HTTPS | CORS |
+ROW = re.compile(
+    r"^\\|\\s*\\[(?P<name>[^\\]]+)\\]\\((?P<url>[^)]+)\\)\\s*\\|"
+    r"\\s*(?P<desc>[^|]*)\\|"
+    r"\\s*(?P<auth>[^|]*)\\|"
+    r"\\s*(?P<https>[^|]*)\\|"
+    r"\\s*(?P<cors>[^|]*)\\|"
+)
+HEADING = re.compile(r"^###\\s+(?P<category>.+?)\\s*$")
+
+
+def fetch(url, timeout=20):
+    req = urllib.request.Request(url, headers={"User-Agent": "vishwakarma-find-api"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read().decode("utf-8", errors="replace")
+
+
+def parse(markdown):
+    """Walk the document so each row inherits the ### heading above it."""
+    entries, category = [], None
+    for line in markdown.splitlines():
+        h = HEADING.match(line)
+        if h:
+            category = h.group("category").strip()
+            continue
+        m = ROW.match(line)
+        if not m:
+            continue
+        auth = m.group("auth").strip().strip("\`")
+        entries.append({
+            "name": m.group("name").strip(),
+            "url": m.group("url").strip(),
+            "description": " ".join(m.group("desc").split()),
+            # The catalog writes "No" for none, else apiKey / OAuth / X-Mashape-Key.
+            "auth": "none" if auth.lower() in ("no", "") else auth,
+            "https": m.group("https").strip().lower() == "yes",
+            "cors": m.group("cors").strip().lower(),   # yes | no | unknown
+            "category": category or "Uncategorised",
+        })
+    return entries
+
+
+def score(entry, terms):
+    """
+    Rank by where the match landed. Name beats category beats description.
+
+    Relevance is computed from term hits alone. The convenience bonuses below are
+    a tiebreak among entries that already matched — folding them into the base
+    score would let an unrelated key-free API outrank nothing at all and survive
+    the \`> 0\` filter, which is how a search for one thing returns another.
+    """
+    name = entry["name"].lower()
+    desc = entry["description"].lower()
+    cat = entry["category"].lower()
+    relevance = 0
+    for t in terms:
+        if t in name:
+            relevance += 10
+        if t in cat:
+            relevance += 5
+        if t in desc:
+            relevance += 3
+
+    if relevance == 0:
+        return 0
+
+    if entry["auth"] == "none":
+        relevance += 2
+    if entry["cors"] == "yes":
+        relevance += 1
+    return relevance
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__.split("\\n")[1])
+    p.add_argument("--need", help="what the interface needs, in your own words")
+    p.add_argument("--category", help="restrict to one catalog category")
+    p.add_argument("--no-auth", action="store_true", help="only APIs needing no key")
+    p.add_argument("--cors", action="store_true", help="only APIs the catalog marks CORS yes")
+    p.add_argument("--limit", type=int, default=10)
+    p.add_argument("--json", action="store_true", help="suppress the human table on stderr")
+    args = p.parse_args()
+
+    if not args.need and not args.category:
+        p.error("give --need and/or --category")
+
+    try:
+        entries = parse(fetch(CATALOG_URL))
+    except (urllib.error.URLError, OSError, TimeoutError) as e:
+        print(json.dumps({"error": f"catalog fetch failed: {e}"}))
+        print(f"error: could not fetch the catalog: {e}", file=sys.stderr)
+        return 2
+
+    if not entries:
+        print(json.dumps({"error": "catalog parsed to zero entries"}))
+        print("error: parsed 0 entries - the catalog format has probably changed",
+              file=sys.stderr)
+        return 2
+
+    total = len(entries)
+    pool = entries
+
+    if args.category:
+        c = args.category.lower()
+        pool = [e for e in pool if c in e["category"].lower()]
+    # HTTPS is not a preference. An API that cannot do TLS is not a candidate.
+    pool = [e for e in pool if e["https"]]
+    if args.no_auth:
+        pool = [e for e in pool if e["auth"] == "none"]
+    if args.cors:
+        pool = [e for e in pool if e["cors"] == "yes"]
+
+    if args.need:
+        terms = [t for t in re.split(r"\\W+", args.need.lower()) if len(t) > 2]
+        scored = [(score(e, terms), e) for e in pool]
+        pool = [e for s, e in sorted(scored, key=lambda x: -x[0]) if s > 0]
+
+    shortlist = pool[: args.limit]
+    out = {
+        "catalog_entries": total,
+        "after_filters": len(pool),
+        "returned": len(shortlist),
+        "next_step": "probe_api.py --url <endpoint> before writing any code",
+        "candidates": shortlist,
+    }
+    print(json.dumps(out, indent=2))
+
+    if not args.json:
+        print(f"\\ncatalog: {total} entries -> {len(pool)} match -> showing {len(shortlist)}\\n",
+              file=sys.stderr)
+        for e in shortlist:
+            flags = []
+            if e["auth"] == "none":
+                flags.append("no-key")
+            else:
+                flags.append(e["auth"])
+            flags.append(f"cors:{e['cors']}")
+            print(f"  {e['name']:<28} [{', '.join(flags)}]  {e['category']}", file=sys.stderr)
+            print(f"    {e['description'][:96]}", file=sys.stderr)
+            print(f"    {e['url']}", file=sys.stderr)
+        print("\\nThe catalog has no rate-limit, uptime, or last-verified column.",
+              file=sys.stderr)
+        print("Probe before you integrate: probe_api.py --url <endpoint>", file=sys.stderr)
+
+    if not shortlist:
+        print("nothing matched - loosen the filters", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+`,
+      },
+      {
+        path: 'scripts/probe_api.py',
+        description:
+          'Call a candidate endpoint for real: status, latency spread, observed CORS header, rate-limit headers, and an inferred schema of the actual payload. Emits the probe report the scaffolder consumes.',
+        executable: true,
+        content: `#!/usr/bin/env python3
+"""
+Probe a candidate endpoint before any integration code is written.
+
+Answers the five questions the public-apis table cannot: does it still exist,
+what is the real response shape, how slow is it, what rate-limit headers come
+back, and does Access-Control-Allow-Origin actually appear. A CORS header that
+is absent here overrides a \`Yes\` in the catalog — the table drifts, the
+response does not.
+
+Emits a probe report that scaffold_client.py consumes, so the generated types
+come from the observed payload rather than from documentation.
+
+Usage
+  probe_api.py --url 'https://api.example.com/v1/thing?q=test'
+  probe_api.py --url '...' --header 'X-API-Key: abc' --name weather
+  probe_api.py --url '...' --runs 3 --out probe-report.json
+
+Exit codes
+  0  endpoint answered 2xx with a parseable JSON body
+  1  endpoint reachable but unusable (non-2xx, non-JSON, or empty)
+  2  endpoint unreachable
+
+Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+SPDX-License-Identifier: Apache-2.0
+"""
+
+import argparse
+import json
+import re
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+RATE_HEADERS = re.compile(r"^(x-)?rate-?limit|^retry-after|^x-ratelimit", re.I)
+
+
+def infer(value, depth=0):
+    """
+    Describe a JSON value as a type tree scaffold_client can render.
+
+    Arrays are described by their first element and a homogeneity flag, because a
+    generated type that claims T[] when the array is heterogeneous produces code
+    that type-checks and then fails at runtime on element two.
+    """
+    if depth > 6:
+        return {"type": "unknown", "note": "nesting deeper than 6 levels not inferred"}
+    if value is None:
+        return {"type": "null", "nullable": True}
+    if isinstance(value, bool):
+        return {"type": "boolean"}
+    if isinstance(value, int):
+        return {"type": "number", "format": "integer"}
+    if isinstance(value, float):
+        return {"type": "number"}
+    if isinstance(value, str):
+        fmt = None
+        if re.match(r"^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2})?", value):
+            fmt = "date-time"
+        elif re.match(r"^https?://", value):
+            fmt = "uri"
+        return {"type": "string", **({"format": fmt} if fmt else {}), "example": value[:60]}
+    if isinstance(value, list):
+        if not value:
+            return {"type": "array", "items": {"type": "unknown"}, "empty_in_sample": True}
+        kinds = {type(v).__name__ for v in value}
+        return {
+            "type": "array",
+            "items": infer(value[0], depth + 1),
+            "homogeneous": len(kinds) == 1,
+            "sample_length": len(value),
+        }
+    if isinstance(value, dict):
+        return {
+            "type": "object",
+            "properties": {k: infer(v, depth + 1) for k, v in list(value.items())[:40]},
+            "truncated": len(value) > 40,
+        }
+    return {"type": "unknown"}
+
+
+def call(url, headers, method, timeout):
+    req = urllib.request.Request(url, method=method)
+    req.add_header("User-Agent", "vishwakarma-probe")
+    req.add_header("Origin", "https://vishwakarma.probe.invalid")   # provoke a CORS header
+    for h in headers:
+        if ":" in h:
+            k, v = h.split(":", 1)
+            req.add_header(k.strip(), v.strip())
+    t0 = time.monotonic()
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            body = r.read()
+            return {
+                "status": r.status,
+                "elapsed_ms": round((time.monotonic() - t0) * 1000),
+                "headers": {k.lower(): v for k, v in r.headers.items()},
+                "body": body,
+            }
+    except urllib.error.HTTPError as e:
+        return {
+            "status": e.code,
+            "elapsed_ms": round((time.monotonic() - t0) * 1000),
+            "headers": {k.lower(): v for k, v in (e.headers or {}).items()},
+            "body": e.read(),
+        }
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__.split("\\n")[1])
+    p.add_argument("--url", required=True)
+    p.add_argument("--header", action="append", default=[], help="repeatable, 'K: V'")
+    p.add_argument("--method", default="GET")
+    p.add_argument("--timeout", type=float, default=10.0)
+    p.add_argument("--runs", type=int, default=2, help="repeat to see latency spread")
+    p.add_argument("--name", help="short identifier used by the scaffolder")
+    p.add_argument("--out", help="write the report here as well as stdout")
+    args = p.parse_args()
+
+    if not args.url.startswith("https://"):
+        print(json.dumps({"error": "refusing a non-HTTPS endpoint"}))
+        print("error: endpoint is not https - not a candidate", file=sys.stderr)
+        return 1
+
+    attempts = []
+    for _ in range(max(1, args.runs)):
+        try:
+            attempts.append(call(args.url, args.header, args.method, args.timeout))
+        except (urllib.error.URLError, OSError, TimeoutError) as e:
+            print(json.dumps({"error": f"unreachable: {e}", "url": args.url}))
+            print(f"error: unreachable - {e}", file=sys.stderr)
+            return 2
+
+    last = attempts[-1]
+    latencies = sorted(a["elapsed_ms"] for a in attempts)
+    hdrs = last["headers"]
+
+    parsed, parse_error = None, None
+    try:
+        parsed = json.loads(last["body"].decode("utf-8", errors="replace"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        parse_error = str(e)
+
+    acao = hdrs.get("access-control-allow-origin")
+    rate = {k: v for k, v in hdrs.items() if RATE_HEADERS.match(k)}
+    ok = 200 <= last["status"] < 300 and parsed is not None
+
+    name = args.name or re.sub(r"\\W+", "-", urllib.parse.urlparse(args.url).netloc).strip("-")
+
+    report = {
+        "name": name,
+        "url": args.url,
+        "method": args.method,
+        "ok": ok,
+        "status": last["status"],
+        "latency_ms": {"min": latencies[0], "max": latencies[-1], "runs": len(latencies)},
+        "content_type": hdrs.get("content-type", ""),
+        "bytes": len(last["body"]),
+        "cors": {
+            "allow_origin": acao,
+            # The catalog's CORS column is a claim. This is the observation.
+            "browser_callable": acao in ("*", "https://vishwakarma.probe.invalid"),
+        },
+        "rate_limit_headers": rate,
+        "auth_used": bool(args.header),
+        "schema": infer(parsed) if parsed is not None else None,
+        "parse_error": parse_error,
+        "verdict": (
+            "unusable" if not ok
+            else "client-callable" if acao in ("*", "https://vishwakarma.probe.invalid") and not args.header
+            else "server-side-only"
+        ),
+    }
+    print(json.dumps(report, indent=2))
+    if args.out:
+        with open(args.out, "w") as f:
+            json.dump(report, f, indent=2)
+
+    v = report["verdict"]
+    print(f"\\n{name}: HTTP {report['status']}  "
+          f"{latencies[0]}-{latencies[-1]}ms  {report['bytes']}B", file=sys.stderr)
+    print(f"  CORS allow-origin: {acao or 'absent'}  -> {v}", file=sys.stderr)
+    if rate:
+        print(f"  rate-limit headers: {', '.join(rate)}", file=sys.stderr)
+    else:
+        print("  rate-limit headers: none advertised - assume a low unpublished quota",
+              file=sys.stderr)
+    if v == "server-side-only":
+        print("  route this through a server handler; a browser call will be blocked "
+              "or would expose the key", file=sys.stderr)
+    if not ok:
+        print(f"  unusable: {parse_error or 'non-2xx status'}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+`,
+      },
+      {
+        path: 'scripts/scaffold_client.py',
+        description:
+          'Generate a typed TypeScript client, a React hook with loading/error/empty states, and — when the probe says server-side-only — a route handler that keeps the credential off the client.',
+        executable: true,
+        content: `#!/usr/bin/env python3
+"""
+Generate a typed TypeScript client and React hook from a probe report.
+
+The types come from the payload probe_api.py actually observed, not from the
+provider's documentation, because documentation drifts and the response does
+not. The generated client returns a domain type you own, so no provider-shaped
+field reaches a component and swapping providers later touches one file.
+
+When the probe says \`server-side-only\` the browser cannot call the endpoint —
+either CORS is absent or a key is involved — so a route handler is emitted and
+the client points at that instead of at the third party.
+
+Usage
+  scaffold_client.py --report probe-report.json --out ./src
+  scaffold_client.py --report probe-report.json --out ./src --dry-run
+  scaffold_client.py --report probe-report.json --out ./src --force
+
+Exit codes
+  0  files written (or, with --dry-run, would be written)
+  1  refused: a target exists and --force was not given
+  2  bad or unusable report
+
+Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors
+SPDX-License-Identifier: Apache-2.0
+"""
+
+import argparse
+import json
+import os
+import re
+import sys
+
+RESERVED = {"default", "function", "class", "interface", "return", "new", "delete"}
+
+
+def pascal(s):
+    parts = [p for p in re.split(r"[^A-Za-z0-9]+", s) if p]
+    return "".join(p[:1].upper() + p[1:] for p in parts) or "Resource"
+
+
+def camel(s):
+    p = pascal(s)
+    return p[:1].lower() + p[1:]
+
+
+def prop_key(k):
+    """Quote any key that is not a plain identifier, so the emitted TS parses."""
+    return k if re.match(r"^[A-Za-z_$][A-Za-z0-9_$]*$", k) and k not in RESERVED else f'"{k}"'
+
+
+def ts_type(node, name, interfaces, depth=0):
+    """
+    Render a schema node as a TS type, hoisting nested objects into named
+    interfaces so the result is readable rather than one deep inline literal.
+    """
+    t = node.get("type")
+    if t == "string":
+        return "string"
+    if t == "number":
+        return "number"
+    if t == "boolean":
+        return "boolean"
+    if t == "null":
+        return "null"
+    if t == "array":
+        items = node.get("items", {})
+        if items.get("type") == "unknown":
+            return "unknown[]"
+        inner = ts_type(items, name + "Item", interfaces, depth + 1)
+        # A heterogeneous sample means T[] would be a lie.
+        return f"{inner}[]" if node.get("homogeneous", True) else "unknown[]"
+    if t == "object":
+        iface = pascal(name)
+        lines = []
+        for k, v in node.get("properties", {}).items():
+            child = ts_type(v, f"{name}-{k}", interfaces, depth + 1)
+            optional = "?" if v.get("nullable") else ""
+            fmt = v.get("format")
+            if fmt == "date-time":
+                lines.append(f"  /** ISO 8601 in the observed payload. */")
+            elif fmt == "uri":
+                lines.append(f"  /** URL in the observed payload. */")
+            lines.append(f"  {prop_key(k)}{optional}: {child}")
+        if node.get("truncated"):
+            lines.append("  // Probe sampled the first 40 keys; more may exist.")
+        body = "\\n".join(lines) or "  [key: string]: unknown"
+        interfaces[iface] = f"export interface {iface} {{\\n{body}\\n}}"
+        return iface
+    return "unknown"
+
+
+CLIENT = '''// Generated by Vishwakarma scaffold_client.py from a live probe of:
+//   {url}
+// Probed {status} in {lat}ms, {bytes} bytes. Verdict: {verdict}.
+// Types describe the payload as observed, not as documented. Re-probe and
+// regenerate if the provider changes shape.
+
+{interfaces}
+{root_decl}
+
+export class {root}Error extends Error {{
+  constructor(
+    message: string,
+    readonly status?: number,
+    readonly retryable = false,
+  ) {{
+    super(message)
+    this.name = '{root}Error'
+  }}
+}}
+
+const ENDPOINT = {endpoint}
+const TIMEOUT_MS = 5_000
+const MAX_ATTEMPTS = 3
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+/**
+ * Retry only what retrying can fix. A 404 or a 401 will answer the same way
+ * every time, so repeating it just multiplies latency before the same failure.
+ */
+function retryable(status: number): boolean {{
+  return status === 429 || status >= 500
+}}
+
+export async function fetch{root}(init?: RequestInit): Promise<{root}> {{
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {{
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+
+    try {{
+      const response = await fetch(ENDPOINT, {{
+        ...init,
+        signal: controller.signal,
+        headers: {{ Accept: 'application/json', ...init?.headers }},
+      }})
+
+      if (!response.ok) {{
+        const canRetry = retryable(response.status)
+        if (canRetry && attempt < MAX_ATTEMPTS) {{
+          // Honour Retry-After when the server sends one; it knows better than we do.
+          const after = Number(response.headers.get('retry-after'))
+          const backoff = Number.isFinite(after) && after > 0
+            ? after * 1000
+            : 2 ** attempt * 100 + Math.random() * 100
+          await sleep(backoff)
+          continue
+        }}
+        throw new {root}Error(
+          \`{name} responded \${{response.status}}\`,
+          response.status,
+          canRetry,
+        )
+      }}
+
+      return (await response.json()) as {root}
+    }} catch (error) {{
+      lastError = error
+      if (error instanceof {root}Error) throw error
+      // An abort is a timeout here, and a timeout is worth one more try.
+      if (attempt < MAX_ATTEMPTS) {{
+        await sleep(2 ** attempt * 100 + Math.random() * 100)
+        continue
+      }}
+    }} finally {{
+      clearTimeout(timer)
+    }}
+  }}
+
+  throw new {root}Error(
+    \`{name} unreachable after \${{MAX_ATTEMPTS}} attempts: \${{String(lastError)}}\`,
+    undefined,
+    true,
+  )
+}}
+'''
+
+HOOK = '''// Generated by Vishwakarma scaffold_client.py.
+'use client'
+
+import {{ useCallback, useEffect, useRef, useState }} from 'react'
+import {{ fetch{root}, {root}Error, type {root} }} from '{import_path}'
+
+/**
+ * Every state a caller must render. \`isEmpty\` is separate from \`data === null\`
+ * because a successful response carrying nothing is a different screen from a
+ * request that has not resolved, and collapsing them produces a spinner that
+ * never stops.
+ */
+export interface Use{root}Result {{
+  data: {root} | null
+  error: {root}Error | null
+  isLoading: boolean
+  isEmpty: boolean
+  refetch: () => void
+}}
+
+function isEmptyPayload(value: {root} | null): boolean {{
+  if (value === null) return true
+  if (Array.isArray(value)) return value.length === 0
+  if (typeof value === 'object') return Object.keys(value).length === 0
+  return false
+}}
+
+export function use{root}(): Use{root}Result {{
+  const [data, setData] = useState<{root} | null>(null)
+  const [error, setError] = useState<{root}Error | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [nonce, setNonce] = useState(0)
+  // Guards against setting state after unmount, and against an earlier slow
+  // response overwriting a later fast one.
+  const current = useRef(0)
+
+  useEffect(() => {{
+    const run = ++current.current
+    setIsLoading(true)
+    setError(null)
+
+    fetch{root}()
+      .then((result) => {{
+        if (current.current !== run) return
+        setData(result)
+      }})
+      .catch((cause) => {{
+        if (current.current !== run) return
+        setError(
+          cause instanceof {root}Error
+            ? cause
+            : new {root}Error(String(cause)),
+        )
+      }})
+      .finally(() => {{
+        if (current.current !== run) return
+        setIsLoading(false)
+      }})
+
+    return () => {{
+      current.current++
+    }}
+  }}, [nonce])
+
+  const refetch = useCallback(() => setNonce((n) => n + 1), [])
+
+  return {{ data, error, isLoading, isEmpty: !isLoading && isEmptyPayload(data), refetch }}
+}}
+'''
+
+ROUTE = '''// Generated by Vishwakarma scaffold_client.py.
+// The probe found no usable Access-Control-Allow-Origin{key_clause}, so the
+// browser cannot call this endpoint directly. This handler keeps the call —
+// and any credential — on the server.
+
+import {{ NextResponse }} from 'next/server'
+
+const UPSTREAM = '{url}'
+
+export async function GET() {{
+  try {{
+    const response = await fetch(UPSTREAM, {{
+      headers: {{
+        Accept: 'application/json',{auth_header}
+      }},
+      // Cache briefly so a burst of readers costs the provider one call.
+      next: {{ revalidate: 60 }},
+    }})
+
+    if (!response.ok) {{
+      return NextResponse.json(
+        {{ error: '{name} upstream error' }},
+        {{ status: response.status === 429 ? 429 : 502 }},
+      )
+    }}
+
+    return NextResponse.json(await response.json())
+  }} catch {{
+    return NextResponse.json({{ error: '{name} unreachable' }}, {{ status: 504 }})
+  }}
+}}
+'''
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__.split("\\n")[1])
+    p.add_argument("--report", required=True)
+    p.add_argument("--out", default="./src", help="source root to write into")
+    p.add_argument("--env-key", help="env var name holding the API key")
+    p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--force", action="store_true", help="overwrite existing files")
+    args = p.parse_args()
+
+    try:
+        with open(args.report) as f:
+            r = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        print(json.dumps({"error": f"cannot read report: {e}"}))
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+
+    if not r.get("ok") or not r.get("schema"):
+        print(json.dumps({"error": "report is not ok - probe the endpoint successfully first"}))
+        print(f"error: probe verdict was '{r.get('verdict')}' - nothing to scaffold",
+              file=sys.stderr)
+        return 2
+
+    name = r["name"]
+    root = pascal(name)
+    server_only = r["verdict"] == "server-side-only"
+
+    interfaces = {}
+    root_src = ts_type(r["schema"], name, interfaces)
+
+    # ts_type names a root object interface after the skill, so emitting an alias
+    # as well would declare the same identifier twice. Alias only when the root is
+    # an array or a primitive, where there is no interface to collide with.
+    iface_block = "\\n\\n".join(interfaces.values())
+    if root_src == root:
+        root_decl = ""
+    else:
+        root_decl = (
+            "\\n/** What this module promises callers. "
+            "Rename fields here, not at call sites. */\\n"
+            f"export type {root} = {root_src}\\n"
+        )
+
+    route_path = f"/api/{re.sub(r'[^a-z0-9-]+', '-', name.lower()).strip('-')}"
+    endpoint = f"'{route_path}'" if server_only else f"'{r['url']}'"
+
+    client = CLIENT.format(
+        url=r["url"], status=r["status"], lat=r["latency_ms"]["max"],
+        bytes=r["bytes"], verdict=r["verdict"], interfaces=iface_block,
+        root=root, root_decl=root_decl, name=name, endpoint=endpoint,
+    )
+    hook = HOOK.format(root=root, import_path=f"@/lib/api/{name}")
+
+    planned = {
+        os.path.join(args.out, "lib", "api", f"{name}.ts"): client,
+        os.path.join(args.out, "hooks", f"use{root}.ts"): hook,
+    }
+
+    if server_only:
+        auth = ""
+        key_clause = ""
+        if args.env_key:
+            auth = f"\\n        Authorization: \`Bearer \${{process.env.{args.env_key}}}\`,"
+            key_clause = " and a key is required"
+        planned[os.path.join(args.out, "app", "api",
+                             route_path.split("/")[-1], "route.ts")] = ROUTE.format(
+            url=r["url"], name=name, auth_header=auth, key_clause=key_clause)
+
+    existing = [p for p in planned if os.path.exists(p)]
+    if existing and not args.force and not args.dry_run:
+        print(json.dumps({"error": "targets exist", "paths": existing}))
+        print("refusing to overwrite:", file=sys.stderr)
+        for e in existing:
+            print(f"  {e}", file=sys.stderr)
+        print("re-run with --force, or --dry-run to see the output first", file=sys.stderr)
+        return 1
+
+    written = []
+    for path, contents in planned.items():
+        if args.dry_run:
+            written.append(path)
+            continue
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write(contents)
+        written.append(path)
+
+    env_line = None
+    if args.env_key:
+        env_line = f"{args.env_key}="
+        env_path = os.path.join(os.path.dirname(args.out.rstrip("/")) or ".", ".env.example")
+        if not args.dry_run:
+            prior = ""
+            if os.path.exists(env_path):
+                with open(env_path) as f:
+                    prior = f.read()
+            if args.env_key not in prior:
+                with open(env_path, "a") as f:
+                    f.write(("" if prior.endswith("\\n") or not prior else "\\n") + env_line + "\\n")
+                written.append(env_path)
+
+    out = {
+        "name": name, "root_type": root, "verdict": r["verdict"],
+        "server_side_only": server_only, "dry_run": args.dry_run,
+        "written": written, "env_entry": env_line,
+        "interfaces": sorted(interfaces),
+    }
+    print(json.dumps(out, indent=2))
+
+    verb = "would write" if args.dry_run else "wrote"
+    print(f"\\n{verb} {len(written)} file(s) for '{name}' ({root}):", file=sys.stderr)
+    for w in written:
+        print(f"  {w}", file=sys.stderr)
+    if server_only:
+        print(f"\\n  Probe said server-side-only, so calls go through {route_path}",
+              file=sys.stderr)
+        if not args.env_key:
+            print("  No --env-key given: add the credential to the route handler yourself.",
+                  file=sys.stderr)
+    print(f"\\n  Import:  import {{ use{root} }} from '@/hooks/use{root}'", file=sys.stderr)
+    print("  Render loading, error, and empty before shipping - all three are in the hook.",
+          file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
 `,
       },
     ],
@@ -437,6 +1282,22 @@ provider's own docs, and none of them by the row.
   ],
 
   verification: [
+    {
+      id: 'probe-before-code',
+      kind: 'command',
+      description:
+        'Probe the endpoint and fail if it is unreachable, non-2xx, or not JSON. Writes the report the scaffolder needs.',
+      command:
+        "python3 scripts/probe_api.py --url '<endpoint>' --name '<name>' --out probe-report.json",
+      blocking: true,
+    },
+    {
+      id: 'scaffold-dry-run',
+      kind: 'command',
+      description: 'Show every file the scaffolder would write, before it writes any of them.',
+      command:
+        'python3 scripts/scaffold_client.py --report probe-report.json --out ./src --dry-run',
+    },
     {
       id: 'selection-review',
       kind: 'self-review',
