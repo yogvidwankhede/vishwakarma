@@ -46,6 +46,13 @@ async function main() {
   }
 
   const lines = [
+    // The barrel is regenerated wholesale, so anything not emitted here is destroyed. The
+    // licence header was previously left to `license:headers` to re-add, which meant running
+    // the documented generator produced a tree that failed `license:check` until someone
+    // noticed. Emit it as part of the file the generator owns.
+    '// Copyright 2026 Yogvid Wankhede and the Vishwakarma project authors',
+    '// SPDX-License-Identifier: Apache-2.0',
+    '',
     '/**',
     ' * The skill catalog.',
     ' *',

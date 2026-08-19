@@ -91,6 +91,13 @@ and the player is waiting for confirmation rather than for a response. And **a s
 no shared view** — each client holds its own slightly stale copy of the world, so any fact the
 interface does not state out loud is one each player answers privately and wrongly.
 
+**Scope.** This skill owns the *interface* layer of a networked session: local echo, presence,
+connection-quality display, join and rejoin legibility, and publishing to the platform. The
+*simulation* layer beneath it — server authority, client prediction and reconciliation, lag
+compensation, rollback, tick rate, cheat resistance — belongs to \`vishwakarma-studios\`. The
+dividing question is what the answer is about: what the player is shown while the network is
+slow is this skill; what the server believes and when is that one.
+
 ---
 
 ## 1. Synchronisation feedback (error if absent)
@@ -660,5 +667,11 @@ is theirs at exactly the moment the game got interesting.
     },
   ],
 
-  relatedSkills: ['3d-game-assets', 'colour-systems', 'motion-design', 'interface-states'],
+  relatedSkills: [
+    'vishwakarma-studios',
+    '3d-game-assets',
+    'colour-systems',
+    'motion-design',
+    'interface-states',
+  ],
 }

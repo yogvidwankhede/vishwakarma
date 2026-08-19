@@ -461,6 +461,21 @@ export function validateManifest(manifest: unknown): ValidationIssue[] {
       if (!reference.path && !reference.content) {
         add(`content.references[${index}]`, 'Reference needs either a path or inline content.')
       }
+
+      // The reference budget existed as a documented constant but was never checked, so an
+      // over-budget reference compiled clean and shipped silently. A reference is loaded as a
+      // unit — the agent cannot read half of one — so an oversized file defeats the progressive
+      // disclosure it was written for: the agent pays the whole cost to answer one question.
+      if (reference.content) {
+        const tokens = estimateTokens(reference.content)
+        if (tokens > TIER_BUDGETS.reference) {
+          add(
+            `content.references[${index}]`,
+            `Reference "${reference.id}" is roughly ${tokens} tokens, over the ${TIER_BUDGETS.reference}-token budget. Split it at a seam where a reader's question changes, so each file can be loaded alone.`,
+            'warning',
+          )
+        }
+      }
     }
   }
 

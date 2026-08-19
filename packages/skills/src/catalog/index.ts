@@ -43,6 +43,7 @@ export { surfaceAndDepth } from './surface-and-depth.js'
 export { themingSystems } from './theming-systems.js'
 export { typographicSystems } from './typographic-systems.js'
 export { uiGenerationWorkflow } from './ui-generation-workflow.js'
+export { vishwakarmaStudios } from './vishwakarma-studios.js'
 
 import { threeDGameAssets } from './3d-game-assets.js'
 import { accessibilityEvidence } from './accessibility-evidence.js'
@@ -77,6 +78,7 @@ import { surfaceAndDepth } from './surface-and-depth.js'
 import { themingSystems } from './theming-systems.js'
 import { typographicSystems } from './typographic-systems.js'
 import { uiGenerationWorkflow } from './ui-generation-workflow.js'
+import { vishwakarmaStudios } from './vishwakarma-studios.js'
 
 /** Every skill in the catalog, in stable order. */
 export const catalog: SkillManifest[] = [
@@ -113,6 +115,7 @@ export const catalog: SkillManifest[] = [
   themingSystems,
   typographicSystems,
   uiGenerationWorkflow,
+  vishwakarmaStudios,
 ]
 
 /** Look up a skill by its id. */

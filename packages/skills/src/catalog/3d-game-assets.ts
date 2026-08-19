@@ -94,6 +94,13 @@ commercial project, contact the service provider for written permission before s
 is a third-party service term and is separate from the Apache-2.0 licence on this skill; check it
 before a commercial release, not after.
 
+**Scope.** This skill owns the asset itself — generating it, verifying its orientation, keeping a
+set visually coherent, and wiring its clips through a Three.js mixer. The engine systems that
+*consume* assets — animation state machines and blend trees, the rendering pipeline and its frame
+cost, collision shapes and the physics solver, skinning and animation LOD — belong to
+\`vishwakarma-studios\`. If the question is about the file, it is this skill; if it is about the
+system playing the file, it is that one.
+
 An asset set passes the contract when all five sections below are satisfied. Orientation failures
 are errors; visual-language violations are warnings.
 
@@ -725,6 +732,7 @@ clarity. Reduced motion means gentler and fewer, not zero — the spawn still ha
   ],
 
   relatedSkills: [
+    'vishwakarma-studios',
     'multiplayer-game-publishing',
     'colour-systems',
     'motion-design',
