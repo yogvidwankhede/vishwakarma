@@ -58,3 +58,6 @@ tmp/
 
 # This repo is the toolkit, not a consumer of it — a profile of itself is noise.
 .vishwakarma/
+
+# Freebuff scratch state — machine-local, not project configuration.
+.freebuff/

@@ -4,15 +4,21 @@
   <img src="assets/banner.png" alt="Vishwakarma — Design intelligence for AI coding agents" width="100%" />
 </a>
 
+<a href="#-vishwakarma-studios">
+  <img src="assets/banner-studios.png" alt="Vishwakarma Studios — Game development intelligence for AI coding agents" width="100%" />
+</a>
+
 <h1></h1>
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-22c55e.svg?style=for-the-badge)](LICENSE)
 [![Packages](https://img.shields.io/badge/packages-18-3d5afe.svg?style=for-the-badge)](#-the-packages)
 [![Skills](https://img.shields.io/badge/skills-34-8b5cf6.svg?style=for-the-badge)](#-the-skill-catalog)
 [![Rules](https://img.shields.io/badge/rules-534-ec4899.svg?style=for-the-badge)](#-the-skill-catalog)
-[![Tests](https://img.shields.io/badge/tests-217%20passing-22c55e.svg?style=for-the-badge)](#)
+[![Tests](https://img.shields.io/badge/tests-224%20passing-22c55e.svg?style=for-the-badge)](#)
 
-**Teach any coding agent to build interfaces that look _designed_ — not _generated_ — and give it the tools to prove it.**
+**Teach any coding agent to build interfaces that look _designed_ — not _generated_ — and games that _feel_ right — and give it the tools to prove both.**
+
+Two skills, one catalog. **Vishwakarma** owns interfaces — web, Android, Apple. **[Vishwakarma Studios](#-vishwakarma-studios)** owns games — the engine, the loop, the physics, the feel, the netcode.
 
 Works with **Claude Code · Cursor · Windsurf · Cline · Roo Code · Codex · Gemini CLI · Copilot · Continue · Zed · Aider** — and any MCP client.
 
@@ -170,7 +176,33 @@ check_contrast(foreground: "#8a8a8a", background: "#ffffff")
 
 Two of those skills change how the rest behave. **Engineering Discipline** is always on: it governs how any task is approached — resolving ambiguity out loud, measuring before changing, restating work as something checkable, keeping diffs scoped. And the three **platform** skills are resolved *before* any value is chosen, because roughly half the constants in the catalog are mutually exclusive between platforms: 44pt is right on Apple and wrong on Android, 48dp is right on Android and not the Apple minimum, and a 46pt compromise is native to neither.
 
-**Vishwakarma Studios** is the one skill that is not about interfaces. Games are real-time simulations with a deadline, and almost every wrong answer in them traces to a violated frame budget, a broken determinism contract, or a physically honest system that feels wrong because honesty was never the goal. It carries 68 of the catalog's references — engines, the fixed timestep, physics, game feel, netcode, game AI, production and shipping — and hands app UI back to the rest of the catalog.
+<a id="-vishwakarma-studios"></a>
+
+### 🕹️ Vishwakarma Studios
+
+<img src="assets/banner-studios.png" alt="Vishwakarma Studios" width="100%" />
+
+The one skill that is not about interfaces. Games are real-time simulations with a deadline, and almost every wrong answer in them traces to a violated frame budget, a broken determinism contract, or a physically honest system that feels wrong because honesty was never the goal.
+
+It carries **68 of the catalog's 136 references** across 20 domains — Unity, Unreal, Godot and custom engines; the fixed timestep; ECS versus OOP; physics and collision; animation; rendering; audio; game feel; input; game UI; netcode; game AI; design loops; performance; production; accessibility; shipping and live ops. Each sits under a 6,000-token budget and loads only when its question is the question you have.
+
+Three claims do the load-bearing work:
+
+- **Feel outranks physical accuracy.** Coyote time, input buffering and asymmetric gravity are deliberate lies, and they are correct. Nobody compares a jump against Newton — they compare it against their own intent, formed 80–120 ms before their finger moved. The common failure is an engineer "fixing" a feel technique into honesty and making the game worse in a diff that reads like a bug fix.
+- **Determinism is a contract, not a preference.** Free at the start, a rewrite later. Whether you need it is decided by the design — replays, rollback, lockstep — not by taste.
+- **An unmeasured bottleneck is not a bottleneck.** Cost is split across two processors, several threads and a driver nobody on the team wrote, which makes intuition unusually unreliable.
+
+It costs **39 tokens idle and 2,947 when it activates**, and hands app UI — launchers, settings screens, store pages — back to the rest of the catalog.
+
+**Install it on its own:**
+
+```bash
+vishwakarma add vishwakarma-studios --target claude-code
+```
+
+Name the target: with no `--target` the CLI installs for whatever it detects in the current directory, which in a fresh one is the `universal` `AGENTS.md` summary rather than the skill and its 68 references. Studios declares no dependencies, so that selection is genuinely one skill. The paste-the-URL and plugin routes above install the whole catalog of 34, Studios included.
+
+Full documentation: **[yogvidwankhede.github.io/vishwakarma/studios](https://yogvidwankhede.github.io/vishwakarma/studios)**
 
 | | | |
 |---|---|---|

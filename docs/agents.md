@@ -138,11 +138,11 @@ CONVENTIONS.md                         (Aider)
 These are single-file targets: the whole file is loaded on every request. That constraint
 drives what we emit.
 
-Including full bodies for fifteen skills would produce a fifty-thousand-token preamble that
-makes the agent worse rather than better. So the file contains an index of what is
-available, the full body of any skill marked always-on, and the *rules only* from everything
-else — strongest first, since attention degrades over a long context and prohibitions carry
-the highest consequence.
+Including full bodies for thirty-four skills would produce a preamble of several hundred
+thousand tokens, which makes the agent worse rather than better. So the file contains an
+index of what is available, the full body of any skill marked always-on, and the *rules
+only* from everything else — strongest first, since attention degrades over a long context
+and prohibitions carry the highest consequence.
 
 All of these are written into a delimited section so your own instructions survive.
 
@@ -232,6 +232,12 @@ value per token, because one covers judgment and the other covers process.
 **By what is going wrong.** If output looks generic, install `design-judgment`. If it breaks
 on mobile, `responsive-architecture`. If animations feel cheap, `motion-design`. If it fails
 audits, `accessible-components`.
+
+**If the artefact is a game.** None of the above applies to a simulation. Install
+[`vishwakarma-studios`](studios.md) instead, and add the interface skills only for the parts
+that are interface — the launcher, the settings screen, the store page. Studios ships 68
+references, so it is worth noting that on the single-file targets only its rules survive;
+Claude Code and MCP are the two targets that carry the reference tier intact.
 
 ## Adding a new agent
 

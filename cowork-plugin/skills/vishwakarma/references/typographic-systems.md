@@ -1,0 +1,404 @@
+# Typographic Systems
+
+Typography in an interface is not styling text. It is defining a small closed system — a
+handful of sizes, a handful of weights, and relationships that derive everything else — and
+then refusing to step outside it. Nearly every typographic failure in shipped UI has the
+same cause: values chosen locally, component by component, with no scale to belong to.
+
+---
+
+## 1. One family, several weights
+
+Most interfaces should use one typeface family and get their variety from weight. Two
+families means two sets of vertical metrics, two x-heights that will not agree at the same
+`font-size`, two loading paths that can shift independently, and a pairing judgement that
+has to hold at every size in the product. A single family at 400 / 500 / 600 / 700 already
+gives four levels of emphasis that harmonise by construction.
+
+Add a second family only for a genuine categorical distinction: a monospace for code and
+log output, or a display face used at one size and nowhere else. If you do pair, the
+contrast must be unmistakable — a geometric sans against a high-contrast serif reads as a
+decision; two humanist sans faces read as an accident.
+
+For interface text prefer a large x-height, open apertures, and unambiguous `Il1` / `O0`
+shapes: UI text lives at 12–16px, where stroke modulation is invisible and glyph
+disambiguation is everything.
+
+---
+
+## 2. A scale, and only the scale
+
+Generate sizes from a base and a ratio (`base x ratio^n`), round to whole pixels, and
+freeze the result as tokens. The ratio should differ by context, and this is the step most
+often got wrong.
+
+**Product UI: 1.125 to 1.2.** The usable range is narrow — roughly 12px to 32px — and
+hierarchy is carried mainly by weight, colour, and space. A small ratio yields enough
+distinct steps inside that range without producing a 40px subheading in a settings panel.
+
+**Editorial: 1.25 to 1.5.** The range runs from 16px to 72px and hierarchy is carried by
+size itself, so steps must be large enough to read as different ranks at a glance.
+
+Apply an editorial ratio to product UI and dense screens explode; apply a UI ratio to an
+article and the headline is indistinguishable from the body. Six or seven steps is enough
+for either. If you need an eighth, you probably need a weight instead.
+
+---
+
+## 3. Leading and tracking are functions of size
+
+Both scale inversely with size, for different reasons, and both are constant sources of
+error because a single global value looks acceptable at exactly one size.
+
+**Leading.** Line spacing exists so the return sweep finds the next line. The gap needed
+grows with measure and shrinks, proportionally, as type gets larger — a 1.5 multiplier at
+48px produces a 24px gap that splits the headline into unrelated strips. Use roughly:
+
+| Size | line-height | tracking |
+| --- | --- | --- |
+| 12px | 1.45 | +0.01em |
+| 14px | 1.45 | +0.005em |
+| 16px (body) | 1.5–1.6 | 0 |
+| 20px | 1.4 | -0.005em |
+| 24px | 1.3 | -0.01em |
+| 32px | 1.2 | -0.015em |
+| 48px | 1.1 | -0.02em |
+| 64px+ | 1.0–1.05 | -0.03em |
+
+**Tracking.** Sidebearings are fitted by the type designer for reading sizes. Scaling is
+linear but perceived spacing is not, so the same fitting looks loose when enlarged and
+cramped when reduced. Zero tracking everywhere is the surest sign of untypeset type.
+
+All-caps and small-caps runs need **+0.06em to +0.1em** on top of the size-derived value.
+Capitals were spaced for use inside lowercase text, and a run of them collides otherwise.
+
+---
+
+## 4. Optical sizing and variable fonts
+
+A variable font with an `opsz` axis carries different outlines for different sizes:
+sturdier hairlines and looser spacing when small, finer hairlines and tighter spacing when
+large. `font-optical-sizing: auto` is the default and ties `opsz` to the computed
+`font-size` — leave it alone rather than pinning `opsz` through
+`font-variation-settings`, which silently resets every axis it does not mention.
+
+Payload: a Latin-subset variable font with one weight axis typically lands at 25–45KB
+WOFF2, against 15–25KB per static weight, so the break-even is around three weights. Below
+that, ship statics; above it, ship the variable font with unused axes dropped.
+
+---
+
+## 5. Measure
+
+Constrain any container holding sentences. The readable band is **45–75 characters**: aim
+for 60–70 in UI prose and 45–55 in sidebars and columns. Beyond it the return sweep becomes
+unreliable and readers re-read lines without noticing.
+
+Set it with `max-inline-size: 65ch`, but know what `ch` means: the advance width of the
+digit zero, which in most sans faces exceeds the average lowercase glyph. A 65ch container
+therefore renders roughly 72–78 real characters. Set the value, then count a line.
+
+---
+
+## 6. Vertical rhythm without a baseline grid
+
+Strict baseline grids almost never survive real UI. Every line box carries half-leading
+split above and below the text, and inputs, avatars, icons, and mixed-size runs each bring
+their own metrics, so pinning everything to a 24px baseline needs per-component
+compensating margins that break the moment a component's content changes size.
+
+What works instead: quantise spacing to a 4px grid, compute leading so each text block is a
+whole number of pixels tall, and use `text-box-trim: trim-both` with
+`text-box-edge: cap alphabetic` (Chrome 133+, Safari 18.2+) to remove half-leading so the
+gap you specify is the gap you see. Where unsupported, subtract the half-leading with a
+negative margin rather than eyeballing it.
+
+---
+
+## 7. Numerals
+
+Use `font-variant-numeric: tabular-nums` anywhere digits align vertically or change in
+place: tables, price columns, dashboards, timers, counters. Proportional figures have
+per-glyph widths, so a counter ticking 1 to 8 reflows and a price column fails to align on
+the decimal.
+
+Keep proportional figures in prose and headlines. Tabular figures pad narrow digits, and a
+headline containing "11" set tabular looks broken.
+
+---
+
+## 8. Wrapping, rag, and orphans
+
+`text-wrap: balance` equalises line lengths across a short block. Browsers cap how many
+lines they will balance (Chrome stops at around six) because the algorithm is superlinear,
+so it is for headings, card titles, and buttons — never body copy. Firefox 121+,
+Safari 17.5+, Chrome fully from 130.
+
+`text-wrap: pretty` is the paragraph tool: it gives up a little evenness across the block
+to avoid a single-word last line and other bad breaks. Chrome since 117, Safari since 26,
+not yet Firefox. It degrades to normal wrapping, so apply it freely to prose.
+
+`hyphens: auto` requires a `lang` attribute on the document or element — without it no
+dictionary is selected and nothing hyphenates. Pair it with `hyphenate-limit-chars: 6 3 3`
+to stop two-letter fragments. Justifying without hyphenation is always wrong: flush edges
+with no break opportunities open rivers of whitespace down the column.
+
+---
+
+## 9. Hierarchy: which lever to pull
+
+Space separates, weight emphasises, size ranks, colour labels. Below about 20px a 2px size
+difference is imperceptible while 400 to 600 is unmistakable, so dense UI should carry
+emphasis in weight and reserve size for genuine rank changes. Colour is the weakest lever:
+on a screen where six things are coloured, colour has stopped ranking anything.
+
+---
+
+## 10. Failures to check
+
+Same `line-height` on headlines and body. Zero tracking everywhere. Eleven font sizes where
+five would do. Prose running the full width of a 1440px viewport. Faux bold, where the
+browser synthesises a missing weight by smearing outlines — set `font-synthesis: none` so
+this fails loudly. Centred paragraphs, which give every line a different starting point.
+All-caps with no added tracking. Letter-spacing on lowercase body text. UI text below 12px.
+
+Font loading is a subsystem of its own: see the font-loading reference for `font-display`,
+preloading, subsetting, and the metric overrides that eliminate swap-induced layout shift.
+
+## Rules
+
+### MUST NOT — Do not request a weight or style the loaded font does not contain; declare font-synthesis: none so missing weights fail visibly.
+
+*Why:* When an unavailable weight is requested the browser synthesises it by outlining or double-drawing the glyphs, which thickens strokes unevenly, destroys the fitted sidebearings, and changes advance widths. The result looks like a rendering fault and, because it silently succeeds, it survives review.
+
+Incorrect:
+
+```css
+@font-face { font-family: Brand; src: url(brand-regular.woff2); }
+.title { font-family: Brand; font-weight: 700; }
+```
+
+Correct:
+
+```css
+@font-face { font-family: Brand; src: url(brand-semibold.woff2); font-weight: 600; }
+.title { font-family: Brand; font-weight: 600; font-synthesis: none; }
+```
+
+### MUST — Reduce line-height as font-size increases: roughly 1.5 at 16px, 1.3 at 24px, 1.2 at 32px, and 1.0–1.1 at 48px and above.
+
+*Why:* Line spacing exists so the eye can find the start of the next line, and the gap needed for that is roughly proportional to measure rather than to glyph size. A multiplier tuned for body text produces an absolute gap at display sizes large enough that the headline stops reading as one object.
+
+Incorrect:
+
+```css
+h1 { font-size: 3rem; line-height: 1.5; }
+```
+
+Correct:
+
+```css
+h1 { font-size: 3rem; line-height: 1.1; }
+```
+
+### MUST — Add 0.06em to 0.1em of letter-spacing to any all-caps or small-caps run.
+
+*Why:* Capital glyphs are spaced on the assumption that they are followed by lowercase letters, whose shorter, rounder forms supply part of the visual gap. A run of capitals therefore has no compensating whitespace and the letters visibly collide.
+
+Incorrect:
+
+```css
+.overline { text-transform: uppercase; font-size: 0.75rem; }
+```
+
+Correct:
+
+```css
+.overline { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em; }
+```
+
+### MUST — Constrain any container of running prose to roughly 45–75 characters per line, typically max-inline-size: 65ch.
+
+*Why:* The return sweep from the end of one line to the start of the next relies on peripheral targeting that degrades with line length. Past about 75 characters readers lose the line and re-read, which measurably reduces both speed and comprehension.
+
+*Exceptions:*
+- Single-line labels, table cells, and code blocks, which are scanned rather than read continuously.
+
+### MUST — Apply font-variant-numeric: tabular-nums to digits that align in columns or update in place.
+
+*Why:* Proportional figures have per-glyph advance widths, so a column of numbers does not align on the decimal and a counter changing from 1 to 8 changes width, forcing the surrounding content to reflow on every tick.
+
+Incorrect:
+
+```css
+.price-column { text-align: right; }
+```
+
+Correct:
+
+```css
+.price-column { text-align: right; font-variant-numeric: tabular-nums; }
+```
+
+### MUST — Give every @font-face an explicit font-display, and pair every webfont with a metric-overridden fallback using size-adjust, ascent-override, and descent-override.
+
+*Why:* Layout shift on font swap is caused by the fallback and the webfont having different average advance widths and different vertical metrics, which changes line counts and line-box heights. Overriding the fallback metrics to match makes the swap dimensionally neutral; changing swap timing only moves the shift.
+
+*Source:* [CSS Fonts Module Level 5, font metrics override descriptors](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/size-adjust)
+
+*Exceptions:*
+- font-display: optional with a preloaded font, which avoids the swap entirely for that navigation.
+
+### MUST — Set a lang attribute whenever hyphens: auto is used, and never justify text without hyphenation enabled.
+
+*Why:* Automatic hyphenation selects a language dictionary from the element language; with no lang declared no dictionary is chosen and the property has no effect. Justification distributes slack into word spaces, so without break opportunities the slack accumulates into rivers of whitespace down the column.
+
+Incorrect:
+
+```css
+.column { text-align: justify; }
+```
+
+Correct:
+
+```css
+.column { text-align: justify; hyphens: auto; hyphenate-limit-chars: 6 3 3; }
+```
+
+### SHOULD NOT — Do not use tabular figures in running prose or headlines.
+
+*Why:* Tabular figures pad narrow digits to a common width, which leaves visible gaps around characters like 1 when they sit inside words rather than in a column.
+
+### SHOULD NOT — Do not preload more than about two font files, and always include crossorigin on the preload link.
+
+*Why:* Preloads enter the highest priority band and compete directly with the stylesheet and the largest contentful image. Font fetches use anonymous CORS mode, so a preload without crossorigin does not match the later request and the file is downloaded twice.
+
+### SHOULD NOT — Do not centre paragraphs of more than two lines.
+
+*Why:* A centred block has a ragged left edge, so every line starts at a different horizontal position and the return sweep has no fixed target to land on. The cost grows with each additional line.
+
+*Exceptions:*
+- Single-line display text, pull quotes, and short empty-state messages.
+
+### SHOULD — Use one typeface family for interface text and express variety through weight, adding a second family only for a categorical distinction such as code.
+
+*Why:* Two families bring two sets of vertical metrics and two x-heights, so the same font-size renders at visibly different apparent sizes and line boxes stop agreeing. Weight variation inside one family produces contrast that is guaranteed to harmonise because it was drawn to.
+
+*Exceptions:*
+- A brand identity that specifies a display face, used at one size and nowhere else.
+- Monospace for code, identifiers, or log output, where the categorical distinction is real.
+
+### SHOULD — Generate type sizes from a modular scale, using a ratio of 1.125–1.2 for product UI and 1.25–1.5 for editorial layouts.
+
+*Why:* Product UI operates in a narrow 12–32px range and carries hierarchy through weight and space, so it needs many small steps; editorial spans 16–72px and carries hierarchy through size itself, so it needs few large ones. Using the wrong ratio either explodes dense screens or collapses headline hierarchy.
+
+Incorrect:
+
+```css
+/* 1.414 ratio applied to a settings panel */
+--text-title-3: 2.5rem; /* card titles now larger than the page title should be */
+```
+
+Correct:
+
+```css
+/* 1.2 ratio, rounded to whole pixels */
+--text-title-3: 1.25rem;
+--text-title-2: 1.5rem;
+--text-title-1: 2rem;
+```
+
+### SHOULD — Apply negative letter-spacing at display sizes (about -0.02em at 48px) and slightly positive letter-spacing below 14px, rather than leaving tracking at zero at every size.
+
+*Why:* Sidebearings are fitted by the type designer for reading sizes. Scaling those outlines is linear but perception of the counters and gaps between them is not, so the same fitting appears loose when enlarged and cramped when reduced.
+
+*Exceptions:*
+- Optical-size-aware variable fonts with font-optical-sizing: auto already adjust spacing, so the corrections needed are smaller.
+
+### SHOULD — Ship WOFF2 only, subset to the scripts actually served, and split by unicode-range.
+
+*Why:* unicode-range lets the browser skip downloading a subset entirely when no character on the page falls inside it, so a Latin-only page never pays for Cyrillic or Greek coverage. WOFF2 is supported by every browser still in support, making additional formats pure dead weight.
+
+### SHOULD — Apply text-wrap: balance only to blocks of at most a few lines such as headings and card titles, and use text-wrap: pretty for paragraphs.
+
+*Why:* Balancing re-solves line breaking for the whole block and is superlinear, so browsers cap the number of lines they will balance — Chrome stops at around six — meaning a long paragraph silently gets no balancing at all. pretty is designed for the paragraph case and targets last-line orphans instead.
+
+Incorrect:
+
+```css
+p { text-wrap: balance; }
+```
+
+Correct:
+
+```css
+h1, h2, h3, .card-title { text-wrap: balance; }
+p { text-wrap: pretty; }
+```
+
+### SHOULD — Below 20px, express emphasis by changing weight rather than by changing size.
+
+*Why:* At small sizes a 1–2px size difference falls below the threshold of reliable perception, while a step from 400 to 600 changes stroke density enough to be unmistakable — and it does so without altering line boxes, so the layout grid stays intact.
+
+### SHOULD — Quantise spacing to a 4px grid with whole-pixel line-heights rather than forcing every element onto a strict baseline grid.
+
+*Why:* Half-leading is split above and below each line box, and inputs, avatars, icons, and mixed-size runs each carry their own metrics, so baseline alignment requires per-component compensating offsets that break whenever a component changes size. Whole-pixel leading on a 4px grid achieves consistent rhythm without that coupling.
+
+*Exceptions:*
+- Long-form editorial layouts with a single text size, where a baseline grid is both achievable and worthwhile.
+
+### MAY — Prefer a variable font when three or more weights are used, and static instances when fewer are.
+
+*Why:* A Latin-subset single-axis variable font is typically 25–45KB while a static instance is 15–25KB, so the variable file pays for itself only once roughly three instances would otherwise be downloaded.
+
+## Before reporting completion
+
+Run these checks against your own output. Answer each question explicitly rather than
+assuming the answer, because the point of the exercise is to notice what you did not
+notice while building.
+
+### Confirm the type scale is a closed system rather than a list of ad hoc values. (blocking)
+
+- List every distinct font-size in the output. Does each one correspond to a named token?
+- Is any pair of sizes closer than the scale ratio, for example 15px next to 16px?
+- How many distinct sizes appear on a single screen? More than six means levels should be collapsed into weight changes.
+- Are any two roles distinguished only by size below 20px, where the difference will not be perceptible?
+
+### Confirm leading and tracking vary with size. (blocking)
+
+- Does any heading above 32px use a line-height greater than 1.25?
+- Does every size in the scale have a tracking value, or is letter-spacing left at zero throughout?
+- Does every all-caps run carry at least 0.06em of extra tracking?
+- Is every line-height a whole number of pixels at the default root size?
+
+### Confirm line lengths stay inside the readable band.
+
+- Does every container holding sentences have a max-inline-size?
+- At the widest supported viewport, count the characters on one full line of body copy. Is it between 45 and 75?
+
+### Confirm numerals are set for their context.
+
+- Does every numeric table column, price list, timer, and counter use tabular-nums?
+- Does any headline or paragraph use tabular-nums where proportional figures belong?
+
+### Confirm webfonts load without shifting layout or synthesising weights. (blocking)
+
+- Does every @font-face declare font-display explicitly?
+- Is there a metric-overridden fallback face using size-adjust, ascent-override, and descent-override, and does the fallback stack reference it?
+- Is every font-weight used in CSS backed by a declared face, so nothing is faux-bolded?
+- Does every preload link include crossorigin, and are there at most two of them?
+- With the webfont blocked, does a long paragraph render at the same height as with it loaded?
+
+### Fail if any stylesheet declares an @font-face without a font-display descriptor nearby.
+
+```bash
+rg -n --multiline --multiline-dotall "@font-face\s*\{(?:[^}]*?)\}" -g "*.css" -g "*.scss" -o | rg -v "font-display" | rg -q "@font-face" && exit 1 || exit 0
+```
+
+## Further reference
+
+These are not loaded by default. Read one only when its question is the question you
+currently have.
+
+- `references/font-loading-cls.md` — How do I load webfonts so that text is visible early and the swap from fallback to webfont causes no layout shift?
+- `references/worked-type-scale.md` — What does a finished, token-level type scale for an application interface actually look like, with every size, weight, leading, and tracking value filled in?

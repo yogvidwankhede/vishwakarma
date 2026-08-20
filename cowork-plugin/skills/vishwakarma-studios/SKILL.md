@@ -1,0 +1,249 @@
+---
+name: vishwakarma-studios
+description: "Game development intelligence — designing, building, reviewing, debugging, and shipping games. Use for Unity, Unreal, Godot, Bevy, love2d, raylib, custom engines; fixed timestep, game loop, ECS, physics, collision, animation state machines, blend trees, root motion, IK; shaders, PBR, lighting, post-processing; game feel — coyote time, input buffering, hitstop, screenshake, camera, juice; core loop, progression, economy, difficulty curve, level design, playtesting; netcode — client prediction, server reconciliation, lag compensation, rollback, authority, cheat resistance; game AI — A*, navmesh, flow fields, behaviour trees, GOAP, utility AI, steering; draw calls, batching, LODs, culling, GC spikes, asset streaming; Perforce, Git LFS, platform certification, game accessibility, telemetry, live ops. Also \"does this feel good\", \"why is my game janky\", \"which engine should I use\". Not for websites, web apps, dashboards, or non-game mobile apps — that is the vishwakarma skill."
+---
+
+# Vishwakarma Studios
+
+Games are real-time simulations with a deadline. Almost every wrong answer in game
+development traces to one of three things: a violated budget, a broken determinism
+contract, or a physically honest system that feels wrong because honesty was never the
+goal. Every rule here states the mechanism that makes it true, so it can be overridden
+correctly when that mechanism does not apply.
+
+## Scope, and the three sibling skills
+
+This skill owns the simulation: the loop, the physics, the feel, the netcode beneath the
+interface, the engine, and the production around them.
+
+- `vishwakarma` owns app UI. A launcher, a settings screen, a store page, or a companion
+  web app is app UI even when it ships with a game.
+- `multiplayer-game-publishing` owns the *interface* layer of multiplayer — local echo,
+  presence, connection-quality display, session legibility. This skill owns the
+  *simulation* layer beneath it: authority, prediction, reconciliation, rollback, lag
+  compensation, cheat resistance. If the question is what the player is shown while the
+  network is slow, that skill; if it is what the server believes and when, this one.
+- `3d-game-assets` owns generated GLB assets and their integration. This skill owns the
+  animation, rendering, and physics systems that consume them.
+
+## Working discipline
+
+**Name the platform and the frame budget before optimising anything.** "Make it faster"
+is unanswerable without a target. 16.67 ms at 60 Hz on PC is a different problem from
+8.33 ms at 120 Hz in VR or 33.3 ms on a handheld with a thermal ceiling.
+
+**Profile before naming a bottleneck.** A guess about performance is a guess even when it
+is educated, and acting on it spends the change budget on the wrong system. Capture on
+target hardware, attribute to CPU or GPU, change one thing, re-measure. Editor profiling
+distorts; say so when it is all that is available.
+
+**Prefer the smallest change that makes it feel right.** Feel problems are usually a
+constant, not an architecture. Before proposing a rewrite, establish that no timing value,
+curve, or threshold produces the desired result.
+
+**When asked whether something feels good, diagnose — do not praise.** The answer names a
+technique or a number: "the jump is floaty because fall gravity equals rise gravity;
+multiply fall by 2.0", not "this feels pretty good". If it genuinely feels right, say
+which specific choice is carrying it.
+
+**Flag reimplementation.** When the request describes something the engine already ships —
+an object pool, a state machine, a navmesh query, a tween library, a save system — say so
+before writing it, and name the built-in. Reimplementation is the most common silent cost
+in game projects.
+
+**Separate defect from taste.** "Input buffering is absent, so a jump pressed one frame
+early is dropped" is a defect. "The jump arc is floatier than the genre norm" is a taste
+call. Presenting a preference as a bug removes the person's ability to disagree with it.
+
+## Context gate — resolve before answering
+
+Four axes change the correct answer. A recommendation given without them is guesswork
+dressed as expertise.
+
+| Axis | Why it decides the answer |
+|---|---|
+| **Engine** | Idioms, footguns, and what is already provided differ per engine. The same feature is correct in one and redundant in another. |
+| **Platform + frame budget** | Sets the ms ceiling, the memory budget, the draw-call budget, and whether thermal throttling governs. |
+| **Scale** | Solo, small team, or studio. Changes source control, build pipeline, certification, and whether an answer is affordable at all. |
+| **Genre** | Determines tick rate, netcode model, AI approach, and which feel techniques apply. A fighting game and an RTS disagree on almost everything. |
+
+Ask when unresolved. A 30 Hz console roguelike and a 120 Hz PC shooter share almost no
+correct answers about timing, netcode, or input, and averaging them fits neither.
+
+## Workflow
+
+**Frame.** Restate the request as a checkable outcome. Name the four gate axes. For a feel
+problem, get the current values before proposing new ones — "the jump feels floaty" needs
+the existing gravity, jump height, and time-to-apex first.
+
+**Gate.** Resolve engine, platform and budget, scale, genre. Check whether the engine
+already provides this. Check whether the change is affordable at this scale — a Perforce
+migration is correct at eighty people and absurd at two.
+
+**Build.** Apply the rules below and the relevant reference. Prefer engine-native
+mechanisms unless the mechanism is the problem. Change one variable at a time when tuning
+feel, because two simultaneous changes cannot be attributed.
+
+**Feel-check.** For anything the player touches: is there input buffering, is there grace
+on the failure edge, does the impact hit visual, audio, haptic, and time-domain channels
+together, and does the camera support the action rather than fight it.
+
+**Verify.** Report what was measured and what was not. An unmeasured system is not a
+passing system.
+
+## Stop conditions
+
+Report and stop rather than proceeding when the platform or frame budget is unknown and
+optimisation was requested; when a bottleneck is being claimed without a capture; when the
+engine already provides the thing being built; when a determinism contract would be broken
+and replays, rollback, or lockstep exist; when a taste call is being presented as a fix; or
+when scope exceeds the stated scale — a live-ops telemetry pipeline proposed to a solo
+developer is not advice, it is a way of not shipping.
+
+Hand back rather than perform: platform certification submission, store page publication,
+live server configuration changes, and anything that spends money or is externally visible.
+
+## Rules
+
+### MUST NOT — Do not name a bottleneck or begin an optimisation without a capture from target hardware.
+
+*Why:* Cost in games is split across CPU and GPU, several threads, and a driver the team did not write, which makes intuition unusually unreliable. Acting on a guess spends the change budget on the wrong system and leaves the real cost in place, so the delay of measuring is cheaper than the cost of being wrong. Editor and development builds distort timings and must be labelled as such when they are all that is available.
+
+### MUST NOT — Do not correct a feel technique into physical accuracy — coyote time, input buffering, asymmetric gravity and forgiving hitboxes are deliberate and correct.
+
+*Why:* Human motor intent precedes perception: the decision to jump leaves the cortex 80–120 ms before the finger moves, so a player who commits at the edge issues that command while the character is still several frames short of it. A simulation that demands frame-perfect agreement is testing a faculty the player does not have, and reports as unresponsive. These techniques correct that mismatch, and each looks like a bug in the diff.
+
+*Exceptions:*
+- A simulation product, training tool, or physics sandbox where fidelity is the deliverable rather than the experience.
+- A window tuned so wide that a playtester notices it — grace stops being invisible and the player learns to distrust the ground.
+
+### MUST — Advance simulation state on a fixed timestep and interpolate the render between steps.
+
+*Why:* A variable-dt simulation is not reproducible, tunnels through colliders when the frame rate drops because a body moves further in one step than a collider is thick, and changes behaviour with hardware. Netcode, replays and physics stability all depend on the step being constant, so this decision constrains every system downstream of it.
+
+*Exceptions:*
+- Purely visual systems with no gameplay consequence — particles, cosmetic animation, UI motion — may run on variable frame time.
+- A turn-based game with no continuous simulation has no timestep to fix.
+
+### MUST — Measure input latency across the whole chain from device poll to photons, not across the code you wrote.
+
+*Why:* The player perceives the total pipeline — polling interval, simulation step, render frame, present queue, display scan-out. A handler that resolves in 0.2 ms sitting inside a 90 ms chain still reads as unresponsive, so a measurement scoped to gameplay code reliably reports success on a game that feels broken. Under roughly 50 ms reads as responsive; past 100 ms is perceptible in action games.
+
+### MUST — State the frame budget in milliseconds for a named platform, and report P99 and frame-time variance rather than average frame rate.
+
+*Why:* An average hides the frames that players actually notice: a stable 45 fps is experienced as smoother than a 60 fps average punctuated by 200 ms spikes, because perception tracks the worst recent frame rather than the mean. The budget also has to include present, driver overhead and systems nobody on the team wrote, so a per-system sum that ignores them will fit on paper and miss on hardware.
+
+### MUST — Decide whether the design requires determinism before writing simulation code, and if it does, seed every RNG stream, keep wall-clock out of the simulation, and control float behaviour.
+
+*Why:* Determinism is nearly free at the start and a rewrite afterwards, because retrofitting it touches every system that read the clock, called an unseeded random, or relied on iteration order. Whether it is needed is fixed by the design — replays, rollback netcode, lockstep — rather than by preference, so leaving the question unasked lets the answer be chosen by accident.
+
+*Exceptions:*
+- Single-player games with no replay, no rollback and no lockstep requirement carry no determinism contract.
+
+### MUST — Ship full input remapping, a toggle alternative to every hold, subtitles with speaker identification, no information carried by colour alone, and motion and photosensitivity options.
+
+*Why:* Each of these is cheap when designed in and expensive afterwards, because the retrofit touches every system that assumed otherwise — a hold that cannot be toggled is usually a hold read directly by gameplay code rather than through an action layer. Colour-only encoding additionally fails for roughly 8% of male players, which is a larger share of the audience than most platform targets teams optimise for.
+
+### MUST — Label every feel judgement as either a defect or a taste call, and say which.
+
+*Why:* A preference presented as a bug removes the person's ability to disagree with it, and a defect presented as a preference gets deferred. The two need different responses — one is fixed, the other is decided — so collapsing them costs either the person's authorship or the game's correctness.
+
+### SHOULD — Name the engine's built-in before writing a replacement for an object pool, state machine, navmesh query, tween, input map, or save system.
+
+*Why:* Reimplementation is the most common silent cost in game projects: it is invisible in review because the code is correct, and it is paid later in bugs the engine had already fixed and in features the built-in would have carried for free. Naming the built-in lets the person choose knowingly rather than discovering the overlap in month eighteen.
+
+*Exceptions:*
+- The built-in is the thing being worked around — its allocation behaviour, its determinism, or its platform support is the actual defect.
+
+## Before reporting completion
+
+Run these checks against your own output. Answer each question explicitly rather than
+assuming the answer, because the point of the exercise is to notice what you did not
+notice while building.
+
+### Run before reporting any game work complete. An unmeasured system is not a passing system. (blocking)
+
+- Was frame time captured on target hardware rather than in the editor, and are P99 and variance reported rather than an average?
+- Is the platform named, and the millisecond budget it was measured against stated?
+- Does everything affecting simulation state advance on a fixed timestep, with render interpolation present?
+- Was it tested at a frame rate other than the development one? Most timing bugs are invisible at exactly 60.
+- Is input latency measured or estimated across the whole chain rather than the handler alone?
+- Is every feel constant a named, tunable value rather than a literal buried in a method?
+- If networked, was it tested with injected latency and packet loss on at least two instances? A LAN test proves nothing about a 120 ms connection.
+- Was the accessibility floor checked against the accessibility references rather than assumed?
+- Does the build run on the lowest target device, not only the development machine?
+- Is each feel judgement labelled as a defect or a taste call?
+
+## Further reference
+
+These are not loaded by default. Read one only when its question is the question you
+currently have.
+
+- `references/engine-unity-runtime-architecture.md` — You are deciding how gameplay code ticks, whether to adopt Burst/Jobs/ECS, or chasing per-frame CPU cost and GC hitches in a Unity project.
+- `references/engine-unity-content-and-presentation.md` — You are choosing how assets get loaded and patched, structuring ScriptableObject and prefab authoring for a team, or picking a render pipeline, physics settings or input stack.
+- `references/engine-unity-builds-and-team-operations.md` — You are setting up builds, stripping, profiling workflow, CI, version-control and assembly layout for a Unity project, upgrading its engine version, or judging whether Unity is the right engine at all.
+- `references/engine-unreal-gameplay-and-code.md` — You are writing or reviewing Unreal gameplay code and need to decide where state lives on the network, what belongs in C++ versus Blueprint, when an actor may tick, and how UObject references must be declared so garbage collection is safe.
+- `references/engine-unreal-runtime-systems.md` — You are budgeting or debugging what Unreal costs at runtime — multiplayer replication bandwidth and CPU, Nanite/Lumen/VSM frame time, shader permutation and cook blowup, World Partition streaming, or Chaos physics behaviour.
+- `references/engine-unreal-production-and-fit.md` — You are setting up or fixing the production infrastructure around an Unreal project — builds, cook, DDC, Perforce, profiling, console certification — or deciding whether Unreal is the right engine for the project at all.
+- `references/engine-godot-foundations.md` — You are choosing Godot or setting up a new Godot project and need to decide how to structure nodes and signals, which language to write in, which engine major version and renderer to target.
+- `references/engine-godot-systems-and-shipping.md` — You have a Godot project running and need to get physics, data authoring, version control, profiling, or an export to a shipping platform right.
+- `references/engine-godot-patterns-and-fit.md` — You are writing or reviewing everyday Godot gameplay, UI, save, threading, or project-convention code, or deciding whether Godot is the wrong engine for a particular project.
+- `references/engine-custom-build-or-buy-decision.md` — You are deciding whether to write your own engine or licence a commercial one, and need the cost ratios, the failure modes, and the middle-path options before committing.
+- `references/engine-custom-framework-survey.md` — You have decided against a commercial engine and are choosing between Bevy, love2d, raylib, and MonoGame, or want to know what each framework's design is worth stealing.
+- `references/engine-custom-what-you-must-build.md` — You are building on a custom or framework-based stack and need to know which systems you must now write yourself — pipeline, editor, renderer, memory, tooling, ports — and to what standard.
+- `references/game-loop-fixed-timestep-core.md` — Load when writing or fixing the main loop itself — the simulation's speed or physics behaviour depends on frame rate, the game hangs or slow-motions after a stall, motion stutters despite a high fps counter, or a per-frame budget needs to be set.
+- `references/game-loop-tick-rate-and-determinism.md` — Load when picking or changing the simulation tick rate, deciding which systems run per-frame versus per-tick, representing cooldowns and timers, implementing pause/slow-motion/hitstop, or making a replay, lockstep or rollback build reproduce bit-for-bit.
+- `references/game-loop-networking-pacing-and-diagnosis.md` — Load when reconciling a server clock with the local simulation, chasing stutter or bad frame pacing rather than low fps, moving frame work onto worker threads, mapping the loop onto a specific engine's callbacks, or triaging a timing bug report.
+- `references/architecture-ecs-decision.md` — Someone is deciding whether to adopt ECS, stay with plain objects, or go hybrid, and needs the cache-latency mechanism, the entity-count break-even, and the cheaper data-oriented moves that come first.
+- `references/architecture-ecs-data-and-systems.md` — Someone is building or reviewing data-oriented code and must decide component granularity, archetype versus sparse-set storage, how to avoid per-frame structural changes, how systems are ordered, parallelised and communicate, and what the layout costs in memory.
+- `references/architecture-ecs-production.md` — An ECS is already in the project or about to be picked, and the open questions are which framework or engine to use, how saves, networking, build times, incremental adoption and debugging tooling will actually work.
+- `references/physics-step-broadphase-and-queries.md` — You are looking at where physics time goes, or at objects passing through geometry, triggers misfiring, or raycasts and layer filtering that are costing more than they should.
+- `references/physics-character-controllers-and-scale.md` — You are building or fixing how a character moves — slopes, steps, ledges, moving platforms, jump feel — or deciding the world unit, gravity and mass conventions the project will be authored in.
+- `references/physics-solver-materials-and-specialised-bodies.md` — You have joints that stretch or jitter, materials that do not behave like the surface they name, or a ragdoll, vehicle or 2D setup that the general rigid body solver is handling badly.
+- `references/physics-networking-determinism-and-budgets.md` — You are replicating physics across a network, need reproducible or deterministic simulation, are diagnosing a physics bug, or are sizing the physics budget for a target device.
+- `references/animation-graphs-and-blending.md` — Load this when deciding how an animation state machine should be structured, why a transition fires late or cannot be cancelled, or why feet slide and characters moon-walk during locomotion blending, acceleration, and root-motion decisions.
+- `references/animation-timing-ik-and-layers.md` — Load this when a transition feels laggy or reads as a cut, an animation-triggered gameplay effect misfires or double-fires, IK is placing feet or hands wrong, an additive or masked layer looks broken, or animation memory needs compressing.
+- `references/animation-scale-networking-and-debugging.md` — Load this when clips must play on differently proportioned skeletons, character density or skinning cost threatens the frame budget, hair/ragdoll/motion matching misbehaves, remote players animate wrongly online, or an animation symptom needs triaging against production budgets.
+- `references/rendering-frame-budget-and-cost-model.md` — You need to know where a frame's milliseconds actually go — which pass, which thread, which renderer architecture, and what makes a shader, a draw call or a transparent layer expensive.
+- `references/rendering-materials-lighting-and-shadows.md` — Your image looks flat, plastic, wrongly lit or wrongly shadowed, or you are choosing between baked, mixed and realtime lighting before the content pipeline is committed.
+- `references/rendering-post-assets-and-profiling.md` — You are past the shading decisions and now need to fit the frame — trimming the post chain, LODs, texture memory or internal resolution, or attributing a measured spike and checking the result against a platform budget.
+- `references/audio-mix-loudness-and-space.md` — You are laying out or repairing the bus tree, setting ducking and snapshot behaviour, hitting a LUFS or dynamic-range target, or deciding how sources are panned, attenuated, occluded and reverberated in the world.
+- `references/audio-voices-music-and-feel.md` — Sounds are dropping out, masking each other or repeating audibly, the music needs to follow game state without arriving late or out of time, or an action feels weak or unresponsive and you need to fix its impact design or its input-to-sound latency.
+- `references/audio-middleware-integration-and-delivery.md` — You are choosing between Wwise, FMOD and engine-native audio, wiring gameplay code to events and parameters, budgeting audio memory, streaming and CPU, adding captions and accessibility hooks, or diagnosing why a sound is missing or the mix drifts between scenes.
+- `references/game-feel-input-grace-and-movement.md` — You are tuning how a character responds to input — jumps that feel floaty or unresponsive, missed ledge jumps, dropped presses, slippery or sluggish ground movement — and need coyote time, buffer windows, jump arc maths and acceleration constants.
+- `references/game-feel-impact-camera-and-feedback.md` — You are making hits land or a camera behave — impacts that read as weightless or spongy, screenshake that rattles or nauseates, a camera that whips or lags, UI motion that feels arbitrary, actions that feel unresponsive or overly committed.
+- `references/game-feel-forgiveness-weight-and-diagnosis.md` — You are adding rumble or VFX, making the game fairer than its collision volumes are, making a character read as heavy or light, or you have a vague complaint like "it feels bad" and need to map it to a mechanism and measure it.
+- `references/input-latency-and-timing.md` — You are deciding how input travels from a physical switch to a visible response — budgeting end-to-end latency, choosing how discrete and continuous inputs are sampled against a fixed timestep, handling network delay, or chasing a game that feels laggy or drops presses.
+- `references/input-signal-and-aiming.md` — You are tuning how a raw control value becomes game intent — stick deadzones and drift, sensitivity curves and aim assist, gyro, touch and virtual sticks, or hold/tap, double-tap, chord and SOCD resolution.
+- `references/input-bindings-devices-and-testing.md` — You are building or auditing the input layer's architecture and surfaces — rebinding and action maps, keyboard layouts, hot-swap and prompt glyphs, wheels or adaptive hardware, the input settings screen, or diagnosing and testing an input bug.
+- `references/game-ui-legibility-and-display.md` — You are deciding how a HUD or world-space element should be drawn so it stays readable over a moving scene, at couch distance, and across the aspect ratios and safe areas of every target display.
+- `references/game-ui-navigation-and-readouts.md` — You are building the parts the player drives or reads mid-fight — controller focus movement, inventory grids, HUD priority under stress, notification feeds, damage numbers, reticles, hit markers or the minimap.
+- `references/game-ui-menus-text-and-cost.md` — You are working on the shell around play — button prompts and tutorials, pause and menu responsiveness, loading and streaming transitions, localisation, accessibility settings, or a UI layer that is eating frame time.
+- `references/netcode-authority-and-prediction.md` — You are choosing who is authoritative over the simulation, sizing the end-to-end latency budget, or building client-side prediction and server reconciliation for the local player's own movement.
+- `references/netcode-interpolation-and-rollback.md` — You are smoothing remote players' motion, deciding how the server adjudicates hitscan shots fired at a stale view, or choosing between delay-based and rollback netcode for a fighting game.
+- `references/netcode-replication-and-bandwidth.md` — You are deciding how world state is encoded and sent — snapshots versus events, reliable versus unreliable channels, quantisation, send rate, per-client bandwidth ceilings — or the game degrades as player count rises and you need relevancy and interest management.
+- `references/netcode-security-transport-and-testing.md` — You are hardening against cheating, choosing a transport or handling NAT traversal and server placement, setting up network emulation and a test matrix, picking an engine or library stack, or diagnosing a specific netcode symptom such as rubber-banding, teleporting remotes, missed hit registration or desync.
+- `references/ai-and-navigation-pathfinding-and-navmesh.md` — You need agents to compute routes through a level — choosing an A* heuristic, budgeting or profiling path queries, baking or debugging a navmesh, handling multiple agent sizes, off-mesh links, dynamic obstacles or streamed navigation tiles.
+- `references/ai-and-navigation-movement-and-spatial-queries.md` — You have paths but the motion is wrong or too expensive — agents zigzag, jam in doorways, crowd the same goal, need flying or vehicle navigation, or must pick cover and tactical positions to stand in.
+- `references/ai-and-navigation-decision-architectures.md` — You are choosing or debugging how an individual agent decides what to do — behaviour tree, GOAP, utility scoring or state machine — or the agent decides correctly but the player reads it as random, unfair or unreactable.
+- `references/ai-and-navigation-squads-perception-and-encounters.md` — You are tuning what agents sense and share, how a group coordinates, how a fight is composed and its difficulty scaled, or how much AI costs per frame — including stealth detection complaints, unreadable group combat, AI frame spikes and engine or middleware selection.
+- `references/design-core-loop-and-scope.md` — You are defining or sanity-checking what the game actually is — stating the core loop, naming its duration tiers, proving it in grey-box before content is built on it, deciding how much is authored content versus generative systems, and scoping the project to a solo or studio production plan.
+- `references/design-progression-rewards-and-difficulty.md` — You are tuning what keeps a player repeating the loop — unlock and power curves, reward schedules and salience, whether required repetition has become grind, difficulty shape and encounter attempt counts, or dynamic difficulty adjustment.
+- `references/design-economy-and-monetisation.md` — You are building or auditing an in-game economy or business model — currency sources and sinks, inflation and saturation, soft versus hard currency, free-to-play retention targets, energy and daily mechanics, or gacha odds, regulatory exposure and the line between fair and predatory monetisation.
+- `references/design-onboarding-and-playtesting.md` — You are working on the player's first hour or on how you learn whether the design works — the first ten minutes, teaching mechanics through level design instead of popups, level pacing and signposting, running playtests, or choosing telemetry that will not mislead you.
+- `references/performance-budgets-and-measurement.md` — You need to set a millisecond frame budget for a specific platform, or you have a slow build and must establish trustworthy numbers — which thread or the GPU is the bottleneck, why editor timings mislead, and which percentiles to report.
+- `references/performance-spikes-draw-calls-and-lod.md` — You have measured the frame and now need to attribute a hitch by its shape, or cut the cost of drawing and simulating a scene through draw call reduction, cache-friendly gameplay code, culling stages and level of detail.
+- `references/performance-memory-and-streaming.md` — You are running out of memory, crashing after hours of play, seeing periodic garbage collection stalls, or fighting pop-in and streaming hitches on a platform with a fixed memory ceiling and a given storage speed.
+- `references/performance-shaders-tooling-and-automation.md` — Players report first-encounter stutter you cannot reproduce, or you need to pick the right profiler, stand up nightly performance regression testing, or decide what to optimise first now that the measurement is done.
+- `references/production-source-control-and-asset-flow.md` — You are choosing or scaling version control for a project full of binary assets, laying out a depot and branch structure, or defining how assets travel from a DCC tool into the engine.
+- `references/production-validation-build-and-iteration.md` — You are setting up submit-time asset validation, CI and build farms, a derived data cache, automated or performance testing, or trying to work out why iteration and cook times are slowing the team down.
+- `references/production-certification-and-localisation.md` — You are planning a platform submission, working through TRC/XR/Lotcheck requirements or store and age-rating logistics, or setting up string extraction, translation, text expansion and voice recording.
+- `references/production-milestones-planning-and-team.md` — You are planning milestones, tracking content or memory budgets, briefing an outsourcing vendor, estimating and scheduling work, structuring a team and its handoffs, or facing a slip that is turning into overtime.
+- `references/accessibility-input-and-motor.md` — You are designing or auditing how the game is controlled — remapping, holds, mashing, timing windows, quick-time events, adaptive hardware support, aim assist, dead zones or any one-off input mechanic.
+- `references/accessibility-visual-and-motion.md` — You are working on anything the player has to see or that can make them ill — colour coding, colourblind modes, text size, contrast, HUD and combat readability, flashing effects, camera shake, field of view or VR comfort.
+- `references/accessibility-audio-cognition-and-multiplayer.md` — You are working on subtitles, captions, the audio mix, haptics, difficulty and cognitive load, multiplayer chat and matchmaking, or menu narration and blind or low-vision play.
+- `references/accessibility-architecture-and-process.md` — You are planning accessibility work rather than implementing a feature — choosing architecture and seams in pre-production, adopting a standard, meeting CVAA or platform certification, budgeting testing with disabled players, scoping tiers, or setting triage and regression rules.
+- `references/shipping-playtesting-and-telemetry.md` — Load this when planning playtests, designing or auditing a telemetry event schema, reading funnels and dashboards, running an A/B test, or deciding what player data may lawfully be collected.
+- `references/shipping-launch-and-incidents.md` — Load this when a launch date is approaching or in progress — planning the day-one patch, sizing and load-testing servers, wiring kill switches and rollback, running go/no-go, or responding to a live incident.
+- `references/shipping-patching-and-liveops.md` — Load this when the game is already shipped and the question is how updates reach players — patch cadence per platform, download size, forced updates, save and account migration, or planning seasons and events.
+- `references/shipping-stability-trust-and-sunset.md` — Load this when the concern is the shipped game's ongoing integrity or its endgame — cheating and moderation, crash reporting and stability, turning player reports into fixable bugs, postmortems, or shutting the game down.

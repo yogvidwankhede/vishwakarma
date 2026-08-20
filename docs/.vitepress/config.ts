@@ -6,7 +6,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Vishwakarma',
   description:
-    '21 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout & theming. Works with Cursor, Windsurf, Cline & 10+ agents.',
+    '34 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development. Works with Cursor, Windsurf, Cline & 10+ agents.',
 
   base: '/vishwakarma/',
 
@@ -20,7 +20,7 @@ export default defineConfig({
       {
         property: 'og:description',
         content:
-          '21 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout & theming.',
+          '34 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development.',
       },
     ],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
@@ -29,7 +29,7 @@ export default defineConfig({
       {
         name: 'twitter:description',
         content:
-          '21 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout & theming.',
+          '34 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development.',
       },
     ],
   ],
@@ -45,6 +45,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Getting started', link: '/getting-started' },
+      { text: 'Studios', link: '/studios' },
       { text: 'Architecture', link: '/architecture' },
       { text: 'GitHub', link: 'https://github.com/yogvidwankhede/vishwakarma' },
     ],
@@ -52,7 +53,10 @@ export default defineConfig({
     sidebar: [
       {
         text: 'Introduction',
-        items: [{ text: 'Getting started', link: '/getting-started' }],
+        items: [
+          { text: 'Getting started', link: '/getting-started' },
+          { text: 'Vishwakarma Studios', link: '/studios' },
+        ],
       },
       {
         text: 'Concepts',

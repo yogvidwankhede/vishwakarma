@@ -64,7 +64,10 @@ def parse(markdown):
         auth = m.group("auth").strip().strip("`")
         entries.append({
             "name": m.group("name").strip(),
-            "url": m.group("url").strip(),
+            # The catalog's link column is the project's documentation or homepage, never a
+            # callable endpoint. Naming it "url" invited probing an HTML docs page and
+            # scaffolding a client for it, so the name states what it is.
+            "docs_url": m.group("url").strip(),
             "description": " ".join(m.group("desc").split()),
             # The catalog writes "No" for none, else apiKey / OAuth / X-Mashape-Key.
             "auth": "none" if auth.lower() in ("no", "") else auth,
@@ -155,7 +158,10 @@ def main():
         "catalog_entries": total,
         "after_filters": len(pool),
         "returned": len(shortlist),
-        "next_step": "probe_api.py --url <endpoint> before writing any code",
+        "next_step": (
+            "Open docs_url, find the actual request URL, then: "
+            "probe_api.py --url <endpoint>. docs_url is documentation, not an endpoint."
+        ),
         "candidates": shortlist,
     }
     print(json.dumps(out, indent=2))
@@ -172,10 +178,13 @@ def main():
             flags.append(f"cors:{e['cors']}")
             print(f"  {e['name']:<28} [{', '.join(flags)}]  {e['category']}", file=sys.stderr)
             print(f"    {e['description'][:96]}", file=sys.stderr)
-            print(f"    {e['url']}", file=sys.stderr)
+            print(f"    docs: {e['docs_url']}", file=sys.stderr)
         print("\nThe catalog has no rate-limit, uptime, or last-verified column.",
               file=sys.stderr)
-        print("Probe before you integrate: probe_api.py --url <endpoint>", file=sys.stderr)
+        print("Those are documentation links, not endpoints. Open one, find the request",
+              file=sys.stderr)
+        print("URL in its docs, and probe that: probe_api.py --url <endpoint>",
+              file=sys.stderr)
 
     if not shortlist:
         print("nothing matched - loosen the filters", file=sys.stderr)

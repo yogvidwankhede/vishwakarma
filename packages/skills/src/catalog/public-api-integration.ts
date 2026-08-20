@@ -180,13 +180,25 @@ tried.
 The three steps above ship as scripts, so this is a pipeline rather than a reading
 exercise. Run them; do not reimplement them.
 
+The scripts ship beside this file, and the working directory is the project root rather
+than the skill directory — so resolve the skill root once and use it. A project install and
+a user install are both possible, hence the two candidates:
+
 \`\`\`bash
-python3 scripts/find_api.py --need "weather forecast" --no-auth
-python3 scripts/probe_api.py --url '<endpoint from the shortlist>' --name weather \\
+API_SKILL="$(ls -d .claude/skills/public-api-integration \\
+  ~/.claude/skills/public-api-integration 2>/dev/null | head -1)"
+
+python3 "$API_SKILL/scripts/find_api.py" --need "weather forecast" --no-auth
+python3 "$API_SKILL/scripts/probe_api.py" --url '<endpoint>' --name weather \\
   --out probe-report.json
-python3 scripts/scaffold_client.py --report probe-report.json --out ./src \\
+python3 "$API_SKILL/scripts/scaffold_client.py" --report probe-report.json --out ./src \\
   --env-key WEATHER_API_KEY
 \`\`\`
+
+\`find_api.py\` shortlists candidates and prints a \`docs_url\` for each. That is a
+documentation link, not a callable endpoint: open it, find the request URL its docs
+specify, and probe that. Probing the \`docs_url\` directly returns an HTML page, which
+\`probe_api.py\` reports as \`documentation-page\`.
 
 \`find_api.py\` returns candidates, never a decision — it filters HTTPS hard, ranks
 relevance from term hits alone, and refuses to let a key-free API look like a match
@@ -376,7 +388,10 @@ def parse(markdown):
         auth = m.group("auth").strip().strip("\`")
         entries.append({
             "name": m.group("name").strip(),
-            "url": m.group("url").strip(),
+            # The catalog's link column is the project's documentation or homepage, never a
+            # callable endpoint. Naming it "url" invited probing an HTML docs page and
+            # scaffolding a client for it, so the name states what it is.
+            "docs_url": m.group("url").strip(),
             "description": " ".join(m.group("desc").split()),
             # The catalog writes "No" for none, else apiKey / OAuth / X-Mashape-Key.
             "auth": "none" if auth.lower() in ("no", "") else auth,
@@ -467,7 +482,10 @@ def main():
         "catalog_entries": total,
         "after_filters": len(pool),
         "returned": len(shortlist),
-        "next_step": "probe_api.py --url <endpoint> before writing any code",
+        "next_step": (
+            "Open docs_url, find the actual request URL, then: "
+            "probe_api.py --url <endpoint>. docs_url is documentation, not an endpoint."
+        ),
         "candidates": shortlist,
     }
     print(json.dumps(out, indent=2))
@@ -484,10 +502,13 @@ def main():
             flags.append(f"cors:{e['cors']}")
             print(f"  {e['name']:<28} [{', '.join(flags)}]  {e['category']}", file=sys.stderr)
             print(f"    {e['description'][:96]}", file=sys.stderr)
-            print(f"    {e['url']}", file=sys.stderr)
+            print(f"    docs: {e['docs_url']}", file=sys.stderr)
         print("\\nThe catalog has no rate-limit, uptime, or last-verified column.",
               file=sys.stderr)
-        print("Probe before you integrate: probe_api.py --url <endpoint>", file=sys.stderr)
+        print("Those are documentation links, not endpoints. Open one, find the request",
+              file=sys.stderr)
+        print("URL in its docs, and probe that: probe_api.py --url <endpoint>",
+              file=sys.stderr)
 
     if not shortlist:
         print("nothing matched - loosen the filters", file=sys.stderr)
@@ -653,6 +674,15 @@ def main():
     rate = {k: v for k, v in hdrs.items() if RATE_HEADERS.match(k)}
     ok = 200 <= last["status"] < 300 and parsed is not None
 
+    # A 2xx that is HTML rather than JSON is almost always a documentation or landing page
+    # reached because a catalog link was mistaken for an endpoint. Reporting that as a bare
+    # "unusable" sends the reader hunting for an API defect that does not exist.
+    looks_like_documentation = (
+        200 <= last["status"] < 300
+        and parsed is None
+        and "html" in hdrs.get("content-type", "").lower()
+    )
+
     name = args.name or re.sub(r"\\W+", "-", urllib.parse.urlparse(args.url).netloc).strip("-")
 
     report = {
@@ -673,8 +703,10 @@ def main():
         "auth_used": bool(args.header),
         "schema": infer(parsed) if parsed is not None else None,
         "parse_error": parse_error,
+        "looks_like_documentation": looks_like_documentation,
         "verdict": (
-            "unusable" if not ok
+            "documentation-page" if looks_like_documentation
+            else "unusable" if not ok
             else "client-callable" if acao in ("*", "https://vishwakarma.probe.invalid") and not args.header
             else "server-side-only"
         ),
@@ -696,6 +728,13 @@ def main():
     if v == "server-side-only":
         print("  route this through a server handler; a browser call will be blocked "
               "or would expose the key", file=sys.stderr)
+    if looks_like_documentation:
+        print("  this answered 2xx with HTML, not JSON - it is a documentation or landing",
+              file=sys.stderr)
+        print("  page, not an endpoint. Open it, find the request URL its docs give, and",
+              file=sys.stderr)
+        print("  probe that instead.", file=sys.stderr)
+        return 1
     if not ok:
         print(f"  unusable: {parse_error or 'non-2xx status'}", file=sys.stderr)
         return 1
@@ -1287,16 +1326,14 @@ if __name__ == "__main__":
       kind: 'command',
       description:
         'Probe the endpoint and fail if it is unreachable, non-2xx, or not JSON. Writes the report the scaffolder needs.',
-      command:
-        "python3 scripts/probe_api.py --url '<endpoint>' --name '<name>' --out probe-report.json",
+      command: `python3 "$(ls -d .claude/skills/public-api-integration ~/.claude/skills/public-api-integration 2>/dev/null | head -1)"/scripts/probe_api.py --url '<endpoint>' --name '<name>' --out probe-report.json`,
       blocking: true,
     },
     {
       id: 'scaffold-dry-run',
       kind: 'command',
       description: 'Show every file the scaffolder would write, before it writes any of them.',
-      command:
-        'python3 scripts/scaffold_client.py --report probe-report.json --out ./src --dry-run',
+      command: `python3 "$(ls -d .claude/skills/public-api-integration ~/.claude/skills/public-api-integration 2>/dev/null | head -1)"/scripts/scaffold_client.py --report probe-report.json --out ./src --dry-run`,
     },
     {
       id: 'selection-review',

@@ -1,0 +1,83 @@
+<svg width="1280" height="440" viewBox="0 0 1280 440" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vishwakarma Studios — Game development intelligence for AI coding agents">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="440" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#100b08"/>
+      <stop offset="1" stop-color="#1a1010"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.18" r="0.75">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.30"/>
+      <stop offset="0.45" stop-color="#f43f5e" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#100b08" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wordmark" x1="88" y1="150" x2="720" y2="250" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#ffdcb0"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="0.5" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#ef4444"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- background -->
+  <rect width="1280" height="440" fill="url(#bg)"/>
+  <rect width="1280" height="440" fill="url(#grid)"/>
+  <rect width="1280" height="440" fill="url(#glow)"/>
+
+  <!-- frame-timing motif (the simulation under the game); low-opacity, right side -->
+  <g transform="translate(1010 220)" opacity="0.5">
+    <circle r="176" fill="none" stroke="#f59e0b" stroke-opacity="0.12" stroke-width="1"/>
+    <rect x="-208" y="-96" width="416" height="192" fill="none" stroke="#f59e0b" stroke-opacity="0.14" stroke-width="1"/>
+    <g>
+      <line x1="-208" y1="-96" x2="-208" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="-156" y1="-96" x2="-156" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="-104" y1="-96" x2="-104" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="-52" y1="-96" x2="-52" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="0" y1="-96" x2="0" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="52" y1="-96" x2="52" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="104" y1="-96" x2="104" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="156" y1="-96" x2="156" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+      <line x1="208" y1="-96" x2="208" y2="96" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+    </g>
+    <line x1="-208" y1="96" x2="208" y2="96" stroke="#ffffff" stroke-opacity="0.07" stroke-width="1"/>
+    <line x1="-208" y1="-38.4" x2="208" y2="-38.4" stroke="#ef4444" stroke-opacity="0.26" stroke-width="1" stroke-dasharray="6 6"/>
+    <line x1="-208" y1="19.2" x2="208" y2="19.2" stroke="#f97316" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="3 7"/>
+    <polyline points="-208.0,15.4 -195.0,38.4 -182.0,-9.6 -169.0,30.7 -156.0,42.2 -143.0,-42.2 -130.0,23.0 -117.0,36.5 -104.0,7.7 -91.0,46.1 -78.0,32.6 -65.0,-73.0 -52.0,17.3 -39.0,40.3 -26.0,-3.8 -13.0,28.8 0.0,49.9 13.0,-21.1 26.0,25.0 39.0,11.5 52.0,44.2 65.0,32.6 78.0,-15.4 91.0,36.5 104.0,19.2 117.0,-48.0 130.0,40.3 143.0,26.9 156.0,3.8 169.0,48.0 182.0,30.7 195.0,-3.8 208.0,38.4" fill="none" stroke="#f97316" stroke-opacity="0.45" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="4" fill="#f59e0b"/>
+  </g>
+
+  <!-- eyebrow -->
+  <text x="90" y="112" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="4" fill="#b8927b">OPEN SOURCE · APACHE&#8209;2.0 · TYPESCRIPT</text>
+
+  <!-- wordmark -->
+  <text x="86" y="212" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="62" font-weight="800" letter-spacing="-3.5" fill="url(#wordmark)">Vishwakarma Studios</text>
+
+  <!-- accent rule -->
+  <rect x="90" y="238" width="150" height="4" rx="2" fill="url(#rule)"/>
+
+  <!-- tagline -->
+  <text x="90" y="290" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="27" font-weight="500" fill="#f6e9e4">Game development intelligence for AI coding agents.</text>
+  <text x="90" y="326" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="18" font-weight="400" fill="#c4a898">Engines, game loop, physics, game feel, netcode, AI — the <tspan fill="#f5d8b8" font-style="italic">simulation</tspan> under the game.</text>
+
+  <!-- frame-budget ramp (a nod to the 16.7 ms budget the whole simulation lives inside) -->
+  <g transform="translate(90 366)">
+    <rect x="0"   width="46" height="16" rx="3" fill="#fff7ed"/>
+    <rect x="52"  width="46" height="16" rx="3" fill="#ffe9cf"/>
+    <rect x="104" width="46" height="16" rx="3" fill="#ffd6a5"/>
+    <rect x="156" width="46" height="16" rx="3" fill="#fdba74"/>
+    <rect x="208" width="46" height="16" rx="3" fill="#fb9a3c"/>
+    <rect x="260" width="46" height="16" rx="3" fill="#f59e0b"/>
+    <rect x="312" width="46" height="16" rx="3" fill="#f97316"/>
+    <rect x="364" width="46" height="16" rx="3" fill="#f2622a"/>
+    <rect x="416" width="46" height="16" rx="3" fill="#ef4444"/>
+    <rect x="468" width="46" height="16" rx="3" fill="#dc2f4b"/>
+    <rect x="520" width="46" height="16" rx="3" fill="#be123c"/>
+  </g>
+
+  <!-- stat row -->
+  <text x="90" y="416" font-family="'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace" font-size="14" font-weight="500" letter-spacing="0.5" fill="#a8887b">68 REFERENCES<tspan fill="#f59e0b">&#160;·&#160;</tspan>20 DOMAINS<tspan fill="#f97316">&#160;·&#160;</tspan>9 RULES<tspan fill="#ef4444">&#160;·&#160;</tspan>4 ENGINES<tspan fill="#22c55e">&#160;·&#160;</tspan>13 AGENTS</text>
+</svg>

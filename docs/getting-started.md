@@ -1,8 +1,9 @@
 # Getting started
 
-Vishwakarma installs design intelligence into whichever AI coding agent you already use.
-This guide takes you from nothing to an agent that builds interfaces properly and can prove
-it did.
+Vishwakarma installs design and simulation intelligence into whichever AI coding agent you
+already use. This guide takes you from nothing to an agent that builds interfaces properly
+and can prove it did — and, if what you are building is a game, one that reasons about frame
+budgets and feel rather than about layout.
 
 ## Install
 
@@ -12,8 +13,9 @@ it did.
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
-Claude fetches the compiled catalog and copies all 21 skills into your project. No
-commands, no build, no npm. Stop reading here if that is all you need.
+Claude fetches the compiled catalog and copies all 34 skills into your project — including
+[Vishwakarma Studios](studios.md), the game development skill. No commands, no build, no npm.
+Stop reading here if that is all you need.
 
 **Plugin install — two commands, version management.** Inside Claude Code:
 
@@ -78,7 +80,7 @@ Generating design tokens
   ✓ src/styles/theme.css
 ```
 
-Four skills rather than the whole catalog, because installing eighteen skills into a
+Four skills rather than the whole catalog, because installing thirty-four skills into a
 project that has not asked for them is how a tool loses someone's trust on first run. Add
 more when you want them.
 
@@ -129,12 +131,15 @@ context until the agent actually asks:
 vishwakarma add --target mcp
 ```
 
-That writes an `.mcp.json` registering the server. Your agent gains thirteen tools:
+That writes an `.mcp.json` registering the server. Your agent gains fourteen tools:
 
 | Tool | What it does |
 |---|---|
+| `list_skills` | Browse the catalog with each skill's trigger and context cost |
 | `search_skills` | Find guidance relevant to the task at hand |
 | `get_skill` | Load one skill's working knowledge and rules |
+| `get_skill_reference` | Fetch one deep reference, when its question is your question |
+| `design_direction` | Resolve a deterministic design direction from the brief |
 | `check_contrast` | Compute contrast, and return the exact passing colour on failure |
 | `build_palette` | Generate a perceptually even, gamut-mapped ramp |
 | `resolve_motion` | Derive duration and easing from a semantic intent |
@@ -191,6 +196,18 @@ A sensible default is the four from `init`, plus whatever matches your work: `mo
 and `micro-interactions` for a marketing site, `information-architecture` and
 `rendering-performance` for a dashboard, `design-tokens` and `theming-systems` if you are
 building a system rather than consuming one.
+
+A game project is the one case where the starter set is the wrong starting point. Install
+`vishwakarma-studios` instead — it declares no dependencies, so it installs alone — and add
+`multiplayer-game-publishing` if the session is networked and `3d-game-assets` if meshes are
+being generated:
+
+```bash
+vishwakarma add vishwakarma-studios --target claude-code
+```
+
+Without `--target`, the CLI installs for the agents it detects in the current directory,
+falling back to the `universal` `AGENTS.md` target when it finds none.
 
 ## Using the packages directly
 
@@ -258,6 +275,7 @@ says so rather than implying it found everything.
 
 ## Where to go next
 
+- [Vishwakarma Studios](studios.md) — the game development skill, and where its scope ends
 - [Architecture](architecture.md) — how it fits together and why
 - [The Design Contract](design-contract.md) — making design checkable
 - [The Motion Grammar](motion-grammar.md) — timing derived from meaning

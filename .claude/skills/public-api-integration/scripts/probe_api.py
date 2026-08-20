@@ -147,6 +147,15 @@ def main():
     rate = {k: v for k, v in hdrs.items() if RATE_HEADERS.match(k)}
     ok = 200 <= last["status"] < 300 and parsed is not None
 
+    # A 2xx that is HTML rather than JSON is almost always a documentation or landing page
+    # reached because a catalog link was mistaken for an endpoint. Reporting that as a bare
+    # "unusable" sends the reader hunting for an API defect that does not exist.
+    looks_like_documentation = (
+        200 <= last["status"] < 300
+        and parsed is None
+        and "html" in hdrs.get("content-type", "").lower()
+    )
+
     name = args.name or re.sub(r"\W+", "-", urllib.parse.urlparse(args.url).netloc).strip("-")
 
     report = {
@@ -167,8 +176,10 @@ def main():
         "auth_used": bool(args.header),
         "schema": infer(parsed) if parsed is not None else None,
         "parse_error": parse_error,
+        "looks_like_documentation": looks_like_documentation,
         "verdict": (
-            "unusable" if not ok
+            "documentation-page" if looks_like_documentation
+            else "unusable" if not ok
             else "client-callable" if acao in ("*", "https://vishwakarma.probe.invalid") and not args.header
             else "server-side-only"
         ),
@@ -190,6 +201,13 @@ def main():
     if v == "server-side-only":
         print("  route this through a server handler; a browser call will be blocked "
               "or would expose the key", file=sys.stderr)
+    if looks_like_documentation:
+        print("  this answered 2xx with HTML, not JSON - it is a documentation or landing",
+              file=sys.stderr)
+        print("  page, not an endpoint. Open it, find the request URL its docs give, and",
+              file=sys.stderr)
+        print("  probe that instead.", file=sys.stderr)
+        return 1
     if not ok:
         print(f"  unusable: {parse_error or 'non-2xx status'}", file=sys.stderr)
         return 1

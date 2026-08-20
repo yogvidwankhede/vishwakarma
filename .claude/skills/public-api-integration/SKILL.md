@@ -106,13 +106,25 @@ tried.
 The three steps above ship as scripts, so this is a pipeline rather than a reading
 exercise. Run them; do not reimplement them.
 
+The scripts ship beside this file, and the working directory is the project root rather
+than the skill directory — so resolve the skill root once and use it. A project install and
+a user install are both possible, hence the two candidates:
+
 ```bash
-python3 scripts/find_api.py --need "weather forecast" --no-auth
-python3 scripts/probe_api.py --url '<endpoint from the shortlist>' --name weather \
+API_SKILL="$(ls -d .claude/skills/public-api-integration \
+  ~/.claude/skills/public-api-integration 2>/dev/null | head -1)"
+
+python3 "$API_SKILL/scripts/find_api.py" --need "weather forecast" --no-auth
+python3 "$API_SKILL/scripts/probe_api.py" --url '<endpoint>' --name weather \
   --out probe-report.json
-python3 scripts/scaffold_client.py --report probe-report.json --out ./src \
+python3 "$API_SKILL/scripts/scaffold_client.py" --report probe-report.json --out ./src \
   --env-key WEATHER_API_KEY
 ```
+
+`find_api.py` shortlists candidates and prints a `docs_url` for each. That is a
+documentation link, not a callable endpoint: open it, find the request URL its docs
+specify, and probe that. Probing the `docs_url` directly returns an HTML page, which
+`probe_api.py` reports as `documentation-page`.
 
 `find_api.py` returns candidates, never a decision — it filters HTTPS hard, ranks
 relevance from term hits alone, and refuses to let a key-free API look like a match
@@ -254,13 +266,13 @@ notice while building.
 ### Probe the endpoint and fail if it is unreachable, non-2xx, or not JSON. Writes the report the scaffolder needs. (blocking)
 
 ```bash
-python3 scripts/probe_api.py --url '<endpoint>' --name '<name>' --out probe-report.json
+python3 "$(ls -d .claude/skills/public-api-integration ~/.claude/skills/public-api-integration 2>/dev/null | head -1)"/scripts/probe_api.py --url '<endpoint>' --name '<name>' --out probe-report.json
 ```
 
 ### Show every file the scaffolder would write, before it writes any of them.
 
 ```bash
-python3 scripts/scaffold_client.py --report probe-report.json --out ./src --dry-run
+python3 "$(ls -d .claude/skills/public-api-integration ~/.claude/skills/public-api-integration 2>/dev/null | head -1)"/scripts/scaffold_client.py --report probe-report.json --out ./src --dry-run
 ```
 
 ### Confirm the API was chosen from evidence rather than from the first matching row. (blocking)

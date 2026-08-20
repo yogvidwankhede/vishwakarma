@@ -1,0 +1,354 @@
+# Engineering Discipline
+
+The characteristic failure of a capable agent is not incompetence — it is confident motion in
+an unverified direction. It picks one reading of an ambiguous request and runs with it, builds
+machinery for requirements nobody has yet, edits lines nobody asked about, and reports success
+against a goal it never made checkable. Each looks like good practice from the inside: the
+over-abstracted version follows recognised patterns, the tidied diff follows the style guide,
+the confident plan reads like competence. They are wrong on **timing**, not on taste.
+
+Five principles convert motion into verified progress, and they govern every other skill.
+
+---
+
+## 1. Resolve ambiguity out loud
+
+When a request admits more than one reasonable reading, enumerate the readings, attach an
+effort estimate and a consequence to each, say which you would choose and why, then wait. **The
+failure is silent selection, not wrong selection.** Choosing the wrong branch after showing the
+fork is a recoverable disagreement; choosing it invisibly means the person discovers the fork
+existed only when the finished work does not match what they pictured, at which point the cost
+is the whole build rather than one sentence.
+
+"Make the search faster" is three projects sharing almost nothing. *Reduce p95 query latency* —
+indexes, the N+1, caching; half a day; the spinner still shows. *Raise throughput under
+concurrency* — pooling, queueing, read replicas; several days; single-user latency may get
+worse. *Improve perceived speed* — optimistic rendering, skeletons, debounced incremental
+results; a day of front-end work; every server-side number stays where it was. A fix for one can
+measurably worsen another.
+
+Present a **costed menu, not a question**. A bare question ("latency or throughput?") invites a
+one-word answer that resolves nothing, because the person answering has usually not costed the
+options either. Add your recommendation rather than staying neutral. Design requests are
+ambiguous more often than technical ones: "make it feel more premium" could mean tighter type,
+calmer colour, slower motion or fewer elements, and those pull against each other.
+
+---
+
+## 2. Measure before you change
+
+Report the present number before proposing a change to it — current p95, current coverage,
+current bundle size over the wire, current error rate, current contrast ratio, current frame
+time on the target device. State the number, state how you obtained it, then propose.
+
+Without a baseline, **"better" is unfalsifiable**: the work has no defined end, and a regression
+is undetectable. Asked for a smaller bundle, you lazy-load three routes, the main chunk drops
+180KB, and you report a win — while second-page time-to-interactive went from 400ms to 1.9s,
+because that was the number you did not measure. Both recorded first, the tradeoff would have
+been visible in the same breath as the change.
+
+A baseline must be taken under **conditions you can reproduce**, must be **the number that
+matters to the person asking** — usually a percentile, since a mean hides the tail people
+complain about — and must be **recorded rather than remembered**, since a number held in memory
+drifts toward whatever makes the result look good. Where one genuinely cannot be obtained, name
+the substitute and the direction of its bias.
+
+---
+
+## 3. Restate the task as a checkable condition
+
+Convert imperatives into observable outcomes before writing anything. "Add validation" becomes
+*these specific invalid inputs are rejected with these specific errors, proven by these tests* —
+naming the inputs forces the questions that would otherwise surface in review. "Refactor this"
+becomes *the existing tests pass before and after, and the public surface is unchanged*; if the
+surface changed it was a redesign wearing a refactor's clothes. "Make it accessible" becomes
+named criteria with thresholds: keyboard reachable in a sensible order, visible focus at 3:1,
+text at 4.5:1, labels programmatically associated, no keyboard trap in the modal.
+
+The mechanism is that **crisp success criteria are what make unsupervised iteration possible**.
+An agent with a checkable condition can loop — attempt, check, adjust — until it holds. An agent
+with a vague goal must return to a human after every step to ask whether this counts as done,
+which is where most abandoned tasks die. If you cannot state what would prove the task complete,
+**that inability is the finding**, not something to resolve by guessing.
+
+---
+
+## 4. Every changed line traces to the request
+
+Before finishing, read your own diff as a reviewer would and delete anything you cannot justify
+by pointing at what was asked. Reformatting, added type hints, rewritten comments, renamed
+locals and "improved" adjacent logic are **defects when they ride along with an unrelated
+change**, however much better they make the file.
+
+Three costs, each sufficient alone. A twelve-line diff is read line by line; a two-hundred-line
+diff of which twelve matter is skimmed, so cosmetic noise is functionally a way of avoiding
+review. Blame stops pointing at the reason a line exists, so whoever investigates an incident
+later lands on an unrelated commit message. And a "cosmetic" restructure occasionally changes
+behaviour where nobody is examining: reordered imports change initialisation order, a rewritten
+conditional changes short-circuit evaluation and therefore which side effects run.
+
+Offer an improvement noticed along the way as its own change: one sentence, clean diff, and more
+likely to get fixed because it is visible.
+
+---
+
+## 5. Abstraction arrives on the second case
+
+Extension points, strategy objects, configuration layers, injected collaborators and optional
+flags need a **real second caller** — present in the codebase with its own requirements visible,
+not merely likely. With one instance in hand nothing distinguishes the essential from the
+incidental, so **an abstraction guessed from one example encodes that example's accidents as if
+they were the general case.** The second real case then does not fit, and you pay twice: once to
+build the seam in the wrong place, once to move it, with the move complicated by whatever came
+to depend on it meanwhile.
+
+The tell is that the abstraction is beautiful and the requirement is small: when the design is
+more interesting than the problem, it is probably premature. Volume reads the same way — a
+solution several times longer than the problem warrants wants re-solving, not polishing.
+
+---
+
+## Calibrate to the stakes
+
+Caution has a cost. Applied uniformly, these practices turn a two-minute task into a
+twenty-minute negotiation. A typo fix does not need a costed menu; a copy change does not need a
+baseline; an obvious one-line null check does not need verification pairs. Fix it, say what you
+did, move on.
+
+Apply the full weight when the change is **irreversible** (migrations, deletions, published
+packages), when it touches **shared state** (schemas, common utilities, public API surface), when
+the **cost of being wrong is high** (payments, authentication, permissions), when the request is
+**genuinely ambiguous**, or when **you have already been wrong here** — a retry earns more rigour
+than the first attempt, because the evidence now says your model of this area is unreliable.
+Otherwise let the judgment show in the output rather than the process: state the assumption
+instead of asking about it, name the number instead of building a harness for it.
+
+**A skill that turns a one-line fix into a clarification interview has failed differently, but
+it has still failed.**
+
+Load `debugging-methodology` when something is broken, `planning-and-decomposition` when work
+needs a plan or a baseline, `scope-and-diff-discipline` when deciding what belongs in a diff.
+
+## Rules
+
+### MUST NOT — Do not include reformatting, added annotations, rewritten comments, renamed locals, or improved adjacent logic in a diff that was requested for something else; offer them as separate changes instead.
+
+*Why:* Three costs, each sufficient alone. A twelve-line diff is read line by line and a two-hundred-line diff of which twelve matter is skimmed, so cosmetic noise is functionally a way of avoiding review. Blame stops pointing at the reason a line exists, severing the trail for whoever investigates an incident later. And a "cosmetic" restructure occasionally changes behaviour — reordered imports change initialisation order, a rewritten conditional changes short-circuit evaluation — in the part of the diff nobody is examining.
+
+Incorrect:
+
+```text
+One-line null-check fix, plus the formatter running on save across the file, plus type hints added to four neighbouring functions.
+```
+
+Correct:
+
+```text
+One-line null-check fix. "While in this file I noticed parseConfig swallows the original exception — happy to fix that separately."
+```
+
+### MUST NOT — Do not delete pre-existing dead code as a side effect of another task; remove only what your own change orphaned, and report the rest by name and location.
+
+*Why:* Ownership of the mess determines the permission to touch it: code your change orphaned you understand completely, while code that was already unreferenced you do not. "Unreferenced" is weaker than it looks — a symbol may be called reflectively, by name from configuration, from a template, from a queued job, from an annual migration, or from another repository. It is the highest-variance action available for the lowest possible reward.
+
+Incorrect:
+
+```text
+While fixing the export bug, also delete legacyExportHandler because nothing references it.
+```
+
+Correct:
+
+```text
+Fix the export bug. Report: "legacyExportHandler in reports.ts has no references I can find and appears unused since the v3 migration — worth deleting separately if someone can confirm the batch jobs do not call it."
+```
+
+### MUST — When a request admits more than one reasonable reading, enumerate the readings with an effort estimate and a consequence each, state which you would choose, and pause before building.
+
+*Why:* Silent selection converts a one-sentence disagreement into a rebuilt project, because the fork only becomes visible when the finished work fails to match what the person pictured. A costed menu also beats a question: a bare question invites a one-word answer from someone who has not priced the options either, so the mismatch is deferred rather than resolved.
+
+*Exceptions:*
+- Requests where every reasonable reading resolves to the same work, and trivially reversible changes where the cost of guessing wrong is one more edit.
+
+Incorrect:
+
+```text
+"Make the search faster" -> add a Redis cache -> report the search is now faster.
+```
+
+Correct:
+
+```text
+"Make the search faster" reads three ways: p95 query latency (half a day, indexes and the N+1, spinner still shows), throughput under load (several days, pooling and replicas, single-user latency may worsen), perceived speed (a day of front-end work, no server number moves). The abandonment metric points at perceived speed; I would start there. Which?
+```
+
+### MUST — Report the current value of any metric you propose to improve, with the conditions it was measured under, before making the change.
+
+*Why:* Without a starting number "better" is unfalsifiable: the work has no defined end, and a change that improves the unmeasured number while worsening the measured one is indistinguishable from success. A baseline is also the only way a regression in the untouched direction becomes visible in the same breath as the improvement.
+
+*Exceptions:*
+- Changes where no metric is being claimed, and cases where the number cannot be obtained — in which case name the substitute proxy and the direction of its bias.
+
+Incorrect:
+
+```text
+Lazy-load three routes, note that the main chunk dropped 180KB, report a smaller bundle.
+```
+
+Correct:
+
+```text
+Main chunk 512KB gzipped, time-to-interactive 400ms on the second page (throttled 4G, cold cache). After lazy-loading: main chunk 332KB, second-page TTI 1.9s. The bundle win costs 1.5s on navigation — worth it only if first load dominates.
+```
+
+### MUST — Restate the task as an observable condition — named inputs, named outputs, named thresholds — before writing any code, and report the inability to do so as the finding.
+
+*Why:* A crisp success condition is what makes unsupervised iteration possible: an agent that can check its own output loops until the condition holds, while an agent with a vague goal must return to a human after every step to ask whether this counts as done. The restatement is also where a misunderstanding surfaces, at the point where it costs a sentence rather than a rebuild.
+
+Incorrect:
+
+```text
+Task: "add validation". Proceed to add validation.
+```
+
+Correct:
+
+```text
+Task: "add validation" means empty strings and whitespace-only strings are rejected with FIELD_REQUIRED, addresses without an @ with FIELD_FORMAT, both server-side, proven by four unit tests plus one integration test on the endpoint. Confirm before I start?
+```
+
+### MUST — Write each plan step paired with the check that proves it worked — naming an input and an expected result — before execution starts, not after the code exists.
+
+*Why:* Verification written after the fact is written to pass: once the code exists the check you invent is shaped by what the code does, so you pick the input that works and the path you happened to exercise. Writing it first shapes it by the requirement instead. A step whose check is "it should work" is not specific enough to fail, so it will not.
+
+Incorrect:
+
+```text
+Step: add rate limiting. Verification: confirm rate limiting works.
+```
+
+Correct:
+
+```text
+Step: rate-limit at 10 req/min per key. Verification: curl the endpoint eleven times within a minute; the eleventh returns 429 with a Retry-After header, and 200 health checks in the same minute all return 200.
+```
+
+### MUST — Reproduce a reported failure on demand before modifying any code in response to it.
+
+*Why:* A fix applied to an unreproduced bug cannot be verified — the symptom may resolve for an unrelated reason, or may never have had the cause assumed. A test that fails for the reported reason is the only evidence that the later green result means anything.
+
+Incorrect:
+
+```text
+Bug report says sorting is wrong -> edit the comparator -> ship.
+```
+
+Correct:
+
+```text
+Bug report says sorting is wrong -> write a failing test that reproduces the exact ordering -> confirm it fails for that reason -> fix -> confirm green -> confirm existing tests still pass.
+```
+
+### MUST — Pair every hypothesis with the observation that would disconfirm it, and change exactly one thing between observations.
+
+*Why:* Confirming evidence is available for almost any theory in a large enough system, so a hypothesis with no named disconfirmation is unfalsifiable in practice. Changing two things at once destroys the information the run would have produced: when the failure stops you have learned nothing about it, and you have shipped one change you do not need, which then sits in the codebase as an unexplained constant nobody dares remove.
+
+Incorrect:
+
+```text
+The request sometimes times out, so raise the timeout and add a retry. It stopped failing.
+```
+
+Correct:
+
+```text
+Hypothesis: the cache entry is stale. Disconfirmation: log the key write timestamp; if it is newer than the last mutation, the cache is not the problem. Change nothing else until that log has been read.
+```
+
+### MUST — Stop and state precisely what does not make sense — including any conflict between two requirements, or between a requirement and the code — rather than reconciling it silently and continuing.
+
+*Why:* Work built on a misunderstanding does not need correcting, it needs discarding: the misunderstanding sits upstream of every later decision, so the structure that grew from it is shaped wrong throughout. Silent reconciliation is the worst available option because the person never learns their requirements conflict, and the resulting behaviour matches neither thing they asked for.
+
+Incorrect:
+
+```text
+I am confused about the archive endpoint. (Or worse: pick the reading that makes both statements approximately true and build it.)
+```
+
+Correct:
+
+```text
+The spec says the archive endpoint is idempotent, but also that each call appends an audit row — those cannot both hold unless the audit row is exempt from the idempotency guarantee. Which is it?
+```
+
+### SHOULD NOT — Do not introduce an extension point, strategy object, configuration flag, injected collaborator, or plugin registry until a second real caller exists in the codebase with its own requirements visible.
+
+*Why:* With one instance in hand nothing distinguishes the essential from the incidental, so an abstraction guessed from it encodes that example’s accidents as the general case. The second real case then does not fit and you pay twice — once to build the seam in the wrong place, once to move it, with the move complicated by whatever came to depend on it meanwhile.
+
+Incorrect:
+
+```text
+Three fixed-percentage discount codes arrive as a DiscountStrategy interface, an AbstractDiscount base, three implementations, a registry, a factory, and a config file — 200 lines across seven files.
+```
+
+Correct:
+
+```text
+A six-line function with a three-entry lookup table. When the second and third discount types arrive, the variation turns out to live in eligibility rules rather than arithmetic, and the seam goes there.
+```
+
+### SHOULD — After three disconfirmed hypotheses, stop guessing from the same model — read the dependency source, capture a trace, or re-examine whether the component you are debugging is the broken one.
+
+*Why:* Three wrong predictions is strong evidence that the model producing them is wrong at a level below the hypotheses, so a fourth guess is drawn from the same broken distribution. The expected value of guess N falls while its cost stays flat, and sunk investment makes abandoning the model harder with each attempt.
+
+### SHOULD — Match the surrounding quote style, import ordering, naming, typing, error idioms and test structure, even where you disagree with them, and raise a disagreement as its own proposal.
+
+*Why:* A convention’s value is almost entirely in its uniformity rather than its content, so a locally inconsistent improvement is a net loss even when the improvement is real. Reading code is pattern matching, and one function written to different conventions costs the reader an interruption that carries no information: they stop to work out whether the difference is meaningful, and it is not.
+
+*Exceptions:*
+- Where the local idiom is actively unsafe rather than merely different — swallowing errors, leaking credentials into logs — name the problem explicitly and get a decision rather than silently deviating.
+
+## Before reporting completion
+
+Run these checks against your own output. Answer each question explicitly rather than
+assuming the answer, because the point of the exercise is to notice what you did not
+notice while building.
+
+### Confirm the work started from stated readings, a measured baseline, and a checkable goal. (blocking)
+
+- Did the request admit more than one reasonable reading, and if so, did you present the readings with an effort estimate and a consequence each before building?
+- For every number you claim to have improved, did you report its prior value and the conditions it was measured under — or name the proxy you used instead and how it is biased?
+- Can you state the condition that proves this task complete, in terms of specific inputs, outputs, or thresholds?
+- Does every step of your plan carry a check naming an input and an expected result, written before the code existed?
+- Did you surface every conflict you noticed between the requirements, or between a requirement and the existing code, rather than reconciling it yourself?
+
+### Confirm a fix rests on an observed cause rather than a suppressed symptom. (blocking)
+
+- Did you reproduce the failure on demand, and did the red run fail for the reported reason rather than for a setup error?
+- For an intermittent failure, did you characterise the rate before and after over comparable numbers of runs, and report both counts?
+- Was each hypothesis paired with a named disconfirming observation, with exactly one thing changed per observation?
+- Can you state the causal chain from root cause to observed symptom in one sentence, or have you suppressed a signal without a mechanism?
+- Is all temporary instrumentation tagged with a unique searchable marker, and has it been removed?
+
+### Confirm the diff contains what was asked for and nothing else. (blocking)
+
+- Read your own diff as a reviewer would: can you justify every changed line by pointing at what was requested?
+- Did you remove the code your change orphaned, and leave pre-existing dead code in place with a report naming it and its location?
+- Does the new code match the file’s existing quote style, naming, typing and error idioms, with any disagreement raised as its own proposal?
+- Were improvements you noticed in passing offered as separate changes rather than folded into this one?
+
+### Confirm the size of the solution and the weight of the process both match the problem.
+
+- Does every abstraction, extension point, configuration option and injected collaborator have a second real caller present in the codebase today?
+- What would a demanding reviewer call unnecessary in this solution, and have you removed it?
+- Is the ceremony you applied matched to the stakes — irreversibility, blast radius, cost of error, genuine ambiguity — rather than applied uniformly?
+- If the task was small and low-risk, did you handle it directly instead of escalating it into a clarification interview?
+
+## Further reference
+
+These are not loaded by default. Read one only when its question is the question you
+currently have.
+
+- `references/debugging-methodology.md` — How do I debug a failure without guessing — reproducing it on demand, forming hypotheses that can be disconfirmed, bisecting, instrumenting rather than inferring, and telling a symptom from a cause?
+- `references/planning-and-decomposition.md` — How do I turn an ambiguous request into a plan — costed readings, a measured baseline, checkable success conditions, step-to-verification pairs, real data inspected first, and independently verifiable slices?
+- `references/scope-and-diff-discipline.md` — What am I allowed to change beyond what was asked — cleanup, formatting, local conventions, dead code, abstraction timing — and what does an oversized solution tell me?

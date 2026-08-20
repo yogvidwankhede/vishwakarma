@@ -1,0 +1,342 @@
+# Mobile Performance
+
+Performance on a phone is a budget problem with a hard deadline and a hostile measurement
+environment. The deadline is the display's refresh interval. The environment is a thermally
+throttled mid-range device on a congested network, which is neither the machine the work was done
+on nor the network it was tested over. Every number below is a budget enforced at a percentile of
+real sessions rather than at the median of a lab run.
+
+---
+
+## 1. The evidence rule
+
+**No architectural change without a trace.** A rewrite justified by "this felt slow" cannot be
+falsified, cannot be measured after the fact, and cannot be defended when it makes something else
+worse. What admits the change is a capture that names the slice, its duration, and the thread it
+ran on.
+
+Console output is not proof. A `System.currentTimeMillis()` pair around a block measures wall time
+on a debuggable build, where R8 is disabled, ART runs interpreted or JIT-compiled code with no
+profile-guided AOT, and the debugger's instrumentation hooks are live. That is commonly two to five
+times slower than release, and slower in a *distribution* that does not match release, so the
+ranking of costs changes rather than merely scaling — which is how a debug timing yields a
+conclusion that is exactly backwards. Macrobenchmark's numbers transfer because it drives a
+release-like build in a separate process; Perfetto ends arguments because its slice table is
+queryable, so "the suspected culprit is not among the slices over one frame" becomes a fact rather
+than an impression. Put your own timings on that timeline with `androidx.tracing.trace("loadFeed")`
+instead of into a log, so your work is visible beside the binder call it was waiting on. Tool
+selection, the query, and the Instruments equivalents sit in **budgets-and-evidence**.
+
+## 2. Startup budgets
+
+Startup has three shapes. **Cold** creates the process, the Application object and the first
+Activity: target under **1s**, investigate anything over **2s**. **Warm**
+reuses a live process but recreates the Activity: target under **500ms**, investigate over **1s**.
+**Hot** returns an existing Activity to the foreground: target under **100ms**, investigate over
+**500ms**, all measured on the target mid-range device rather than on the fastest handset in the
+room.
+
+Two different moments both get called startup. **TTID**, time to initial display, is when the
+first frame is drawn, and the platform reports it for free. **TTFD**, time to full display, is
+when the screen shows real content, and nothing reports it unless you call `reportFullyDrawn()` or
+`ReportDrawn`. **TTFD is the honest number.** TTID can be driven arbitrarily low by painting a
+skeleton immediately, which improves the metric and changes nothing for a user still looking at
+grey rectangles; a team that optimises TTID alone eventually ships a launch reaching first frame
+in 380ms and usable content in 3.4 seconds, and files it as a win. Track both, gate on TTFD.
+
+Most of the cold-start tax is main-thread work before the first frame, and most of it is invisible
+in your source. A library's initialisation `ContentProvider`, merged in from a dependency, is
+created by the system before `Application.onCreate()` returns — synchronously, in manifest order —
+so a few analytics and crash-reporting libraries routinely add 200–400ms before your code runs. A Baseline Profile is the other large lever, typically 15–30%, because
+without one ART interprets and JIT-compiles the startup path on the first runs.
+
+## 3. Frame budgets
+
+The frame budget is the refresh interval: **16.7ms at 60Hz**, **11.1ms at 90Hz**, **8.3ms at
+120Hz**. It is the budget for the whole frame, not for your draw call. Inside that window the
+system delivers input, runs your composition or layout and draw, hands buffers to SurfaceFlinger,
+and lets the compositor assemble and queue the frame before the next scanout, so your application
+thread realistically owns about half of it. Measuring your own render at 9ms on a
+120Hz panel and declaring the frame safe is how a fast screen still drops every third frame. A
+missed deadline is also not a slightly late frame: the previous frame is re-scanned and content is
+stationary for two intervals, which is why jank is perceptible at drop rates a throughput average
+calls negligible.
+
+**Jank is a percentile, never a mean.** Report P50, P90 and P99 frame duration together with the
+percentage of frames over budget. A scroll in which 970 frames take 6ms and 30 take 90ms averages
+8.5ms, comfortably inside a 16.7ms budget, while the user has watched three visible stutters — the
+tail of the distribution is the experience. Two further thresholds belong to the platform, not to
+you: a **frozen frame** is one over **700ms**, long enough that the app appears hung, and
+an **ANR** fires when the main thread fails to service input for **5 seconds**.
+
+## 4. Field gates
+
+Play publishes bad-behaviour thresholds on the Android vitals dashboard: a user-perceived crash
+rate above roughly **1.09%**, or a user-perceived ANR rate above roughly **0.47%**, measured per
+device model over 28 days. Exceeding either can reduce store visibility and put a warning on the
+listing.
+
+That makes both numbers **product constraints rather than engineering preferences**. A stability
+regression does not merely annoy users; it reduces the distribution of every future release,
+including the one that fixes the regression, so stability work outranks feature work whenever a
+model-specific rate approaches the threshold. Set the alert well below the threshold, not at it: by the time the dashboard flags you, the 28-day window already contains the damage.
+
+## 5. Web parity
+
+The web runtime has different mechanics and the same discipline. Core Web Vitals, each assessed at
+the **75th percentile** of real users: **LCP ≤ 2.5s**, **INP ≤ 200ms**, **CLS ≤ 0.1**. Read the
+correspondences rather than the numbers. LCP is TTFD's sibling — both ask when the user can start,
+not when something was painted. INP is the frame budget expressed as input latency: an interaction
+misses 200ms for the same reason a frame misses 8.3ms, a main thread occupied by work that should
+have been chunked, deferred or moved off it. CLS lacks a direct native analogue only because
+native layout is less prone to asynchronously-sized content, and it returns the moment a list item
+resizes after its image resolves.
+
+The shared principle is the one worth carrying between platforms: **budgets are percentiles from
+the field, never medians from the lab**. A lab trace explains *why* something is slow and can never
+tell you *whether* it is slow for your users, because your device and network are not theirs. Lab
+traces diagnose; field percentiles decide.
+
+## 6. Where the rest of the budget goes
+
+Heap and bytes take the same treatment; mechanisms are in **resources-and-gating**. Give every
+asynchronous image load an explicit decode target size: a loader with no dimensions decodes at the
+source's intrinsic resolution, so a 4000×3000 photo costs 48MB of heap whatever slot it lands
+in. Bound caches in bytes against `ActivityManager.getMemoryClass()` and drop them on
+`onTrimMemory`: Android does not swap, so unbounded growth ends in the process being killed rather
+than slowed. Ship an App Bundle with R8 and resource shrinking, and archive `mapping.txt` for
+every build that reaches a user. Then gate all of it in CI against a stored baseline, comparing
+P90 within a noise band derived from observed variance — a budget no build ever fails on is a
+preference, and preferences lose to deadlines.
+
+## Rules
+
+### MUST NOT — Do not draw a performance conclusion from a logcat timing or a System.currentTimeMillis() measurement taken on a debuggable build.
+
+*Why:* On a debuggable build R8 is disabled, ART runs interpreted or JIT-compiled code with no profile-guided AOT, and the debugger’s instrumentation hooks are live. That is commonly two to five times slower than release, and slower in a distribution that does not match release at all, so the ranking of costs changes rather than merely scaling. A conclusion drawn from that measurement can be exactly backwards. Macrobenchmark exists because it drives a release-like build in a separate process, which is why its numbers transfer.
+
+Incorrect:
+
+```kotlin
+val t = System.currentTimeMillis()
+loadFeed()
+Log.d("perf", "feed ${System.currentTimeMillis() - t}ms")
+```
+
+Correct:
+
+```kotlin
+@Test fun scroll() = benchmarkRule.measureRepeated(
+    packageName = PKG,
+    metrics = listOf(FrameTimingMetric()),
+    compilationMode = CompilationMode.Partial(),
+    iterations = 20,
+) { … }
+```
+
+### MUST — Capture a trace or benchmark on a release build on a physical device before making any architectural change in the name of performance.
+
+*Why:* A rewrite justified by "this felt slow" cannot be falsified, cannot be measured after the fact, and cannot be defended when it makes something else worse. What makes the claim checkable in both directions is a capture that names the slice, its duration, and the thread it ran on — which is also the only thing that tells you whether your suspected culprit is even in the top forty slices over one frame.
+
+*Source:* [Perfetto trace processor, slice table](https://perfetto.dev/docs/analysis/trace-processor)
+
+Incorrect:
+
+```kotlin
+// "the feed feels janky" → rewrite the adapter and the repository
+```
+
+Correct:
+
+```kotlin
+androidx.tracing.trace("loadFeed") { repository.load() }
+// SELECT name, dur / 1e6 AS ms FROM slice WHERE dur > 16e6 ORDER BY dur DESC LIMIT 40;
+```
+
+### MUST — Report frame duration and interaction latency as P50, P90, and P99 plus the percentage of frames over budget, never as a mean.
+
+*Why:* A mean is structurally blind to the thing users complain about. A scroll where 970 frames take 6ms and 30 take 90ms averages 8.5ms — comfortably inside a 16.7ms budget — while the user has watched three visible stutters, because the distribution’s tail is the experience. This is the same reason Core Web Vitals are assessed at the 75th percentile of real users rather than at a lab median.
+
+*Source:* [Macrobenchmark FrameTimingMetric; web.dev Core Web Vitals](https://web.dev/articles/vitals)
+
+Incorrect:
+
+```kotlin
+println("avg frame ${durations.average()}ms")
+```
+
+Correct:
+
+```kotlin
+println("P50 ${p(durations, 50)} P90 ${p(durations, 90)} P99 ${p(durations, 99)} over16.7 ${pctOver(durations, 16.7)}%")
+```
+
+### MUST — Instrument time to full display through reportFullyDrawn() or ReportDrawn and gate startup on it, tracking TTID alongside rather than instead.
+
+*Why:* TTID is the moment the first frame is drawn, and it can be driven arbitrarily low by painting a skeleton immediately — which improves the metric and changes nothing for a user still looking at grey rectangles. A team that optimises TTID alone eventually ships a launch that reaches first frame in 380ms and usable content in 3.4 seconds, and reports it as a win. TTFD is the number that corresponds to the user being able to start.
+
+*Source:* [Android app startup metrics](https://developer.android.com/topic/performance/vitals/launch-time)
+
+Incorrect:
+
+```kotlin
+// logcat "Displayed …: +380ms" recorded as the startup number
+```
+
+Correct:
+
+```kotlin
+LaunchedEffect(feed) { if (feed.isNotEmpty()) ReportDrawn() }
+```
+
+### MUST — Hold cold start under 1s, warm under 500ms, and hot under 100ms on the target mid-range device, treating 2s, 1s, and 500ms as defects to investigate.
+
+*Why:* The dominant cold-start tax is main-thread work before the first frame, and most of it is not visible in your source: a library’s initialisation ContentProvider declared in a merged manifest is created by the system before Application.onCreate() returns, synchronously, in manifest order, so a handful of analytics and crash-reporting libraries routinely add 200–400ms before your code runs at all. A Baseline Profile is the other lever, typically 15–30% of startup, because without one ART interprets and JIT-compiles the startup path on the first runs.
+
+*Source:* [Android app startup time guidance](https://developer.android.com/topic/performance/vitals/launch-time)
+
+Incorrect:
+
+```xml
+<!-- merged in from a dependency, runs before Application.onCreate() -->
+<provider android:name="com.vendor.SdkInitProvider" />
+```
+
+Correct:
+
+```xml
+<provider android:name="com.vendor.SdkInitProvider" tools:node="remove" />
+<!-- initialise through androidx.startup, or lazily at first use -->
+```
+
+### MUST — Budget against the whole frame — 16.7ms at 60Hz, 11.1ms at 90Hz, 8.3ms at 120Hz — and leave roughly half of it for input delivery and compositing.
+
+*Why:* Within one refresh interval the system must deliver input, run your composition or layout and draw, hand buffers to SurfaceFlinger, and let the compositor assemble and queue the frame before the display’s next scanout, so your application thread realistically owns about half the window. Measuring your own render at 9ms on a 120Hz panel and declaring the frame safe is how a "fast" screen still drops every third frame. A missed deadline is also not a slightly late frame: the previous frame is re-scanned and content is stationary for two intervals, which is why jank is perceptible at drop rates a throughput average calls negligible.
+
+Incorrect:
+
+```kotlin
+// render measured at 9.0ms on a 120Hz device → "within the 8.3ms budget after rounding"
+```
+
+Correct:
+
+```kotlin
+// 120Hz: 8.3ms total, ~4ms for application work; measure frameDurationCpuMs P90/P99
+```
+
+### MUST — Give every asynchronous image load an explicit decode target size rather than letting the loader decode at the source’s intrinsic resolution.
+
+*Why:* An image loader with no target dimensions decodes at full source resolution, so a 4000×3000 JPEG at ARGB_8888 occupies 4000 × 3000 × 4 = 48MB of heap regardless of the 64dp avatar slot it is being drawn into. Fifty such rows request 2.4GB against a per-app limit in the low hundreds of megabytes, so the outcome is an OutOfMemoryError — and the outcome before that is seconds of garbage-collection pauses on the main thread while the allocator tries.
+
+Incorrect:
+
+```kotlin
+AsyncImage(model = url, contentDescription = null, modifier = Modifier.size(64.dp))
+```
+
+Correct:
+
+```kotlin
+AsyncImage(
+    model = ImageRequest.Builder(context).data(url).size(64.dp.roundToPx()).build(),
+    contentDescription = null,
+    modifier = Modifier.size(64.dp),
+)
+```
+
+### MUST — Bound every in-memory cache in bytes against ActivityManager.getMemoryClass(), and release caches on onTrimMemory(TRIM_MEMORY_UI_HIDDEN) and above.
+
+*Why:* Android does not swap: when the system needs memory it kills processes by oom_adj score, so unbounded growth manifests not as slowness but as the app disappearing from the recents list mid-task, which the user correctly attributes to your app being broken. Bounding by entry count bounds nothing, because bitmap sizes vary by orders of magnitude between a thumbnail and a full-bleed hero. The trim callback is the system’s explicit warning that you are next in the kill order.
+
+Incorrect:
+
+```kotlin
+val cache = HashMap<String, Bitmap>()
+```
+
+Correct:
+
+```kotlin
+val cache = object : LruCache<String, Bitmap>(am.memoryClass * 1024 * 1024 / 8) {
+    override fun sizeOf(key: String, value: Bitmap) = value.byteCount
+}
+```
+
+### MUST — Ship an App Bundle with R8 and resource shrinking enabled, and archive and upload mapping.txt automatically for every build that reaches a user.
+
+*Why:* R8 removes unreachable code and rewrites what remains, so without the mapping file for that exact build a production crash arrives as a.b.c.d(Unknown Source) and is undiagnosable. The file is build-specific — a rebuild from the same commit does not necessarily reproduce it — so there is no recovery path once the artefact is gone, which is why it must be part of the release job rather than a manual step. The bundle itself is the other half: splits per density, ABI, and language typically remove 35–50% of the transfer.
+
+Incorrect:
+
+```kotlin
+buildTypes { release { isMinifyEnabled = true } }  // mapping.txt left in build/outputs
+```
+
+Correct:
+
+```kotlin
+buildTypes { release { isMinifyEnabled = true; isShrinkResources = true } }
+// CI: upload build/outputs/mapping/release/mapping.txt to Play and the crash reporter
+```
+
+### SHOULD — Fail the build on startup, frame, and download-size regressions against a stored baseline, comparing P90 within a noise band derived from observed run-to-run variance.
+
+*Why:* A budget that is not enforced by a build failure is a preference, and preferences lose to deadlines. Size regressions in particular arrive one dependency at a time and nobody reads a lockfile diff closely enough to notice a transitive 2MB. The noise band is what keeps the gate alive: a gate that produces false failures is disabled within a fortnight, which leaves you worse off than having no gate, so the band must come from the measured variance of the fixed CI device rather than from a guess.
+
+Incorrect:
+
+```yaml
+- run: ./gradlew :benchmark:connectedCheck   # results printed, never asserted
+```
+
+Correct:
+
+```yaml
+- run: ./gradlew :benchmark:connectedCheck
+- run: python3 ci/compare.py --metric startupMs --percentile 90 --baseline baseline.json --band 2sd
+```
+
+## Before reporting completion
+
+Run these checks against your own output. Answer each question explicitly rather than
+assuming the answer, because the point of the exercise is to notice what you did not
+notice while building.
+
+### Confirm every performance claim rests on admissible evidence. (blocking)
+
+- For each claimed improvement or regression, which trace or benchmark supports it, and was it captured on a release build on a physical device rather than from logcat on a debuggable one?
+- Does the repository contain Macrobenchmark tests using StartupTimingMetric() and FrameTimingMetric() that actually run in CI?
+- Are custom timing regions emitted as trace slices via androidx.tracing.trace, so they sit on the same timeline as the binder calls and lock waits they were blocked on?
+- For any comparison, are the device model, compilation mode, and iteration count identical to the baseline, and is the variance band narrower than the effect being claimed?
+
+### Confirm the startup and frame budgets are stated, instrumented, and met. (blocking)
+
+- Is cold start under 1s, warm under 500ms, and hot under 100ms on the target mid-range device, and is the gate set on TTFD via reportFullyDrawn()/ReportDrawn rather than on TTID alone?
+- Does the merged manifest still contain any third-party initialisation ContentProvider, and does Application.onCreate() perform any disk read, network call, or database open?
+- Is a Baseline Profile generated, committed, and regenerated when the startup path changes?
+- Is the frame budget stated for the target refresh rate, with headroom left for system compositing, and are there any frames over 700ms in the scroll benchmark?
+- Does any list item binder perform I/O, decode an image, or construct a formatter per bind?
+
+### Confirm the numbers being reported are field percentiles rather than lab means.
+
+- Are jank figures reported as P50/P90/P99 and percentage of frames over budget, with no mean presented as a verdict?
+- Is the user-perceived crash rate below 1.09% and the ANR rate below 0.47% on every significant device model, with alerts set at a warning level below those thresholds rather than at them?
+- Are LCP, INP, and CLS taken at the 75th percentile of field data, and do they meet 2.5s, 200ms, and 0.1 for the routes under review?
+- Where a lab trace and field data disagree, which one is being used to decide, and which is only being used to explain?
+
+### Confirm images, lists, memory, size, and the CI gates are all bounded. (blocking)
+
+- Does every async image request specify an explicit decode target size, and does any lazy list item contain a SubcomposeLayout or BoxWithConstraints, or lack a stable key and content type?
+- Is every cache bounded in bytes against ActivityManager.getMemoryClass(), and does onTrimMemory release caches at TRIM_MEMORY_UI_HIDDEN and above?
+- After navigating into and out of each major screen, is the retained instance count for its Activity, Fragment, and ViewModel exactly zero in a post-GC heap dump, and does any ViewModel or singleton hold a View, Activity, or non-application Context?
+- Does release output an App Bundle with resConfigs, abiFilters, and WebP or vector assets, with R8 and resource shrinking on and mapping.txt uploaded automatically?
+- Does a size-budget or benchmark-threshold breach fail the build rather than emit a warning, and is the noise band derived from observed variance rather than guessed?
+
+## Further reference
+
+These are not loaded by default. Read one only when its question is the question you
+currently have.
+
+- `references/budgets-and-evidence.md` — What counts as admissible evidence that something is slow, which tool answers which question, what are the cold, warm, hot, TTID and TTFD budgets, how much of a frame do I actually own, and which crash and ANR rates put store distribution at risk?
+- `references/resources-and-gating.md` — How do I size an image decode, what makes a list item expensive, how do I find and bound a memory leak, what removes bytes from the download, how do the Core Web Vitals correspond to the native budgets, and which gates belong in CI?
