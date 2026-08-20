@@ -22,9 +22,21 @@ Two skills, one catalog. **Vishwakarma** owns interfaces — web, Android, Apple
 
 Works with **Claude Code · Cursor · Windsurf · Cline · Roo Code · Codex · Gemini CLI · Copilot · Continue · Zed · Aider** — and any MCP client.
 
+**Both skills, in any Claude Code session:**
+
 ```text
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
+
+<sub>Installs all 34 skills — Vishwakarma and Vishwakarma Studios.</sub>
+
+**Just the game skill:**
+
+```bash
+vishwakarma add vishwakarma-studios --target claude-code
+```
+
+<sub>Studios alone, with its 68 references and nothing else. Needs the CLI from a <a href="#-quick-start">checkout</a> — not yet on npm. <a href="#-vishwakarma-studios">More →</a></sub>
 
 <sub>Open source · Apache-2.0 · TypeScript · Zero telemetry</sub>
 
