@@ -286,6 +286,13 @@ Correct:
 *Exceptions:*
 - User-authored content, where emoji are the user’s own words.
 
+### MUST — Name the audience, the product job, and one thing the product is deliberately not, before choosing a visual direction — and state them as assumptions if nobody has supplied them.
+
+*Why:* A visual direction is only correct relative to a product. With no stated product, the generative default is the most common pattern in training data — the centred hero, the three feature cards, the gradient CTA — which is the specific failure this skill exists to prevent. Stating what the product is not is what breaks that pull, because the pull is toward a template rather than away from a requirement, and a negative constraint is the only kind that blocks it. Assumptions stated in the report cost one correcting sentence; assumptions left implicit are discovered after the interface is built.
+
+*Exceptions:*
+- A critique of an existing interface inherits the product context from the artefact under review, and inventing a different one rewrites the brief instead of reviewing the work.
+
 ### MUST — Rank the content of a screen by importance before applying any styling, and make each element’s visual weight match its rank.
 
 *Why:* Visual hierarchy is the mechanism by which a viewer decides where to look. Without an explicit ranking, every styling decision is made locally, and locally safe choices sum to uniformity, which presents the viewer with no entry point.

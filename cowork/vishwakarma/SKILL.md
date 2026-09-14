@@ -160,6 +160,12 @@ Load the file for the branch you are on. Do not read the whole tree.
 | Browser multiplayer games, real-time sync, join flows | `multiplayer-game-publishing.md` |
 | GLB generation, Three.js integration, asset orientation | `3d-game-assets.md` |
 | Choosing a public API, probing it, generating a typed client | `public-api-integration.md` |
+| Red–green–refactor, watching a test fail before making it pass | `test-driven-development.md` |
+| Reviewing a code change, or answering findings on your own | `code-review.md` |
+| Splitting work across subagents, parallel branches, worktrees, plans | `agent-orchestration.md` |
+| What to carry across sessions, and what a stale note costs | `agent-memory.md` |
+| Evaluating a third-party skill before installing it | `skill-discovery.md` |
+| Turning friction in real work into rule changes and deletions | `methodology-feedback.md` |
 
 ---
 

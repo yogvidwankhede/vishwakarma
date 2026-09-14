@@ -240,6 +240,14 @@ Correct:
 
 *Why:* Invented content is unverifiable and frequently false, and it dilutes the ranking by inserting blocks with no assigned importance. A short honest page outperforms a padded one, and fabricated quotes or figures are a correctness problem rather than a stylistic one.
 
+### SHOULD — Before designing a second screen for the same product, write the audience, product job, voice and what the product is not into a durable brief, and read it before Phase 1.
+
+*Why:* The Phase 1 brief describes one screen and is discarded with it, so nothing carries the product-level decisions forward. Each new screen therefore re-derives the audience from the request in front of it, and re-derivation drifts — which is why the third screen of a product is frequently designed for a different user than the first. A separate artefact is needed because the two halves decay at different rates: a screen job changes whenever the screen does, while who the product serves changes perhaps twice in its life.
+
+*Exceptions:*
+- A one-off screen with no siblings has nothing to stay consistent with.
+- A product that already maintains an equivalent artefact — a positioning doc or a brand brief the team actually reads — should have that one cited rather than a second copy created.
+
 ### SHOULD — Choose the layout skeleton and responsive strategy, and confirm the document reflows correctly, before applying colour, shadow, radius, or any visual treatment.
 
 *Why:* Visual treatment is applied to a structure and inherits its defects. Fixing a structural problem after styling means re-styling everything downstream, so the ordering makes the expensive decision the reversible one.
@@ -314,5 +322,6 @@ Run `vishwakarma audit` if the project has the CLI available.
 These are not loaded by default. Read one only when its question is the question you
 currently have.
 
+- `references/product-context.md` — I am about to design a second or third screen for a product I have designed for before, or the output is technically correct but reads as though a different product made it.
 - `references/phase-checklist.md` — What exactly do I do at each phase, what output must exist before I move on, and what do I check before claiming the interface is finished?
 - `references/clarifying-questions.md` — When should I ask the user a question about a UI request, what should I ask, and how do I proceed on assumptions when I should not ask?

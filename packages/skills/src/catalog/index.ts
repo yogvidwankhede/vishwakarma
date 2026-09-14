@@ -13,7 +13,10 @@ import type { SkillManifest } from '../manifest.js'
 export { threeDGameAssets } from './3d-game-assets.js'
 export { accessibilityEvidence } from './accessibility-evidence.js'
 export { accessibleComponents } from './accessible-components.js'
+export { agentMemory } from './agent-memory.js'
+export { agentOrchestration } from './agent-orchestration.js'
 export { codeQuality } from './code-quality.js'
+export { codeReview } from './code-review.js'
 export { colourSystems } from './colour-systems.js'
 export { componentArchitecture } from './component-architecture.js'
 export { designJudgment } from './design-judgment.js'
@@ -25,6 +28,7 @@ export { interactionDesign } from './interaction-design.js'
 export { interfaceCopy } from './interface-copy.js'
 export { interfaceStates } from './interface-states.js'
 export { layoutComposition } from './layout-composition.js'
+export { methodologyFeedback } from './methodology-feedback.js'
 export { microInteractions } from './micro-interactions.js'
 export { mobilePerformance } from './mobile-performance.js'
 export { motionDesign } from './motion-design.js'
@@ -39,7 +43,9 @@ export { responsiveArchitecture } from './responsive-architecture.js'
 export { reverseEngineering } from './reverse-engineering.js'
 export { scrollExperiences } from './scroll-experiences.js'
 export { seoAndMetadata } from './seo-and-metadata.js'
+export { skillDiscovery } from './skill-discovery.js'
 export { surfaceAndDepth } from './surface-and-depth.js'
+export { testDrivenDevelopment } from './test-driven-development.js'
 export { themingSystems } from './theming-systems.js'
 export { typographicSystems } from './typographic-systems.js'
 export { uiGenerationWorkflow } from './ui-generation-workflow.js'
@@ -48,7 +54,10 @@ export { vishwakarmaStudios } from './vishwakarma-studios.js'
 import { threeDGameAssets } from './3d-game-assets.js'
 import { accessibilityEvidence } from './accessibility-evidence.js'
 import { accessibleComponents } from './accessible-components.js'
+import { agentMemory } from './agent-memory.js'
+import { agentOrchestration } from './agent-orchestration.js'
 import { codeQuality } from './code-quality.js'
+import { codeReview } from './code-review.js'
 import { colourSystems } from './colour-systems.js'
 import { componentArchitecture } from './component-architecture.js'
 import { designJudgment } from './design-judgment.js'
@@ -60,6 +69,7 @@ import { interactionDesign } from './interaction-design.js'
 import { interfaceCopy } from './interface-copy.js'
 import { interfaceStates } from './interface-states.js'
 import { layoutComposition } from './layout-composition.js'
+import { methodologyFeedback } from './methodology-feedback.js'
 import { microInteractions } from './micro-interactions.js'
 import { mobilePerformance } from './mobile-performance.js'
 import { motionDesign } from './motion-design.js'
@@ -74,7 +84,9 @@ import { responsiveArchitecture } from './responsive-architecture.js'
 import { reverseEngineering } from './reverse-engineering.js'
 import { scrollExperiences } from './scroll-experiences.js'
 import { seoAndMetadata } from './seo-and-metadata.js'
+import { skillDiscovery } from './skill-discovery.js'
 import { surfaceAndDepth } from './surface-and-depth.js'
+import { testDrivenDevelopment } from './test-driven-development.js'
 import { themingSystems } from './theming-systems.js'
 import { typographicSystems } from './typographic-systems.js'
 import { uiGenerationWorkflow } from './ui-generation-workflow.js'
@@ -85,7 +97,10 @@ export const catalog: SkillManifest[] = [
   threeDGameAssets,
   accessibilityEvidence,
   accessibleComponents,
+  agentMemory,
+  agentOrchestration,
   codeQuality,
+  codeReview,
   colourSystems,
   componentArchitecture,
   designJudgment,
@@ -97,6 +112,7 @@ export const catalog: SkillManifest[] = [
   interfaceCopy,
   interfaceStates,
   layoutComposition,
+  methodologyFeedback,
   microInteractions,
   mobilePerformance,
   motionDesign,
@@ -111,7 +127,9 @@ export const catalog: SkillManifest[] = [
   reverseEngineering,
   scrollExperiences,
   seoAndMetadata,
+  skillDiscovery,
   surfaceAndDepth,
+  testDrivenDevelopment,
   themingSystems,
   typographicSystems,
   uiGenerationWorkflow,

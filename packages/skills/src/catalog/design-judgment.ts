@@ -483,6 +483,20 @@ the exact change. "Increase the gap between the section heading and the first ca
 
   rules: [
     {
+      id: 'design-judgment/direction-follows-stated-product',
+      strength: 'must',
+      statement:
+        'Name the audience, the product job, and one thing the product is deliberately not, before choosing a visual direction — and state them as assumptions if nobody has supplied them.',
+      evidence: {
+        rationale:
+          'A visual direction is only correct relative to a product. With no stated product, the generative default is the most common pattern in training data — the centred hero, the three feature cards, the gradient CTA — which is the specific failure this skill exists to prevent. Stating what the product is not is what breaks that pull, because the pull is toward a template rather than away from a requirement, and a negative constraint is the only kind that blocks it. Assumptions stated in the report cost one correcting sentence; assumptions left implicit are discovered after the interface is built.',
+        confidence: 'strong',
+      },
+      exceptions: [
+        'A critique of an existing interface inherits the product context from the artefact under review, and inventing a different one rewrites the brief instead of reviewing the work.',
+      ],
+    },
+    {
       id: 'design-judgment/rank-before-style',
       strength: 'must',
       statement:
