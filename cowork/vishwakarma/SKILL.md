@@ -166,6 +166,8 @@ Load the file for the branch you are on. Do not read the whole tree.
 | What to carry across sessions, and what a stale note costs | `agent-memory.md` |
 | Evaluating a third-party skill before installing it | `skill-discovery.md` |
 | Turning friction in real work into rule changes and deletions | `methodology-feedback.md` |
+| 3D on the web — scene, camera, lighting, load, fallback, a11y | `webgl-experiences.md` |
+| Whether it is actually shippable — legal pages, real content, demos | `ship-readiness.md` |
 
 ---
 

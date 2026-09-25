@@ -286,6 +286,14 @@ Correct:
 *Exceptions:*
 - User-authored content, where emoji are the user’s own words.
 
+### MUST NOT — Do not apply hover transitions — lift, scale, glow, colour shift — to elements that do not respond to a click or a key press.
+
+*Why:* A hover response is an affordance claim: the element is reporting that it can be operated. Firing it on static cards and stat tiles trains the user that motion under the cursor means nothing, after which the hover states that do mark real targets stop being read, and pointer users lose their only pre-click cue for what is clickable.
+
+*Exceptions:*
+- A card that is itself one link or button, where the whole surface is the target.
+- Hover that reveals genuinely deferred content, such as a tooltip or a row action.
+
 ### MUST — Name the audience, the product job, and one thing the product is deliberately not, before choosing a visual direction — and state them as assumptions if nobody has supplied them.
 
 *Why:* A visual direction is only correct relative to a product. With no stated product, the generative default is the most common pattern in training data — the centred hero, the three feature cards, the gradient CTA — which is the specific failure this skill exists to prevent. Stating what the product is not is what breaks that pull, because the pull is toward a template rather than away from a requirement, and a negative constraint is the only kind that blocks it. Assumptions stated in the report cost one correcting sentence; assumptions left implicit are discovered after the interface is built.
@@ -315,6 +323,14 @@ Correct:
 
 *Why:* Layouts are authored against convenient sample data whose length happens to fit. The overwhelming majority of layout defects found in production are content-length defects that were structurally invisible during development.
 
+### MUST — Build the palette with at least one value below 30% lightness, one above 95%, and most surfaces below half the available chroma, so emphasis has somewhere left to go.
+
+*Why:* Emphasis is contrast, and contrast is spent out of a fixed range. An all-pastel palette has no value dark enough to make the primary action primary once body text has taken its 4.5:1; a palette pinned at the chroma ceiling has nothing that can be more vivid than its neighbours, because saturation is judged relatively. Both are legible and flat, which is the failure users describe as looking fine but nothing standing out.
+
+*Exceptions:*
+- A single decorative region such as a hero wash or an illustration may sit inside a narrow band, provided the interface elements over it draw from the full range.
+- Categorical data visualisation, where several series need maximum separation in hue and chroma simultaneously.
+
 ### SHOULD NOT — Do not use more than six distinct font sizes in a single view.
 
 *Why:* Hierarchy is expressed through perceptible differences between levels. Beyond roughly six levels the differences become too small to perceive, so additional sizes add visual noise without adding structure.
@@ -328,6 +344,38 @@ Correct:
 
 *Exceptions:*
 - A very low-contrast border used purely to hold an edge against a same-tone background, where the shadow alone would disappear.
+
+### SHOULD NOT — Do not add a visual element that carries no information — background dot grids, radial glow orbs, sparkle icons, multi-colour accent stripes, or decorative window chrome.
+
+*Why:* Every mark on a screen is read as a signal before it is read as decoration, and each of these marks is borrowed from a component where it did carry one: a status stripe, a progress bar, an application chrome, a generative-feature affordance. Used decoratively it spends attention on a claim the page cannot honour, and it devalues the same mark everywhere it is load-bearing. The cost is not the pixels, it is that the vocabulary stops being trustworthy.
+
+*Exceptions:*
+- A mark specified by a documented identity system, where it reads as the brand rather than as a borrowed interface signal.
+- Illustration and editorial art, which the viewer parses as an image rather than as interface.
+
+### SHOULD NOT — Do not use pure white or pure black for surfaces, text, or borders, and keep at least three tint steps between the page and the topmost layer.
+
+*Why:* Pure white and pure black are the two values a palette contains when nobody defined one, which is precisely why they read as unfinished. With the page already at the end of the lightness range, no step remains above it, so cards, inputs, and popovers must be separated by borders instead of by surface — which is where the flat, outlined look comes from. A neutral ramp carrying a chroma of roughly 0.005 to 0.01 also binds the greys to the accent hue, and that is perceived as coherence rather than as colour.
+
+*Exceptions:*
+- Print and e-ink output, where the substrate itself is the white point.
+- OLED interfaces where true black is chosen for power or contrast, provided the surface step above it still exists.
+
+### SHOULD NOT — Do not give different hues to items that differ only in position, and keep a single view to at most three hue families.
+
+*Why:* A hue change is read as a category change, because hue is the strongest categorical cue the medium has. Mapping hues across a set of siblings — six feature icons, eight tags, a nav — therefore asserts a taxonomy the content does not have, and once six hues are in play there is no hue left that can mark the one item which actually is different.
+
+*Exceptions:*
+- Data encodings with a legend, where the hue is the data.
+- Colour used as a user-assigned label, as in calendars and project tags.
+
+### SHOULD NOT — Do not run a looping animation — a bouncing arrow, a pulsing ring, a shimmering border — outside an indeterminate-progress context.
+
+*Why:* Peripheral motion is processed pre-attentively, so a loop re-captures attention on every cycle whether or not it has anything new to report. In a progress context the repetition is the message; everywhere else it charges the user indefinitely to restate something the layout already states, and large-area looping motion is a documented trigger for vestibular symptoms.
+
+*Exceptions:*
+- Indeterminate loading, streaming, and live-connection indicators.
+- Ambient motion in an explicitly decorative surface, gated behind prefers-reduced-motion.
 
 ### SHOULD — Separate top-level sections by at least three times the gap used between elements inside a section.
 
@@ -355,6 +403,21 @@ Correct:
 
 *Exceptions:*
 - Genuinely symmetric binary choices, such as accept and decline in a consent dialog.
+
+### SHOULD — State the typeface choice against one rejected alternative and one reason, rather than inheriting whichever face the framework or template already configured.
+
+*Why:* A default is not a decision, and the absence shows up downstream: a face nobody chose is used at every size without the optical corrections a chosen face gets, because whoever did not pick it also did not read its metrics. Requiring the comparison is what makes the choice checkable. Landing on Inter is legitimate; landing on it without knowing what it beat is the tell.
+
+*Exceptions:*
+- A project whose design system specifies the face, where the choice was made upstream and reopening it is the error.
+
+### SHOULD — In a mixed-size tile layout such as a bento grid, no two cells may differ in area unless the content in them differs in importance.
+
+*Why:* Unequal cells are themselves a hierarchy claim, since area is read as importance before any content is read. When the sizes were chosen to tile the rectangle neatly, the claim is false and the viewer spends attention on the largest tile because the layout instructed them to. An equal grid asserts nothing, which is weaker but not wrong.
+
+*Exceptions:*
+- Media galleries where cell size follows the intrinsic aspect ratio of the image.
+- Dashboards where a cell is sized by the smallest area its chart stays legible in, making the sizing functional rather than expressive.
 
 ## Before reporting completion
 

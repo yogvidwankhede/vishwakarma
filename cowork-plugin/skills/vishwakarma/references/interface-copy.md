@@ -363,6 +363,66 @@ Correct:
 Your plan renews on 12 August 2026.
 ```
 
+### SHOULD NOT — Do not open with a category inversion — "It's not X, it's Y", "X, reimagined", "X, but for Y", "Stop doing X. Start doing Y." — unless the same block names the specific capability that makes the new category true.
+
+*Why:* The construction asserts a reclassification while supplying nothing a reader can check, and it spends the most-read line in the product describing a category the product is not in. Its frequency in generated marketing copy is now high enough that the shape itself is read as authorship rather than as a claim, so it discredits whatever follows it.
+
+*Exceptions:*
+- Copy correcting a misclassification the audience has demonstrably already made, where naming the wrong category is the information: "This is a compiler, not a linter — it rejects programs a linter would only warn about."
+- Comparative copy where X is a named competitor or a prior version and the difference is stated in measurable terms rather than implied by the inversion.
+
+Incorrect:
+
+```text
+It's not a note-taking app, it's a second brain.
+```
+
+Correct:
+
+```text
+Every note is linked to the meeting, person, and project it came from.
+```
+
+### SHOULD NOT — Do not prefix feature-list items with checkmarks or tick icons; reserve the tick for state the system actually verified, such as a completed step, a passing check, or a column in a two-sided comparison table.
+
+*Why:* A tick is a verification glyph everywhere else in an interface, so on an unchecked feature list it asserts a confirmation that nothing performed. It also gives every item identical weight, removing the ranking the reader came to the list for, and it reproduces the left half of a feature matrix, which invites the reader to notice that the competitor column is missing.
+
+*Exceptions:*
+- Checklists, onboarding progress, and status lists, where the tick reports a fact the product confirmed.
+- A real comparison table where the tick contrasts with a cross and both products are named.
+
+Incorrect:
+
+```text
+✓ Fast  ✓ Secure  ✓ Scalable  ✓ Easy to use
+```
+
+Correct:
+
+```text
+Cold starts under 50 ms in 18 regions. SOC 2 Type II with keys you rotate yourself. Tested to 40,000 requests per second.
+```
+
+### SHOULD NOT — Do not use three-comparative cadences such as "faster, simpler, smarter", or more than one standalone sentence fragment per section, in place of a measured claim.
+
+*Why:* Three is the shortest list that sounds complete, so the slot gets filled to length and the third member is chosen for stress rather than meaning. None of the comparatives names a baseline, which makes all three unfalsifiable while the rhythm supplies the impression that a claim was made. Fragment emphasis works the same way, lending a phrase the weight of a full stop without a finite verb to carry a claim.
+
+*Exceptions:*
+- A triad whose three members are each measured or independently verifiable.
+- A single fragment answering an immediately preceding question, or a tagline the reader encounters once rather than as a rhythm.
+
+Incorrect:
+
+```text
+Faster, simpler, smarter. Built for teams. No setup. Just results.
+```
+
+Correct:
+
+```text
+Builds finish in 40 seconds instead of six minutes, and two people can edit the same file at once.
+```
+
 ### SHOULD — Give every empty state three parts: what belongs here, why it is useful, and exactly one action.
 
 *Why:* The empty state is seen by every new user before any populated screen, making it the earliest available teaching surface. A bare "No items" cannot be distinguished from a fault, and multiple competing actions reproduce the paralysis the state exists to resolve.
@@ -401,6 +461,87 @@ Correct:
 
 *Exceptions:*
 - Developer-facing tools, and error surfaces where a copyable code genuinely helps support — include it as secondary detail, not as the message.
+
+### SHOULD — Keep em dashes to at most one per short paragraph and two or three per page of marketing copy; above that rate, re-punctuate each one as the comma, colon, semicolon, or full stop the relation actually calls for.
+
+*Why:* The em dash accepts every relation between two clauses, so it lets a writer join two thoughts without deciding whether the relation is apposition, consequence, contrast, or a sentence break. A high rate is therefore evidence those decisions were skipped, and because punctuation is what varies the rhythm of prose, one mark carrying every join gives every sentence the same shape.
+
+*Exceptions:*
+- Quoted speech, transcripts, interviews, and fiction, where the dash reproduces how someone talks.
+- A matched pair of dashes bracketing a genuine parenthetical, which is one construction rather than two connectors.
+- Dense reference prose where commas are already carrying a list inside the clause and a comma would be ambiguous.
+
+Incorrect:
+
+```text
+Deploy in seconds — no config, no YAML — and scale automatically — from one user to a million.
+```
+
+Correct:
+
+```text
+Deploy in seconds. No config files, no YAML. Traffic scales from one user to a million without a change on your side.
+```
+
+### SHOULD — Let bullet length and grammatical shape follow what each item is worth, and put the most consequential item first, rather than trimming every item to the same three-word noun phrase.
+
+*Why:* A reader uses relative length and position as a ranking signal before reading any of the words, so a list where every item is the same size states that nothing in it matters more than anything else. Uniformity of that kind comes from filling a template to a round number, and the items added to reach the number are the ones with nothing behind them.
+
+*Exceptions:*
+- Specification, parameter, and option lists, where parallel construction is what lets the reader compare values in the same dimension.
+- Localised sets where parallel structure is a translation or legal-review requirement.
+
+Incorrect:
+
+```text
+Fast builds / Simple setup / Great support / Full control / Team ready
+```
+
+Correct:
+
+```text
+Builds finish in 40 seconds, down from six minutes.
+Setup is one command; there is no config file.
+Support answers in under 4 hours, including weekends.
+```
+
+### SHOULD — Name each pricing tier after the buyer or the limit it fits, and state every difference between adjacent tiers as a number, so a reader can self-select without contacting anyone.
+
+*Why:* The tier name is the reader’s fastest route to "which one is me" and is read before any bullet list, so a name from an internal ladder such as Starter/Pro/Enterprise answers that question for nobody and forces all three lists to be read. A boundary the copy states as "advanced features" rather than a number is usually a boundary that was never decided, and a "Most popular" badge substitutes a social cue for the fact the reader was looking for.
+
+*Exceptions:*
+- Contracts genuinely priced per negotiation, where "Contact us" is accurate; state the threshold at which a reader should make contact, such as above 50 editors or when data residency is required.
+- A single usage-based rate, where there are no tiers to select between.
+
+Incorrect:
+
+```text
+Starter: Free. Pro: $29/mo (Most popular) — everything in Starter, plus advanced features. Enterprise: Contact us.
+```
+
+Correct:
+
+```text
+Solo: $0. One editor, 3 projects, 7-day history.
+Team: $29 per editor per month. Unlimited projects, SSO, audit log. For 2 to 50 editors.
+Company: from $18,000 a year. Adds SAML, data residency, 99.9% uptime. Contact us above 50 editors.
+```
+
+### SHOULD — A subtitle must add a fact its heading does not already contain; if striking the shared words leaves no new claim, delete the subtitle and let the heading run one line longer.
+
+*Why:* The subtitle slot exists in the layout before anyone has decided what belongs in it, so it gets filled by paraphrase. It is the second most-read line on the page, and a reader who finds no new information there learns the page repeats itself, after which everything below is skimmed rather than read.
+
+Incorrect:
+
+```text
+Ship faster with automated deploys / Deploy automatically and ship your product faster
+```
+
+Correct:
+
+```text
+Ship faster with automated deploys / Push to main and the new version is live in about 90 seconds.
+```
 
 ## Before reporting completion
 
@@ -456,3 +597,4 @@ currently have.
 
 - `references/copy-rewrites.md` — I have a specific bad string — a button, error, empty state, dialog, tooltip, or notification — what does the corrected version look like and why?
 - `references/accessible-naming.md` — How do I write aria-label, alt text, and link text so screen reader and voice control users get the same information as sighted users?
+- `references/generated-copy-tells.md` — This marketing or landing-page copy reads as AI-generated but I cannot say why — which construction is doing it, what is the mechanism, and what does the rewrite look like?

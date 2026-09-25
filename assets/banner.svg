@@ -70,5 +70,5 @@
   </g>
 
   <!-- stat row -->
-  <text x="90" y="416" font-family="'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace" font-size="14" font-weight="500" letter-spacing="0.5" fill="#7b84a8">40 SKILLS<tspan fill="#3d5afe">&#160;·&#160;</tspan>619 RULES<tspan fill="#8b5cf6">&#160;·&#160;</tspan>18 PACKAGES<tspan fill="#ec4899">&#160;·&#160;</tspan>13 AGENTS<tspan fill="#22c55e">&#160;·&#160;</tspan>224 TESTS</text>
+  <text x="90" y="416" font-family="'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace" font-size="14" font-weight="500" letter-spacing="0.5" fill="#7b84a8">42 SKILLS<tspan fill="#3d5afe">&#160;·&#160;</tspan>662 RULES<tspan fill="#8b5cf6">&#160;·&#160;</tspan>18 PACKAGES<tspan fill="#ec4899">&#160;·&#160;</tspan>13 AGENTS<tspan fill="#22c55e">&#160;·&#160;</tspan>226 TESTS</text>
 </svg>

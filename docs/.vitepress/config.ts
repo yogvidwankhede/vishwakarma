@@ -6,7 +6,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Vishwakarma',
   description:
-    '40 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development. Works with Cursor, Windsurf, Cline & 10+ agents.',
+    '42 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development. Works with Cursor, Windsurf, Cline & 10+ agents.',
 
   base: '/vishwakarma/',
 
@@ -20,7 +20,7 @@ export default defineConfig({
       {
         property: 'og:description',
         content:
-          '40 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development.',
+          '42 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development.',
       },
     ],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
@@ -29,7 +29,7 @@ export default defineConfig({
       {
         name: 'twitter:description',
         content:
-          '40 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development.',
+          '42 Claude Code skills for AI coding agents — design judgment, colour, motion, accessibility, layout, theming, and game development.',
       },
     ],
   ],

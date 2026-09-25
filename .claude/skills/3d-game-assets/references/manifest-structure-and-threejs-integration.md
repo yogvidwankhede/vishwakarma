@@ -93,24 +93,26 @@ blends the two poses through the interval; a cut swaps skeletal poses between co
 which is a discontinuity the eye catches at 60 fps because it violates the velocity continuity
 every other frame of the animation established.
 
-## 3. Using `@vishwakarma/three` helpers
+## 3. Mounting the asset
 
-```js
-import { useGLTF, useMixedAnimation } from '@vishwakarma/three'
+`@vishwakarma/three` does not ship a loader. Load with `useGLTF` from `@react-three/drei`,
+or your own loader, and apply the manifest's `calibrationYawDegrees` to the visual child
+yourself — rotating the collision root rotates the physics with it.
 
-// Loads, normalises, and applies calibration from manifest automatically
-const { scene, mixer } = useGLTF(manifest, 'player-character')
-const { transition } = useMixedAnimation(mixer, { crossFadeDuration: 0.2 })
+Wrap the scene in what the package does ship, all of which is real and exported:
+`AdaptiveCanvas` (sizes the renderer to the measured device tier), `SceneBoundary` and
+`SceneFallback` (context loss is a runtime event, not a hypothetical), `PerformanceGuard`
+(degrades quality when frames run long), `SceneDescription` (a canvas is opaque to assistive
+technology), and `useOnDemandRender` (a static scene rendering at 60 fps burns battery for
+nothing). `SCENE_BUDGETS` gives the per-tier draw-call, triangle and texture-memory ceilings
+your asset has to fit inside.
 
-// Trigger state change with cross-fade
-transition('walk')   // → Motion Grammar 'respond' intent, 60–120 ms ease-out
-transition('idle')
-```
+Keep one mixer per character: two mixers write conflicting pose data to the same bones. Cross-fade
+rather than cut — a pose snap is visible at 60 fps — on the Motion Grammar `respond` intent,
+60–120 ms ease-out.
 
-`useGLTF()` resolves the asset from the manifest and applies the orientation calibration to the
-visual child, so the calibration cannot be forgotten at one call site and applied at another.
-`useMixedAnimation()` owns the single mixer and the cross-fade duration.
-`useInstancedGLB()` handles crowds and particle-like groups of the same asset.
+Scene setup, camera, lighting, load sequencing and the accessibility path belong to
+`webgl-experiences.md`. This file stops at the asset.
 
 ## 4. Keep primitives as fallback
 
@@ -151,9 +153,10 @@ clarity. Reduced motion means gentler and fewer, not zero — the spawn still ha
 
 ## 6. Vishwakarma package integration
 
-- **`@vishwakarma/three`** — `useGLTF()` resolves assets from the manifest and applies
-  orientation calibration; `useMixedAnimation()` manages cross-fades; `useInstancedGLB()` for
-  crowds or particle-like asset groups.
+- **`@vishwakarma/three`** — `AdaptiveCanvas`, `PerformanceGuard`, `SceneBoundary`,
+  `SceneFallback`, `SceneDescription`, `useOnDemandRender` and `SCENE_BUDGETS`. It ships
+  no asset loader: load through `@react-three/drei` or your own, and apply the manifest's
+  calibration yourself.
 - **`@vishwakarma/motion`** — `resolveMotion('enter')` for spawn transitions,
   `resolveMotion('affirm')` for collectible pickups. Keeps asset animation in Motion Grammar
   timing without per-asset tuning.

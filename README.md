@@ -12,9 +12,9 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-22c55e.svg?style=for-the-badge)](LICENSE)
 [![Packages](https://img.shields.io/badge/packages-18-3d5afe.svg?style=for-the-badge)](#-the-packages)
-[![Skills](https://img.shields.io/badge/skills-40-8b5cf6.svg?style=for-the-badge)](#-the-skill-catalog)
-[![Rules](https://img.shields.io/badge/rules-619-ec4899.svg?style=for-the-badge)](#-the-skill-catalog)
-[![Tests](https://img.shields.io/badge/tests-224%20passing-22c55e.svg?style=for-the-badge)](#)
+[![Skills](https://img.shields.io/badge/skills-42-8b5cf6.svg?style=for-the-badge)](#-the-skill-catalog)
+[![Rules](https://img.shields.io/badge/rules-662-ec4899.svg?style=for-the-badge)](#-the-skill-catalog)
+[![Tests](https://img.shields.io/badge/tests-226%20passing-22c55e.svg?style=for-the-badge)](#)
 
 **Teach any coding agent to build interfaces that look _designed_ — not _generated_ — and games that _feel_ right — and give it the tools to prove both.**
 
@@ -28,7 +28,7 @@ Works with **Claude Code · Cursor · Windsurf · Cline · Roo Code · Codex · 
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
-<sub>Installs all 40 skills — Vishwakarma and Vishwakarma Studios.</sub>
+<sub>Installs all 42 skills — Vishwakarma and Vishwakarma Studios.</sub>
 
 **Just the game skill:**
 
@@ -104,7 +104,7 @@ The fastest path. In any Claude Code session, just tell it where to look:
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
-Claude fetches the compiled catalog from `.claude/skills/` in the repository and copies all 40 skills into your project. No commands, no build, no npm.
+Claude fetches the compiled catalog from `.claude/skills/` in the repository and copies all 42 skills into your project. No commands, no build, no npm.
 
 ### Claude Code plugin — two commands
 
@@ -115,7 +115,7 @@ The repository also ships as a **Claude Code plugin marketplace**, which gives y
 /plugin install vishwakarma@vishwakarma
 ```
 
-All 40 skills load with progressive disclosure — descriptions always visible, full guidance and references only when relevant.
+All 42 skills load with progressive disclosure — descriptions always visible, full guidance and references only when relevant.
 
 ### Every other agent — the CLI
 
@@ -184,7 +184,7 @@ check_contrast(foreground: "#8a8a8a", background: "#ffffff")
 
 ## 📚 The skill catalog
 
-**40 skills**, carrying **619 rules** (every single one with its mechanism stated), **196 self-review checks**, and **155 deep references** loaded only when needed.
+**42 skills**, carrying **662 rules** (every single one with its mechanism stated), **198 self-review checks**, and **162 deep references** loaded only when needed.
 
 Two of those skills change how the rest behave. **Engineering Discipline** is always on: it governs how any task is approached — resolving ambiguity out loud, measuring before changing, restating work as something checkable, keeping diffs scoped. And the three **platform** skills are resolved *before* any value is chosen, because roughly half the constants in the catalog are mutually exclusive between platforms: 44pt is right on Apple and wrong on Android, 48dp is right on Android and not the Apple minimum, and a 46pt compromise is native to neither.
 
@@ -196,7 +196,7 @@ Two of those skills change how the rest behave. **Engineering Discipline** is al
 
 The one skill that is not about interfaces. Games are real-time simulations with a deadline, and almost every wrong answer in them traces to a violated frame budget, a broken determinism contract, or a physically honest system that feels wrong because honesty was never the goal.
 
-It carries **68 of the catalog's 155 references** across 20 domains — Unity, Unreal, Godot and custom engines; the fixed timestep; ECS versus OOP; physics and collision; animation; rendering; audio; game feel; input; game UI; netcode; game AI; design loops; performance; production; accessibility; shipping and live ops. Each sits under a 6,000-token budget and loads only when its question is the question you have.
+It carries **68 of the catalog's 162 references** across 20 domains — Unity, Unreal, Godot and custom engines; the fixed timestep; ECS versus OOP; physics and collision; animation; rendering; audio; game feel; input; game UI; netcode; game AI; design loops; performance; production; accessibility; shipping and live ops. Each sits under a 6,000-token budget and loads only when its question is the question you have.
 
 Three claims do the load-bearing work:
 
@@ -212,7 +212,7 @@ It costs **39 tokens idle and 2,947 when it activates**, and hands app UI — la
 vishwakarma add vishwakarma-studios --target claude-code
 ```
 
-Name the target: with no `--target` the CLI installs for whatever it detects in the current directory, which in a fresh one is the `universal` `AGENTS.md` summary rather than the skill and its 68 references. Studios declares no dependencies, so that selection is genuinely one skill. The paste-the-URL and plugin routes above install the whole catalog of 40, Studios included.
+Name the target: with no `--target` the CLI installs for whatever it detects in the current directory, which in a fresh one is the `universal` `AGENTS.md` summary rather than the skill and its 68 references. Studios declares no dependencies, so that selection is genuinely one skill. The paste-the-URL and plugin routes above install the whole catalog of 42, Studios included.
 
 Full documentation: **[yogvidwankhede.github.io/vishwakarma/studios](https://yogvidwankhede.github.io/vishwakarma/studios)**
 
@@ -231,7 +231,7 @@ Full documentation: **[yogvidwankhede.github.io/vishwakarma/studios](https://yog
 | 🧪 **Code Quality** | 🧬 **Reverse Engineering** | 🔌 **Public API Integration** |
 | 🕹️ **Vishwakarma Studios** | 🔴 **Test-Driven Development** | 👀 **Code Review** |
 | 🕸️ **Agent Orchestration** | 🧠 **Agent Memory** | 🧭 **Skill Discovery** |
-| 🔁 **Methodology Feedback** | | |
+| 🔁 **Methodology Feedback** | 🧊 **WebGL Experiences** | 🚢 **Ship Readiness** |
 
 ```bash
 vishwakarma show motion-design   # read any skill in full
@@ -271,7 +271,7 @@ vishwakarma show motion-design   # read any skill in full
 ### 🚚 Distribution — *gets the intelligence into any agent*
 | Package | What it does |
 |---|---|
-| [`@vishwakarma/skills`](packages/skills) | The skill format, validator & 40-skill catalog |
+| [`@vishwakarma/skills`](packages/skills) | The skill format, validator & 42-skill catalog |
 | [`@vishwakarma/adapters`](packages/adapters) | Compiles one skill into **13 agent formats**, with the install lockfile |
 | [`@vishwakarma/mcp`](packages/mcp) | The MCP server — 14 tools, 2 prompts, 2 resources |
 | [`@vishwakarma/registry`](packages/registry) | Copy-in component distribution with dependency resolution |
