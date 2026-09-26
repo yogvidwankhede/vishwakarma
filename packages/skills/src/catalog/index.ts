@@ -52,6 +52,7 @@ export { themingSystems } from './theming-systems.js'
 export { typographicSystems } from './typographic-systems.js'
 export { uiGenerationWorkflow } from './ui-generation-workflow.js'
 export { vishwakarmaStudios } from './vishwakarma-studios.js'
+export { visualFeedbackLoop } from './visual-feedback-loop.js'
 export { webglExperiences } from './webgl-experiences.js'
 
 import { threeDGameAssets } from './3d-game-assets.js'
@@ -96,6 +97,7 @@ import { themingSystems } from './theming-systems.js'
 import { typographicSystems } from './typographic-systems.js'
 import { uiGenerationWorkflow } from './ui-generation-workflow.js'
 import { vishwakarmaStudios } from './vishwakarma-studios.js'
+import { visualFeedbackLoop } from './visual-feedback-loop.js'
 import { webglExperiences } from './webgl-experiences.js'
 
 /** Every skill in the catalog, in stable order. */
@@ -142,6 +144,7 @@ export const catalog: SkillManifest[] = [
   typographicSystems,
   uiGenerationWorkflow,
   vishwakarmaStudios,
+  visualFeedbackLoop,
   webglExperiences,
 ]
 

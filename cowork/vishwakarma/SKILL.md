@@ -169,6 +169,7 @@ Load the file for the branch you are on. Do not read the whole tree.
 | Turning friction in real work into rule changes and deletions | `methodology-feedback.md` |
 | 3D on the web — scene, camera, lighting, load, fallback, a11y | `webgl-experiences.md` |
 | Whether it is actually shippable — legal pages, real content, demos | `ship-readiness.md` |
+| Checking your own output by rendering it, and reporting what you did not check | `visual-feedback-loop.md` |
 
 ---
 

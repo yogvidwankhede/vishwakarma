@@ -856,6 +856,7 @@ technology baseline, coverage ceiling. Four lines that prevent every subsequent 
   ],
 
   relatedSkills: [
+    'visual-feedback-loop',
     'accessible-components',
     'design-review',
     'interface-states',

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Vishwakarma
   text: Design and simulation intelligence for AI coding agents
-  tagline: 43 skills that give Claude, Cursor, Cline, and Windsurf real taste in two domains — interfaces, where colour, motion, accessibility, hierarchy, layout and theming are computed rather than guessed; and games, where the frame budget, the fixed timestep, and how a jump feels decide whether it works.
+  tagline: 44 skills that give Claude, Cursor, Cline, and Windsurf real taste in two domains — interfaces, where colour, motion, accessibility, hierarchy, layout and theming are computed rather than guessed; and games, where the frame budget, the fixed timestep, and how a jump feels decide whether it works.
   actions:
     - theme: brand
       text: Get started
@@ -18,7 +18,7 @@ hero:
 
 features:
   - title: One line to install
-    details: Paste the GitHub URL into any Claude Code session and all 43 skills copy into your project. No commands, no build step, no npm.
+    details: Paste the GitHub URL into any Claude Code session and all 44 skills copy into your project. No commands, no build step, no npm.
     icon: 🔗
   - title: Games as well as interfaces
     details: Vishwakarma Studios covers the simulation layer — engines, the fixed timestep, ECS, physics, game feel, netcode, game AI, performance, and shipping. Sixty-eight references, loaded on demand, costing 39 tokens until a game question arrives.
@@ -27,7 +27,7 @@ features:
     details: Contrast ratios, perceptual colour ramps, fluid type scales, motion timing, stagger delays — everything that can be calculated is calculated. Agents calling functions are never wrong.
     icon: 📐
   - title: A design contract, not a style guide
-    details: Each of the 678 rules is a checkable constraint with a pass condition. The agent runs 199 self-review checks against these before reporting done, so guidance degrades into habit rather than being silently ignored.
+    details: Each of the 692 rules is a checkable constraint with a pass condition. The agent runs 200 self-review checks against these before reporting done, so guidance degrades into habit rather than being silently ignored.
     icon: ✅
   - title: Works with any AI agent
     details: Compiles to 13 agent formats from one source — Claude Code, Cursor, Cline, Windsurf, Copilot, and more. Author once; every agent stays in sync.
@@ -48,7 +48,7 @@ In any Claude Code session:
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
-Claude fetches the compiled catalog and copies all 43 skills into your project. No commands, no build, no npm.
+Claude fetches the compiled catalog and copies all 44 skills into your project. No commands, no build, no npm.
 
 ## Or use the plugin
 

@@ -838,6 +838,7 @@ question, because it looks finished.`,
   ],
 
   relatedSkills: [
+    'visual-feedback-loop',
     'design-judgment',
     'information-architecture',
     'layout-composition',

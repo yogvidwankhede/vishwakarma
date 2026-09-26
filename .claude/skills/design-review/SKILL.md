@@ -125,11 +125,9 @@ consequence and no change, so acting on it means redoing the review.
 
 ## 6. Reviewing generated output
 
-Generated interfaces fail structurally rather than randomly, so check the signature
-directly: gradient-filled heading text; exactly three equal cards under a centred heading;
-emoji standing in for icons; one radius and one shadow everywhere; every section at the same
-max-width; the violet-to-cyan palette; blur blobs behind the hero; a subtitle restating the
-heading; invented testimonials; the same fade-up on every element; only the happy path built.
+Generated interfaces fail structurally rather than randomly, so check the signature directly
+against `design-judgment`'s `anti-patterns.md`, which lists each tell with its replacement.
+The review's own contribution is the diagnosis rather than the list.
 
 State the meta-finding plainly: uniformity is the diagnosis. Where every value is identical,
 no decision was made, and the correction is ranking, not polish.
@@ -143,6 +141,10 @@ colour values, tokens versus hard-coded values, semantic markup and ARIA usage, 
 management inside modal code, which properties are animated, and whether empty, loading and
 error branches exist at all. Mark anything needing rendered layout as *unverified —
 requires a running build*, and never assert a defect you have not seen.
+
+Check first that you cannot run it. On something you just built, a dev server turns most of
+these *unverified* rows into measurements — `visual-feedback-loop` owns that loop, and
+taking this reduced pass by default is how a review becomes a set of predictions.
 
 ---
 
