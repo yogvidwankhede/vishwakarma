@@ -170,6 +170,7 @@ Load the file for the branch you are on. Do not read the whole tree.
 | 3D on the web — scene, camera, lighting, load, fallback, a11y | `webgl-experiences.md` |
 | Whether it is actually shippable — legal pages, real content, demos | `ship-readiness.md` |
 | Checking your own output by rendering it, and reporting what you did not check | `visual-feedback-loop.md` |
+| Shaders, refraction, noise fields, ASCII and halftone — surfaces computed per pixel | `procedural-surfaces.md` |
 
 ---
 

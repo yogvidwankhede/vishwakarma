@@ -106,6 +106,11 @@ the opaque version first and lower the alpha only inside
 `@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)))`.
 Reversed, unsupporting browsers get translucent text over unknown content.
 
+And know where this ends. Blur *averages* the backdrop; it cannot *displace* it, which is why
+even correct CSS glass reads as frosted plastic rather than as glass. Displacement needs a
+neighbourhood lookup, so it belongs to `procedural-surfaces` — along with the chromatic
+separation at the edges that actually sells the material.
+
 ---
 
 ## 6. Gradients that are not decorative
@@ -155,12 +160,8 @@ inset alone, because a recess casts nothing.
 
 ## The failures, named
 
-**One shadow everywhere**, on cards, dropdowns and modals alike: not an elevation system, a
-decoration. **Glass over a flat background**: blur cost paid, a tint gained. **One radius
-token** from avatar to modal, nested corners visibly fighting. **Banded hero gradients**:
-large, low-delta, ungrained. **Border plus shadow**: two physical stories on one element.
-**Dark-theme shadows** carried over from the light theme, invisible on `#111`, leaving
-every panel at apparently the same depth.
+The rules below carry each with its mechanism. `design-judgment`’s `anti-patterns.md` has
+the same tells as visual signatures, each with a replacement.
 
 ## Rules
 

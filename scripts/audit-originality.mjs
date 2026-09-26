@@ -37,12 +37,21 @@ const EXEMPT_FILES = new Set([
   'NOTICE',
   'ORIGINALITY.md',
   'CODE_OF_CONDUCT.md',
-  'NOTICE',
   'scripts/audit-originality.mjs',
   'scripts/audit-licenses.mjs',
   'scripts/apply-license-headers.mjs',
 ])
 
+/**
+ * Extensions the walk reads.
+ *
+ * Shader and markup files are here for a reason worth stating: the guard's whole value is
+ * catching a paste that still carries its origin, and a fragment shader lifted from a
+ * playground or a vendored SVG icon set are two of the most likely pastes in a project like
+ * this one. Neither has a `.ts` extension, so both were invisible to this scan. No such file
+ * exists in the tree yet — this is a tripwire placed before the wire is needed, not a fix for
+ * something it caught.
+ */
 const SCANNED_EXTENSIONS = new Set([
   '.ts',
   '.tsx',
@@ -57,6 +66,16 @@ const SCANNED_EXTENSIONS = new Set([
   '.json',
   '.yaml',
   '.yml',
+  // Shaders: copyrighted like any source, and routinely copied as loose files.
+  '.glsl',
+  '.frag',
+  '.vert',
+  '.wgsl',
+  // Markup and components, where vendored icon sets and widgets land.
+  '.svg',
+  '.html',
+  '.vue',
+  '.svelte',
 ])
 
 const RULES = [

@@ -1030,6 +1030,7 @@ reduce\`, and Save-Data on — six complete pages, or the scene is not finished.
   ],
 
   relatedSkills: [
+    'procedural-surfaces',
     '3d-game-assets',
     'rendering-performance',
     'mobile-performance',

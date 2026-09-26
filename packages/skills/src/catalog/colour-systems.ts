@@ -1025,6 +1025,7 @@ lowering opacity will often drop below the 3:1 non-text floor and disappear enti
   ],
 
   relatedSkills: [
+    'procedural-surfaces',
     'design-judgment',
     'design-tokens',
     'accessible-components',

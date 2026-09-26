@@ -1,0 +1,210 @@
+# Procedural Surfaces
+
+Some surfaces cannot be declared, only computed. The test for whether you are in this skill's
+territory is precise: **does the effect need to know about a pixel's neighbours, or about a
+function evaluated at that pixel?** If it does, no CSS property expresses it.
+
+Two examples make the boundary concrete. `backdrop-filter: blur()` *averages* what is behind a
+panel, which is why CSS glass reads as frosted plastic rather than as glass — real glass
+*displaces* the backdrop as a function of surface curvature, and displacement needs a
+neighbourhood lookup. A CSS gradient *interpolates* between stops, so it bands on any gentle
+transition; a computed field *evaluates* a function per pixel, so it cannot.
+
+Everything else in this skill is a variation on those two moves: sample the backdrop somewhere
+else, or evaluate something per pixel.
+
+---
+
+## 1. The cost is fill rate, and the budget is already written down
+
+A fullscreen fragment shader costs *pixels × instructions per pixel*, and nothing else about
+your scene matters. At device pixel ratio 2 on a 1440×900 viewport that is 10.4 million
+fragments per frame, every frame.
+
+`SCENE_BUDGETS.postProcessingPasses` from `@vishwakarma/three` is **0 at tier none, 0 at low,
+1 at medium, 3 at high**. Read that honestly: on the device class that carries most traffic, the
+budget for a fullscreen pass is zero. So the designed static surface is not the fallback — it is
+the primary artefact, and the shader is an enhancement layered over it at high tier.
+
+Two levers actually work, in this order. **Resolution**: render the effect to a half-resolution
+target and upscale; fill cost falls with the square, and for a soft field nobody can tell. The
+tier's own `dpr` range already encodes this — low tier is [0.75, 1]. **Instruction count**:
+three octaves of noise instead of six. Beyond about four octaves the detail is below a pixel and
+you are paying for nothing.
+
+---
+
+## 2. Write the shader yourself
+
+Shader code is copyrighted like any other code, and a snippet pasted from a repository, a blog
+or a shader playground arrives with its licence and its author's name attached. Name the
+*technique* — refraction by gradient displacement, fractional Brownian motion, luminance
+quantisation — and implement it from the mechanism. The mechanisms are mathematics and are not
+ownable; the implementations are.
+
+This repository's `audit-originality.mjs` is a tripwire for the mechanical signs of a paste: a
+foreign copyright line, an embedded licence block, an `adapted from` comment. It fails the
+build so a human looks. It is not a plagiarism detector and cannot be one, so it does not
+replace the discipline — it only catches the careless version.
+
+---
+
+## 3. The four technique classes
+
+**Refraction** — displace a sampled backdrop by the gradient of a height field, and sample the
+three channels at slightly different offsets for dispersion. That chromatic separation at the
+edges is what sells glass; blur alone never will. `refractive-glass.md`.
+
+**Computed colour fields** — evaluate smooth noise per pixel to get a gradient with no stops and
+no banding, which can also move without animating a single DOM node. The technique is neutral;
+the *palette* is where these go wrong, so sample a ramp from `colour-systems` rather than
+inventing hues in the shader. That is the whole difference between this and the violet-to-cyan
+tell. `computed-fields.md`.
+
+**Flow displacement** — advect texture coordinates along a vector field so a logo or photograph
+appears to flow. Derive the offset from a time uniform; never accumulate it, or the surface
+drifts and cannot be paused or reversed. `flow-displacement.md`.
+
+**Quantisation and decomposition** — reduce an image to one sample per cell and map each sample
+to a glyph, a dot, or a primitive. This one needs no WebGL at all, which makes it the cheapest
+technique here and the only one whose output can *be* real text. `quantised-images.md`.
+
+---
+
+## 4. What every one of them owes
+
+A **designed still** that is the real content, at the same reserved aspect ratio, shipping before
+any shader initialises. Under `prefers-reduced-motion: reduce`, **freeze the time uniform and
+keep rendering** — a frozen field is still a surface, and removing it is a bigger change than
+the preference asked for. Keep coordinates small: `highp` precision is not guaranteed in
+fragment shaders on mobile GPUs, and noise fed large-magnitude inputs bands or breaks in ways
+that never appear on a desktop. And verify the result by rendering it — `visual-feedback-loop`
+owns that, and a shader is the clearest case of something you cannot evaluate from source.
+
+---
+
+**Boundaries.** `surface-and-depth` owns every depth effect CSS can express, including
+`backdrop-filter` glass and dithered gradients — go there first, and come here only when the
+effect needs a neighbourhood. `webgl-experiences` owns mounting, tiering and fallback for the
+canvas that hosts these. `colour-systems` owns every colour a field samples.
+`media-driven-motion` owns motion sampled from recorded frames rather than computed.
+`rendering-performance` owns the page's other costs. `vishwakarma-studios` owns shaders inside
+a game's render loop.
+
+## Rules
+
+### MUST NOT — Do not apply flow displacement to live text; put the effect on the surface and keep the type on a plate above it.
+
+*Why:* Letterforms stop being legible well before the displacement becomes visually interesting, and text rendered through a shader is no longer text to a screen reader, a crawler, find-in-page, or translation. The effect is available at full strength on the surface behind, where it costs none of that.
+
+### MUST — Reach for a shader only when the effect needs a neighbourhood lookup or a per-pixel function; otherwise use the CSS treatment surface-and-depth specifies.
+
+*Why:* A fullscreen pass costs pixels times instructions on every frame and is budgeted at zero passes below medium tier, so it must buy something CSS cannot express. Blur, elevation, dithered gradients and concentric radii all already have correct CSS answers, and replacing them with a shader spends the page’s entire effect budget on parity.
+
+### MUST — Implement shader techniques from their mechanism rather than pasting code from a repository, blog or shader playground.
+
+*Why:* Shader source is copyrighted like any other code and arrives with its licence and author attached, while the underlying mathematics — gradient displacement, fractional Brownian motion, luminance quantisation — is not ownable and takes a few lines to write from its description. The originality audit only catches the mechanical signs of a paste, so it cannot substitute for this.
+
+### MUST — Gate every fullscreen pass on the tier budget: zero passes at none and low, one at medium, three at high.
+
+*Why:* SCENE_BUDGETS.postProcessingPasses is 0, 0, 1 and 3 across the four tiers, so on the device class carrying most traffic the budget for a fullscreen pass is zero. A shader that ships unconditionally is therefore shipped over budget on most devices, where it competes with the frame budget the rest of the page needs.
+
+### MUST — Ship the designed static surface as the primary artefact and layer the shader over it, rather than treating the still as a degradation.
+
+*Why:* Because the pass budget is zero below medium tier, the still is what most visitors see — along with every no-JS, Save-Data, print and crawler request. Designing the shader first and deriving a fallback from it produces a fallback nobody composed, which is the common reason these pages look unfinished exactly where they are seen most.
+
+### MUST — Drive a colour field by indexing the project’s own ramp, never by choosing hues inside the shader.
+
+*Why:* Hues chosen in shader source sit outside every palette discipline the project has, which is precisely how the violet-to-cyan field became the recognisable tell — the technique is neutral and the palette is the giveaway. Indexing an uploaded ramp makes the field the system’s colours by construction, and interpolating in a perceptual space beforehand avoids the desaturated middle that linear RGB produces between two saturated hues.
+
+### MUST — Compute every animated shader value from a time or progress uniform; never feed a frame’s output back in as the next frame’s input.
+
+*Why:* A feedback loop makes the surface a function of its own history, so it cannot be paused and resumed to the same state, scrubbed, reversed, or reproduced for a screenshot comparison — which also puts it beyond what the visual feedback loop can check. Multi-tap sampling along a streamline within one frame gives the same smearing deterministically.
+
+### MUST — Under prefers-reduced-motion: reduce, freeze the time uniform and keep rendering the surface rather than replacing it.
+
+*Why:* A moving full-viewport field is large-area motion and a documented vestibular trigger, so the preference genuinely applies. But a frozen field is still a designed surface, and swapping it for a flat colour changes the page more than the preference asked for — the preference is about motion, not about the surface.
+
+### MUST — Keep shader input coordinates small and wrap the time uniform before it enters the shader.
+
+*Why:* highp float precision is not guaranteed for fragment shaders on mobile GPUs, so noise fed coordinates in the thousands — a large scale factor, or a clock that has run for minutes — loses mantissa bits and visibly quantises into blocks or freezes. It never reproduces on the desktop that built it, which is why it reaches production.
+
+Incorrect:
+
+```ts
+material.uniforms.time.value = performance.now() / 1000
+```
+
+Correct:
+
+```ts
+material.uniforms.time.value = (performance.now() / 1000) % 1000
+```
+
+### MUST — Measure text contrast over a moving field against the field’s worst-case lightness, or put the text on a solid plate.
+
+*Why:* A field gives text a different backdrop every frame, so a ratio measured against its average passes while individual frames fail. The worst case is the only measurement that means anything, and clamping the field’s lightness range is usually cheaper than plating every text element over it.
+
+### MUST — Order an ASCII or block ramp by ink coverage measured in the actual font, and derive cell aspect ratio from its advance width and line height.
+
+*Why:* Coverage depends on weight, x-height and advance width, so a ramp copied from another project is mis-ordered for yours and produces tonal reversals that read as noise. Sampling square cells into cells that are roughly 0.55 as wide as they are tall also stretches the image by nearly two to one, which is usually blamed on the source image.
+
+### MUST — Scale halftone dots by the square root of tone, and rotate the sampling lattice off the pixel axes.
+
+*Why:* Dot area rather than radius is what the eye integrates as tone, so radius proportional to luminance renders midtones far too dark. An axis-aligned lattice also interferes with the pixel grid and produces moiré, which is why print halftones sit at 15, 45 or 75 degrees.
+
+### MUST — Run greedy primitive fitting at build time and ship the resulting SVG; do not fit in the browser.
+
+*Why:* Cost is iterations times candidates times pixels touched, which is minutes of compute for a usable result. Doing that in a page moves a render farm onto the user’s main thread for an output that never changes, and the output is a static file by nature.
+
+### MUST — Ship the source image or mark as the real asset with correct alternative text, and treat the quantised or displaced rendering as a presentation layer over it.
+
+*Why:* Every technique here transforms something, and that something is what a crawler, a print stylesheet, a Save-Data request and a reader with images disabled must receive. A brand mark that exists only as shader output also cannot be printed, used as a favicon, or read by anything without WebGL.
+
+*Exceptions:*
+- An ASCII rendering emitted as real selectable text, which is itself an accessible representation once it carries a text alternative or is marked decorative.
+
+### SHOULD — Reduce fill cost by rendering the effect to a half-resolution target before reducing its octave count or removing features.
+
+*Why:* Fill cost falls with the square of resolution, so half resolution is a four-times saving, and for a soft field the loss is imperceptible because the missing detail was sub-pixel. Cutting features changes the design; cutting resolution usually does not, which makes it the cheaper lever to try first.
+
+*Exceptions:*
+- Effects whose subject is high-frequency detail — a sharp refraction edge, a halftone grid — where upscaling visibly softens the thing the effect is for.
+
+### SHOULD — Use three or four octaves of noise for a screen-scale field, not six.
+
+*Why:* Each octave doubles spatial frequency, so once an octave’s features fall below a pixel it contributes aliasing rather than detail while still costing its full instruction count. Six is a figure carried over from terrain generation, where a camera gets close enough for the high octaves to resolve.
+
+## Before reporting completion
+
+Run these checks against your own output. Answer each question explicitly rather than
+assuming the answer, because the point of the exercise is to notice what you did not
+notice while building.
+
+### Confirm the computed surface earns its cost, degrades to something designed, and was written rather than pasted — measured on a real mid-tier phone. (blocking)
+
+- What does this effect do that no CSS property can express — a neighbourhood lookup, or a per-pixel function? If neither, why is it not the surface-and-depth treatment?
+- Was every shader written from its mechanism? Name the technique for each one and where the implementation came from.
+- Does the effect render at all below medium tier, and if so, against what budget — postProcessingPasses is 0 at low.
+- With every shader disabled, is the remaining surface a composed design or a leftover? Which of the two was built first?
+- What is the measured frame time on a real mid-tier phone after two continuous minutes, and did halving the render resolution get tried before any feature was cut?
+- How many noise octaves are evaluated per pixel, and at the rendered resolution are the highest ones larger than a pixel?
+- Where did the field’s colours come from — an uploaded ramp built in a perceptual space, or values chosen in shader source?
+- Is every animated value a function of a time or progress uniform, with no frame-to-frame feedback? Can the surface be frozen and resumed to the same pixels?
+- Under prefers-reduced-motion: reduce, is the time uniform frozen while the surface still renders?
+- Are shader coordinates kept small and the time uniform wrapped, and has the effect been seen running for several minutes on a phone rather than seconds on a desktop?
+- For text over a field: was contrast measured against the field’s worst-case lightness, or is the text on a solid plate?
+- For a glyph ramp: was coverage measured in the shipping font, and does the cell aspect ratio come from its advance width and line height?
+- For halftone: do dots scale with the square root of tone, and is the lattice rotated off the pixel axes?
+- For fitted primitives: did the fitting run at build time, and is the shipped artefact a static file?
+- Is the source image or mark shipped as a real asset with alternative text, and does the page still convey its content with the rendering removed?
+
+## Further reference
+
+These are not loaded by default. Read one only when its question is the question you
+currently have.
+
+- `references/refractive-glass.md` — How do I make glass that distorts what is behind it, where does the backdrop texture come from, and what does it cost?
+- `references/computed-fields.md` — How do I build a gradient that cannot band and can move without animating the DOM, and how do I keep it from looking like every other AI-generated hero?
+- `references/flow-displacement.md` — How do I make a logo or photograph appear to flow, and how do I keep it pausable and reversible?
+- `references/quantised-images.md` — How do I render an image as characters, blocks or dots properly, why does a copied glyph ramp look wrong, and how do I fit geometric primitives to an image?

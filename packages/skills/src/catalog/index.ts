@@ -38,6 +38,7 @@ export { multiplayerGamePublishing } from './multiplayer-game-publishing.js'
 export { platformAndroid } from './platform-android.js'
 export { platformApple } from './platform-apple.js'
 export { platformWeb } from './platform-web.js'
+export { proceduralSurfaces } from './procedural-surfaces.js'
 export { publicApiIntegration } from './public-api-integration.js'
 export { renderingPerformance } from './rendering-performance.js'
 export { responsiveArchitecture } from './responsive-architecture.js'
@@ -83,6 +84,7 @@ import { multiplayerGamePublishing } from './multiplayer-game-publishing.js'
 import { platformAndroid } from './platform-android.js'
 import { platformApple } from './platform-apple.js'
 import { platformWeb } from './platform-web.js'
+import { proceduralSurfaces } from './procedural-surfaces.js'
 import { publicApiIntegration } from './public-api-integration.js'
 import { renderingPerformance } from './rendering-performance.js'
 import { responsiveArchitecture } from './responsive-architecture.js'
@@ -130,6 +132,7 @@ export const catalog: SkillManifest[] = [
   platformAndroid,
   platformApple,
   platformWeb,
+  proceduralSurfaces,
   publicApiIntegration,
   renderingPerformance,
   responsiveArchitecture,
