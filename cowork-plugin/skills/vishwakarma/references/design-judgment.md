@@ -112,6 +112,18 @@ anything else on this list. Owner: `motion-design`.
 
 ---
 
+## 4. A named style is a pre-committed constraint set
+
+Deciding *which* differences to make is the hard part, and a named style — Swiss, Y2K,
+Victorian — is somebody else's tested answer to exactly that. It is judgment borrowed under a
+name, and it delivers nothing until the name is unpacked into decisions.
+
+`named-styles.md` has twenty reduced to decidable parameters, each with its **counterfeit
+tell**: what a page does when it wears the name without the commitments. A "Swiss" page that is
+centred is the clearest case, since Swiss is asymmetric by definition.
+
+---
+
 ## What "premium" actually is
 
 It is not gradients, glass, or glow. Interfaces read as expensive when they demonstrate
@@ -126,6 +138,10 @@ run on every screen; `critique-protocol.md` is the seven-pass long form for a fi
 interface; `anti-patterns.md` is the catalogue of tells with a replacement for each.
 
 ## Rules
+
+### MUST NOT — Do not apply two named styles to one surface.
+
+*Why:* Each style is a constraint set, and two sets of constraints on one surface means neither is binding — which is an unmade decision rather than eclecticism, and it produces exactly the undifferentiated result this skill exists to prevent. Maximalism and collage may quote other styles, but the containing style still governs.
 
 ### MUST NOT — Do not apply multi-hue gradients to heading text as a decorative effect.
 
@@ -164,6 +180,10 @@ Correct:
 *Exceptions:*
 - A card that is itself one link or button, where the whole surface is the target.
 - Hover that reveals genuinely deferred content, such as a tooltip or a row action.
+
+### MUST — Before choosing values, write down the three or four commitments the named style imposes, and treat that list as a checkable contract.
+
+*Why:* A style name is a pre-committed set of differences that somebody already tested, and it delivers nothing until it is unpacked into decisions. Written down it also becomes reviewable — "the style claims Swiss and this section is centred" is a finding, whereas "this looks generic" is an impression.
 
 ### MUST — Name the audience, the product job, and one thing the product is deliberately not, before choosing a visual direction — and state them as assumptions if nobody has supplied them.
 
@@ -247,6 +267,10 @@ Correct:
 *Exceptions:*
 - Indeterminate loading, streaming, and live-connection indicators.
 - Ambient motion in an explicitly decorative surface, gated behind prefers-reduced-motion.
+
+### SHOULD — For every style a page claims, check its counterfeit tell before anything else in the review.
+
+*Why:* Each style attracts one specific failure — centring in Swiss, a violet-to-cyan gradient in Y2K, a blurred panel over a flat fill in glass, non-integer scaling in pixel art — because that failure is the cheapest way to gesture at the name without paying for it. Checking the known failure first is the highest-yield question available.
 
 ### SHOULD — Separate top-level sections by at least three times the gap used between elements inside a section.
 
@@ -341,6 +365,7 @@ Run `vishwakarma audit` if the project has the CLI available.
 These are not loaded by default. Read one only when its question is the question you
 currently have.
 
+- `references/named-styles.md` — What does a style name actually commit me to — palette, type, grid, depth, ornament — and what gives away a page that is only pretending to be in that style?
 - `references/craft-values.md` — What are the concrete numbers behind "is it typeset", "is there one light source", "does it survive real content" — and which skill owns each of them?
 - `references/anti-patterns.md` — What are the specific visual signatures that make an interface look AI-generated, and what replaces each one?
 - `references/critique-protocol.md` — How do I systematically review an interface I just built and produce specific, prioritised fixes?

@@ -184,7 +184,7 @@ check_contrast(foreground: "#8a8a8a", background: "#ffffff")
 
 ## 📚 The skill catalog
 
-**45 skills**, carrying **713 rules** (every single one with its mechanism stated), **201 self-review checks**, and **177 deep references** loaded only when needed.
+**45 skills**, carrying **719 rules** (every single one with its mechanism stated), **201 self-review checks**, and **179 deep references** loaded only when needed.
 
 Two of those skills change how the rest behave. **Engineering Discipline** is always on: it governs how any task is approached — resolving ambiguity out loud, measuring before changing, restating work as something checkable, keeping diffs scoped. And the three **platform** skills are resolved *before* any value is chosen, because roughly half the constants in the catalog are mutually exclusive between platforms: 44pt is right on Apple and wrong on Android, 48dp is right on Android and not the Apple minimum, and a 46pt compromise is native to neither.
 
@@ -196,7 +196,7 @@ Two of those skills change how the rest behave. **Engineering Discipline** is al
 
 The one skill that is not about interfaces. Games are real-time simulations with a deadline, and almost every wrong answer in them traces to a violated frame budget, a broken determinism contract, or a physically honest system that feels wrong because honesty was never the goal.
 
-It carries **68 of the catalog's 177 references** across 20 domains — Unity, Unreal, Godot and custom engines; the fixed timestep; ECS versus OOP; physics and collision; animation; rendering; audio; game feel; input; game UI; netcode; game AI; design loops; performance; production; accessibility; shipping and live ops. Each sits under a 6,000-token budget and loads only when its question is the question you have.
+It carries **68 of the catalog's 179 references** across 20 domains — Unity, Unreal, Godot and custom engines; the fixed timestep; ECS versus OOP; physics and collision; animation; rendering; audio; game feel; input; game UI; netcode; game AI; design loops; performance; production; accessibility; shipping and live ops. Each sits under a 6,000-token budget and loads only when its question is the question you have.
 
 Three claims do the load-bearing work:
 

@@ -27,7 +27,7 @@ features:
     details: Contrast ratios, perceptual colour ramps, fluid type scales, motion timing, stagger delays — everything that can be calculated is calculated. Agents calling functions are never wrong.
     icon: 📐
   - title: A design contract, not a style guide
-    details: Each of the 713 rules is a checkable constraint with a pass condition. The agent runs 201 self-review checks against these before reporting done, so guidance degrades into habit rather than being silently ignored.
+    details: Each of the 719 rules is a checkable constraint with a pass condition. The agent runs 201 self-review checks against these before reporting done, so guidance degrades into habit rather than being silently ignored.
     icon: ✅
   - title: Works with any AI agent
     details: Compiles to 13 agent formats from one source — Claude Code, Cursor, Cline, Windsurf, Copilot, and more. Author once; every agent stays in sync.

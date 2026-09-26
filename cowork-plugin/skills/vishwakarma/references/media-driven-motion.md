@@ -111,6 +111,21 @@ Ship that still first, reserve its space, and upgrade to the sequence after firs
 
 ---
 
+## 6. Named recipes
+
+A shot has four independent parameters — **subject treatment, camera path, time behaviour,
+light** — and a named recipe is one combination of them, fixed so it can be asked for by name
+and executed the same way twice. `cinematic-recipes.md` defines the grammar and specifies the
+named shots; `/bullettime` means subject timescale near zero while the camera orbits at speed,
+not "make it dramatic".
+
+Two things the grammar buys. A name can be **checked**: if `/orbit_sweep` specifies a locked
+target, a shot whose subject drifts out of frame is a defect rather than a matter of taste. And
+a name **composes** — a sequence is a list of recipes with scroll spans, which is a timeline you
+can review before building it.
+
+---
+
 **Boundaries.** `scroll-experiences` owns the scroll mechanism, thrash, pinning and the progress
 geometry — its rules apply in full here and are not repeated. `motion-design` and
 `motion-physics` own interpolated motion. `webgl-experiences` owns mounting, tiering and
@@ -130,6 +145,14 @@ exist; `ship-readiness` owns whether a demo is real.
 ### MUST NOT — Do not clear the canvas or draw a placeholder when the requested frame is not resident; hold the last drawn frame.
 
 *Why:* A held frame reads as a pause in the motion, which is a normal thing for motion to do. A cleared canvas or a spinner reads as a broken page, and it appears precisely during the fast scrolls where the window cannot keep up — so the worst impression lands on the most common interaction.
+
+### MUST — Specify a named shot by its four grammar parameters plus a check a reviewer can run, and never by an adjective.
+
+*Why:* Subject, camera, time and light are independent, so a name that does not fix all four leaves the shot undetermined and it will be built differently each time. The check is what makes the name enforceable: "does the subject bounding box stay within a few per cent across the sweep" is reviewable, while "smooth camera" gives a reviewer nothing to decide.
+
+### MUST — Budget a sequence by its most expensive beat against the lowest tier shipped, and shorten the sequence rather than degrading every beat.
+
+*Why:* Tier budgets apply per rendered frame, so one beat needing two shadow casters gates the whole sequence at high tier. Turning every beat down until the expensive one fits produces a sequence where nothing reads, whereas three beats that work is a shot; five that do not is a defect distributed evenly.
 
 ### MUST — Derive scrub time from a clamped 0..1 progress value computed from scroll position, never from accumulated scroll deltas or an elapsed-time clock.
 
@@ -212,6 +235,13 @@ if (!seeking) { seeking = true; video.currentTime = target.current * video.durat
 *Exceptions:*
 - Motion that is itself the subject — a visualisation of a live system, an art piece — where the movement is the content rather than a signal that content exists.
 
+### SHOULD — Write a composed sequence as a list of recipes with scroll spans before building it, and return the final beat to the first beat’s framing.
+
+*Why:* A five-line timeline is cheap to change and a built one is not, so the review belongs before the work. A sequence that ends somewhere other than where it started leaves the viewer mid-shot at the end of the scroll, which reads as unfinished because there is no resolution to the movement.
+
+*Exceptions:*
+- A sequence whose end state is the page’s next section, where the final framing is a deliberate hand-off rather than a return.
+
 ### SHOULD — When the subject of a section exists and can be photographed or rendered, drive its motion from frames rather than from a CSS transition on a still.
 
 *Why:* An interpolated transition contains only its two endpoints and its easing curve, so it can describe the element but never the subject. A frame source contains an independent measurement per frame, which is where weight, contact shadow, motion blur and material response come from — none of which can be approximated by a transform.
@@ -266,6 +296,7 @@ notice while building.
 These are not loaded by default. Read one only when its question is the question you
 currently have.
 
+- `references/cinematic-recipes.md` — What exactly does /bullettime or /explodeview specify, how do I name a new shot, and what does each one cost against the scene budget?
 - `references/scrubbed-footage.md` — How do I drive a video element from scroll without it lagging, how must the file be encoded to be scrubbable, and how do I know the pixels match my target?
 - `references/frame-sequences.md` — How many frames can I afford, how do I decode them without blocking the main thread, how big a window do I hold in memory, and when is a sprite atlas better?
 - `references/scene-timelines.md` — How do I turn scroll progress into a camera path or animation time in a scene, and why does my scroll-driven scene stop updating?
