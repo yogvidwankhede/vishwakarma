@@ -214,6 +214,22 @@ can review before building it.
 
 ---
 
+## 7. When the clock is not the scroll
+
+Everything above is paced by the reader: they stop, reverse, and it never runs without their
+intent. A **timed camera flight** — an intro that plays on load and carries the viewer through
+several environments — is paced by the machine, and that single difference creates obligations
+scroll never had. It must be skippable, it must not be what the page is waiting on, and under
+\`prefers-reduced-motion\` it must not play at all.
+
+It also cannot hold its world in memory. A flight that visits four environments at medium-tier
+quality is four times over the texture budget, so exactly one is resident and the others are
+loaded and disposed around it. The transitions therefore have to hide a swap —
+\`camera-flights.md\` has how, including the form where the thing you fly through is also the
+section's title card.
+
+---
+
 **Boundaries.** \`scroll-experiences\` owns the scroll mechanism, thrash, pinning and the progress
 geometry — its rules apply in full here and are not repeated. \`motion-design\` and
 \`motion-physics\` own interpolated motion. \`webgl-experiences\` owns mounting, tiering and
@@ -222,6 +238,116 @@ the field gates the byte budgets answer to. \`design-judgment\` owns whether the
 exist; \`ship-readiness\` owns whether a demo is real.`,
 
     references: [
+      {
+        id: 'camera-flights',
+        title: 'Timed camera flights across multiple environments',
+        answers:
+          'How does one continuous camera path cross several environments without cuts, where does the swap hide, and what does a machine-paced sequence owe that a scroll-paced one does not?',
+        content: `# Camera flights
+
+A flight is one continuous camera path through several environments, played on a clock rather
+than on scroll. It is the strongest impression a site can make in ten seconds and the easiest
+to ship as something that blocks the page, so the discipline is mostly about what it owes.
+
+## The clock is the whole difference
+
+Scroll is user-paced: it stops when they stop, reverses when they reverse, and never advances
+without intent. A flight advances regardless. Four obligations follow, and none of them applies
+to the scroll-driven work in this skill.
+
+**It must be skippable, visibly.** A control that is present from the first frame, reachable by
+keyboard, and lands the viewer at the resting state — not at a black screen. Any click, key or
+scroll should also end it: someone who starts interacting has told you they are done watching.
+
+**It must not be what the page is waiting on.** The flight is not the largest contentful paint
+and not a gate on interactivity. The resting state — the composition the flight ends at — ships
+as real markup and is what a visitor sees if nothing else ever loads.
+
+**Under \`prefers-reduced-motion: reduce\` it does not play.** This is the one case in this
+catalogue where the correct response is not to freeze but to *skip*: a full-viewport camera
+flight is exactly the vestibular trigger the preference exists for, and the resting state is
+already a complete design. Render that instead.
+
+**It ends somewhere deliberate.** A flight that stops mid-move leaves the viewer in an
+arbitrary frame. Either it resolves to the resting composition, or it loops — and if it loops,
+the seam is visible whenever the last frame does not match the first.
+
+## One environment at a time
+
+\`SCENE_BUDGETS\` allows 96 MiB of texture memory and 500,000 triangles at medium tier. Four
+distinct environments authored to that quality is four times over, so a flight does not hold its
+world: exactly one environment is resident, the next is loaded during the approach, and the
+previous is disposed after the crossing.
+
+**Disposal is manual and the common bug is silent.** Removing an object from the scene graph
+drops the JavaScript reference; the GPU memory stays allocated until each resource is disposed
+explicitly. A material also holds references to its textures, and disposing the material does
+not dispose them — so a flight that loops will climb until the tab is killed, and it will do it
+slowly enough that nobody connects the crash to the intro.
+
+\`\`\`ts
+// Dispose depth-first: textures, then materials, then geometries.
+scene.traverse((obj) => {
+  const mesh = obj as { geometry?: { dispose(): void }; material?: unknown }
+  mesh.geometry?.dispose()
+  for (const mat of [mesh.material].flat().filter(Boolean) as Array<Record<string, unknown>>) {
+    for (const value of Object.values(mat)) {
+      if (value && typeof (value as { isTexture?: boolean }).isTexture === 'boolean') {
+        ;(value as { dispose(): void }).dispose()
+      }
+    }
+    ;(mat as unknown as { dispose(): void }).dispose()
+  }
+})
+\`\`\`
+
+**The measurable check** is \`renderer.info.memory\`, which reports live \`geometries\` and
+\`textures\` counts. Record both at the resting state, run the flight through a full cycle, and
+read them again: equal numbers mean the swap is clean, and a climb is the leak. This is a real
+measurement rather than an inspection, which is what \`visual-feedback-loop\` asks for.
+
+## The transition is a traversal, not a cut
+
+Two environments can share one camera path if something occupies the frame while the swap
+happens. Put an **occluder on the path** — a surface the camera passes through at the moment of
+the change.
+
+The elegant form, and the one worth copying, is an occluder that is *also content*: a
+perforated or semi-transparent panel carrying the section's title and a line of copy, sitting
+across the path. The camera flies through the panel; the panel hides most of the swap; and
+because it is perforated, the next environment is already visible through it, so the crossing
+reads as moving between connected spaces rather than as a scene change. A curtain that hides a
+load is machinery. A title card you fly through is the site.
+
+Three requirements make it work:
+
+- **The occluder fills the frustum at the crossing frame.** Check the narrowest supported
+  aspect ratio, not the widest — a panel that covers a 16:9 frame can leave gaps at the edges
+  of a portrait viewport.
+- **The next environment has rendered at least one frame before the crossing.** Loading *at* the
+  crossing puts the hitch at the exact moment attention is highest. Begin the load on approach
+  and hold the crossing until its first frame is done.
+- **The old environment disposes after, not during.** Disposal during the crossing competes with
+  the frame you most need.
+
+**Motion blur is the second mask.** Blur peaks with camera speed, and camera speed peaks at a
+crossing, so the two coincide for free — which is the argument for putting the fastest part of
+the path exactly where the swap is.
+
+## The chrome stays DOM
+
+Navigation, filters and any input belong in the DOM above the canvas, not as geometry inside
+it. They then keep working while the world moves: selectable, focusable, translatable,
+findable, and unaffected when the environment swaps. The test is whether the nav survives with
+the canvas deleted — if it does not, it was never chrome, it was scenery.
+
+## Composing one
+
+Write the path down before building it: a list of environments, the occluder between each pair,
+and the seconds allotted. Then budget it per environment against the lowest tier shipped, and
+walk the list asking what is resident at each moment. The list is where a flight gets shortened,
+and shortening it is almost always right — the second-best thing a flight can do is end.`,
+      },
       {
         id: 'cinematic-recipes',
         title: 'The shot grammar, and the named recipes it generates',
@@ -762,6 +888,70 @@ library" is not an answer, and hearing it is the finding.`,
   },
 
   rules: [
+    {
+      id: 'media-driven-motion/flight-is-skippable',
+      strength: 'must',
+      statement:
+        'Give a timed camera flight a visible, keyboard-reachable skip from its first frame, and end it on any click, key or scroll.',
+      evidence: {
+        rationale:
+          'A machine-paced sequence advances whether or not the viewer wants it to, which is the one thing scroll-driven motion never does. Someone who starts interacting has already said they are finished watching, so continuing to hold the viewport is taking time they declined to give.',
+        confidence: 'established',
+      },
+      verifiedBy: 'real-motion-review',
+    },
+    {
+      id: 'media-driven-motion/flight-does-not-gate-the-page',
+      strength: 'must',
+      statement:
+        'Ship the flight\u2019s resting composition as real markup and never let the flight be the largest contentful paint or a gate on interactivity.',
+      evidence: {
+        rationale:
+          'The resting state is what every no-JS, Save-Data, print, crawler and reduced-motion visitor receives, and what everyone else sees if the flight never loads — so it is the page, and the flight is an enhancement over it. A sequence that owns first paint also adds its entire load time to the moment a visitor decides whether to stay.',
+        confidence: 'established',
+      },
+      verifiedBy: 'real-motion-review',
+    },
+    {
+      id: 'media-driven-motion/reduced-motion-skips-the-flight',
+      strength: 'must',
+      statement:
+        'Under prefers-reduced-motion: reduce, do not play a camera flight at all; render its resting composition directly.',
+      evidence: {
+        rationale:
+          'Elsewhere this catalogue freezes motion rather than removing it, because a frozen surface is still a surface. A flight is the exception: full-viewport camera movement through space is precisely the vestibular trigger the preference exists for, and its resting composition is already a complete design rather than a degradation.',
+        confidence: 'established',
+      },
+      verifiedBy: 'real-motion-review',
+    },
+    {
+      id: 'media-driven-motion/hide-the-swap-in-a-traversal',
+      strength: 'must',
+      statement:
+        'Cross between environments by flying through an occluder that fills the frustum, with the next environment already rendered and the old one disposed after.',
+      evidence: {
+        rationale:
+          'Only one environment fits the texture budget, so a multi-environment flight is a sequence of swaps and each swap needs somewhere to hide. Loading at the crossing puts the hitch at the moment attention is highest, and disposing during it competes with the frame that most needs the budget. An occluder that carries the section title makes the concealment content rather than machinery.',
+        confidence: 'strong',
+      },
+      examples: {
+        bad: 'setEnvironment(next) // swap in the open; one stalled frame is a visible cut',
+        good: 'await next.warmup(); flyThrough(occluder); queueMicrotask(() => previous.dispose())',
+      },
+      verifiedBy: 'real-motion-review',
+    },
+    {
+      id: 'media-driven-motion/chrome-stays-dom',
+      strength: 'must',
+      statement:
+        'Keep navigation, filters and inputs in the DOM above the canvas rather than as geometry inside the scene.',
+      evidence: {
+        rationale:
+          'DOM chrome stays selectable, focusable, translatable and findable while the world moves behind it, and survives an environment swap untouched. Geometry carrying an interface loses all of that and has to be rebuilt every time the scene changes. The test is whether the navigation still works with the canvas deleted.',
+        confidence: 'established',
+      },
+      verifiedBy: 'real-motion-review',
+    },
     {
       id: 'media-driven-motion/name-the-shot-with-a-check',
       strength: 'must',

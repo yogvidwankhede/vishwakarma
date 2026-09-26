@@ -147,6 +147,14 @@ rules apply there — progress derived from position, clamped, off under reduced
 *Exceptions:*
 - A determinate progress indicator inside an interaction the user explicitly started, such as a configurator the user opened by pressing a button.
 
+### MUST — Hold one environment in GPU memory at a time, and dispose geometries, materials and their textures explicitly before loading the next.
+
+*Why:* The medium tier allows 96 MiB of texture memory, so several environments authored to that quality cannot coexist. Removing an object from the scene graph only drops the JavaScript reference — the GPU allocation survives until each resource is disposed, and a material holds references to its textures that disposing the material does not release. A sequence that loops therefore climbs until the tab is killed, slowly enough that nobody connects the crash to it.
+
+### MUST — Verify a swap by reading renderer.info.memory geometries and textures before and after a full cycle, not by inspecting the code.
+
+*Why:* A leaked geometry looks identical to a disposed one in source and in the rendered picture; only the live counts distinguish them. Equal numbers across a cycle prove the swap is clean and a climb is the leak, which makes this one of the few GPU-memory questions with a direct measurement rather than an inference.
+
 ### MUST — Mount 3D through AdaptiveCanvas from @vishwakarma/three rather than a bare react-three-fiber Canvas.
 
 *Why:* AdaptiveCanvas supplies four behaviours a bare canvas lacks: an on-demand frame loop, a pixel-ratio range taken from the active tier budget, the renderer reached by a module-scope lazy import inside a SceneBoundary and a Suspense boundary that share one fallback node, and — at tier none — the fallback returned without allocating a WebGL context at all.

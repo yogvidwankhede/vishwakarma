@@ -808,6 +808,30 @@ reduce\`, and Save-Data on — six complete pages, or the scene is not finished.
 
   rules: [
     {
+      id: 'webgl/one-environment-resident',
+      strength: 'must',
+      statement:
+        'Hold one environment in GPU memory at a time, and dispose geometries, materials and their textures explicitly before loading the next.',
+      evidence: {
+        rationale:
+          'The medium tier allows 96 MiB of texture memory, so several environments authored to that quality cannot coexist. Removing an object from the scene graph only drops the JavaScript reference — the GPU allocation survives until each resource is disposed, and a material holds references to its textures that disposing the material does not release. A sequence that loops therefore climbs until the tab is killed, slowly enough that nobody connects the crash to it.',
+        confidence: 'established',
+      },
+      verifiedBy: 'webgl-finish-review',
+    },
+    {
+      id: 'webgl/measure-resource-counts-across-a-cycle',
+      strength: 'must',
+      statement:
+        'Verify a swap by reading renderer.info.memory geometries and textures before and after a full cycle, not by inspecting the code.',
+      evidence: {
+        rationale:
+          'A leaked geometry looks identical to a disposed one in source and in the rendered picture; only the live counts distinguish them. Equal numbers across a cycle prove the swap is clean and a climb is the leak, which makes this one of the few GPU-memory questions with a direct measurement rather than an inference.',
+        confidence: 'established',
+      },
+      verifiedBy: 'webgl-finish-review',
+    },
+    {
       id: 'webgl/render-through-adaptive-canvas',
       strength: 'must',
       statement:

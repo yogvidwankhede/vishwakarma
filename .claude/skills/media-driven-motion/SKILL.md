@@ -136,6 +136,22 @@ can review before building it.
 
 ---
 
+## 7. When the clock is not the scroll
+
+Everything above is paced by the reader: they stop, reverse, and it never runs without their
+intent. A **timed camera flight** — an intro that plays on load and carries the viewer through
+several environments — is paced by the machine, and that single difference creates obligations
+scroll never had. It must be skippable, it must not be what the page is waiting on, and under
+`prefers-reduced-motion` it must not play at all.
+
+It also cannot hold its world in memory. A flight that visits four environments at medium-tier
+quality is four times over the texture budget, so exactly one is resident and the others are
+loaded and disposed around it. The transitions therefore have to hide a swap —
+`camera-flights.md` has how, including the form where the thing you fly through is also the
+section's title card.
+
+---
+
 **Boundaries.** `scroll-experiences` owns the scroll mechanism, thrash, pinning and the progress
 geometry — its rules apply in full here and are not repeated. `motion-design` and
 `motion-physics` own interpolated motion. `webgl-experiences` owns mounting, tiering and
@@ -155,6 +171,38 @@ exist; `ship-readiness` owns whether a demo is real.
 ### MUST NOT — Do not clear the canvas or draw a placeholder when the requested frame is not resident; hold the last drawn frame.
 
 *Why:* A held frame reads as a pause in the motion, which is a normal thing for motion to do. A cleared canvas or a spinner reads as a broken page, and it appears precisely during the fast scrolls where the window cannot keep up — so the worst impression lands on the most common interaction.
+
+### MUST — Give a timed camera flight a visible, keyboard-reachable skip from its first frame, and end it on any click, key or scroll.
+
+*Why:* A machine-paced sequence advances whether or not the viewer wants it to, which is the one thing scroll-driven motion never does. Someone who starts interacting has already said they are finished watching, so continuing to hold the viewport is taking time they declined to give.
+
+### MUST — Ship the flight’s resting composition as real markup and never let the flight be the largest contentful paint or a gate on interactivity.
+
+*Why:* The resting state is what every no-JS, Save-Data, print, crawler and reduced-motion visitor receives, and what everyone else sees if the flight never loads — so it is the page, and the flight is an enhancement over it. A sequence that owns first paint also adds its entire load time to the moment a visitor decides whether to stay.
+
+### MUST — Under prefers-reduced-motion: reduce, do not play a camera flight at all; render its resting composition directly.
+
+*Why:* Elsewhere this catalogue freezes motion rather than removing it, because a frozen surface is still a surface. A flight is the exception: full-viewport camera movement through space is precisely the vestibular trigger the preference exists for, and its resting composition is already a complete design rather than a degradation.
+
+### MUST — Cross between environments by flying through an occluder that fills the frustum, with the next environment already rendered and the old one disposed after.
+
+*Why:* Only one environment fits the texture budget, so a multi-environment flight is a sequence of swaps and each swap needs somewhere to hide. Loading at the crossing puts the hitch at the moment attention is highest, and disposing during it competes with the frame that most needs the budget. An occluder that carries the section title makes the concealment content rather than machinery.
+
+Incorrect:
+
+```
+setEnvironment(next) // swap in the open; one stalled frame is a visible cut
+```
+
+Correct:
+
+```
+await next.warmup(); flyThrough(occluder); queueMicrotask(() => previous.dispose())
+```
+
+### MUST — Keep navigation, filters and inputs in the DOM above the canvas rather than as geometry inside the scene.
+
+*Why:* DOM chrome stays selectable, focusable, translatable and findable while the world moves behind it, and survives an environment swap untouched. Geometry carrying an interface loses all of that and has to be rebuilt every time the scene changes. The test is whether the navigation still works with the canvas deleted.
 
 ### MUST — Specify a named shot by its four grammar parameters plus a check a reviewer can run, and never by an adjective.
 
@@ -306,6 +354,7 @@ notice while building.
 These are not loaded by default. Read one only when its question is the question you
 currently have.
 
+- `references/camera-flights.md` — How does one continuous camera path cross several environments without cuts, where does the swap hide, and what does a machine-paced sequence owe that a scroll-paced one does not?
 - `references/cinematic-recipes.md` — What exactly does /bullettime or /explodeview specify, how do I name a new shot, and what does each one cost against the scene budget?
 - `references/scrubbed-footage.md` — How do I drive a video element from scroll without it lagging, how must the file be encoded to be scrubbable, and how do I know the pixels match my target?
 - `references/frame-sequences.md` — How many frames can I afford, how do I decode them without blocking the main thread, how big a window do I hold in memory, and when is a sprite atlas better?
