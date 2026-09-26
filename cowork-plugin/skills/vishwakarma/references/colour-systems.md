@@ -25,7 +25,24 @@ terrible authoring format: it discards the relationships that make a palette a s
 
 ---
 
-## 2. Shaping a ramp
+## 2. Choose the scheme before the ramp
+
+The scheme is how many hue families the system may use, and it decides what hierarchy is
+allowed to be made of, so it comes before any ramp.
+
+**Monochromatic** is the strictest and the most often botched, because the pigment vocabulary
+hides two independent axes: a **tint** raises L and a **shade** lowers it — chroma falling with
+both, per the envelope below — while a **tone** lowers chroma at roughly *constant* L. Treated
+as one slider they couple, so nothing in the palette can be both light and vivid. With no hue
+channel to lean on, two ranks differing only in L need the 0.15 separation section 7 asks of
+semantic colours.
+
+`colour-schemes.md` has monochrome in full, the other four relationships with their failure
+modes, and the semantic-state problem one hue creates.
+
+---
+
+## 3. Shaping a ramp
 
 An eleven-step ramp needs three curves.
 
@@ -49,7 +66,7 @@ colour.
 
 ---
 
-## 3. Three token layers, and why the indirection earns its keep
+## 4. Three token layers, and why the indirection earns its keep
 
 ```
 --blue-600: oklch(0.58 0.16 255);        /* primitive: what the colour is   */
@@ -70,7 +87,7 @@ waiting for dark mode.
 
 ---
 
-## 4. A dark theme is built, not inverted
+## 5. A dark theme is built, not inverted
 
 Mapping L to 1-L produces a theme that is technically dark and visually wrong.
 
@@ -86,40 +103,32 @@ against white text, causing halation for astigmatic readers. Sit at L 0.18 and L
 
 ---
 
-## 5. Contrast: gate on WCAG 2, reason with APCA
+## 6. Contrast: gate on WCAG 2, reason with APCA
 
-WCAG 2's ratio is `(L1 + 0.05) / (L2 + 0.05)` over relative luminance: fixed flare term,
-symmetric, blind to polarity and to font size beyond one crude threshold. It is demonstrably
-wrong at the extremes — `#767676` scores 4.54:1 against white *and* 4.62:1 against black,
-passing SC 1.4.3 in both directions. No single grey can be adequately readable against both
-ends of the range; the additive term inflates ratios among dark pairs.
+WCAG 2's ratio is symmetric over relative luminance with a fixed flare term, so it is blind to
+polarity and demonstrably wrong at the extremes: `#767676` scores 4.54:1 against white *and*
+4.62:1 against black, passing SC 1.4.3 in both directions when no single grey can be adequately
+readable against both ends.
 
-APCA models this properly — polarity-aware, spatial-frequency-aware, reporting Lc 0 to about
-108 (Lc 75 body text, Lc 60 content text, Lc 45 headlines, Lc 30 floor, Lc 15 invisible). But
-APCA was removed from the WCAG 3 drafts in 2023, WCAG 3 still has no determined algorithm, and
-every legal regime references WCAG 2.x. So **gate CI on WCAG 2 and use APCA to break ties**:
-prefer the higher Lc among passing candidates, and treat any dark-theme pair below Lc 60 as
-suspect however good its ratio.
+APCA models it properly — polarity- and spatial-frequency-aware, reporting Lc 0 to about 108
+(Lc 75 body, Lc 60 content, Lc 45 headline, Lc 30 floor). But it was removed from the WCAG 3
+drafts in 2023, WCAG 3 still names no algorithm, and every legal regime references WCAG 2.x. So
+**gate CI on WCAG 2 and break ties with APCA**: prefer the higher Lc among passing candidates,
+and treat any dark-theme pair below Lc 60 as suspect however good its ratio.
 
-The requirement people forget is **SC 1.4.11: 3:1 for non-text** — input borders, switch
-tracks, unchecked checkboxes, icon-only buttons, chart series edges, focus indicators. A
-hairline border at 1.4:1 is the commonest accessibility defect in otherwise careful systems. A
-focus ring must clear 3:1 against *both* the component and the page behind it.
+The forgotten requirement is **SC 1.4.11: 3:1 for non-text** — input borders, switch tracks,
+unchecked boxes, icon-only buttons, chart series edges, focus rings. A hairline border at 1.4:1
+is the commonest accessibility defect in otherwise careful systems.
 
 ---
 
-## 6. Hue is never the message
+## 7. Hue is never the message, and the gamut is not yours
 
-Around 8% of men and 0.5% of women have a colour vision deficiency, most often affecting
-red-green discrimination — precisely the pair used for error and success. Encode state with an
-icon, a label, or a shape, and separate semantic colours by at least 0.15 in OKLCh L.
-
----
-
-## 7. Wide gamut, gracefully
-
-Browser gamut-mapping clips per-colour, so it can flatten adjacent ramp steps into one. Author
-in sRGB, then opt specific accents into wider gamut explicitly:
+Around 8% of men and 0.5% of women cannot reliably separate red from green — precisely the pair
+used for error and success — so state needs an icon, a label or a shape, and semantic colours
+need at least 0.15 of OKLCh L between them. Gamut-mapping carries the same shape of hazard: it
+clips per colour, so two out-of-range steps can flatten into one. Author in sRGB and opt
+individual accents up explicitly.
 
 ```css
 --color-accent: oklch(0.58 0.16 255);
@@ -149,25 +158,46 @@ inside already-translucent containers, and fades the focus ring along with every
 
 ## The specific failures
 
-- **Purple-to-blue everything.** Any hue works if the ramp is even; the violet-indigo-cyan
-  band announces itself as a default.
-- **Pure grey neutrals.** `oklch(L 0 0)` beside a warm brand colour looks accidental. Carry
-  0.005 to 0.02 of chroma at the brand hue through the whole neutral ramp.
-- **Too many hues.** Beyond three families plus neutrals, the palette is a collection rather
-  than a system.
-- **Decorative accent.** An accent that also appears in an illustration, a badge, and a chart
-  no longer marks the primary action.
-- **Secondary text at 3:1.** If text must fall below 4.5:1 to look right, delete it rather
-  than dim it.
-- **`filter: invert(1)` dark mode.** It inverts photographs and logos, rotates every hue by
-  180 degrees so the brand colour becomes its complement, and double-inverts anything that
-  tries to compensate.
+The rules below carry them with their mechanisms. `design-judgment`'s `anti-patterns.md` has
+the purple-to-blue palette and the other visual tells, each with its replacement.
 
 ## Rules
 
 ### MUST NOT — Do not implement a dark theme with filter: invert() or a global hue rotation.
 
 *Why:* Inversion operates on rendered values rather than on roles, so it rotates every hue by 180 degrees — turning the brand colour into its complement and error red into cyan — inverts photographs and logos, and double-inverts any descendant that compensates. It also cannot express the elevation reversal a dark theme requires.
+
+### MUST — State the scheme — how many hue families the system may use — before shaping any ramp.
+
+*Why:* The scheme decides what hierarchy is permitted to be made of. Shaping ramps first and counting hues afterwards is how a palette reaches six families with no rule about any of them, which is strictly worse than having chosen three deliberately.
+
+### MUST — Treat tint and shade as lightness movements and tone as a chroma reduction at constant lightness, never as one combined slider.
+
+*Why:* Coupling the two axes means the middle of the palette is simultaneously lighter and flatter, so no value can be both light and vivid and the accent has nowhere to go. A tone is specifically a desaturated sibling at the same L, which is what a surface beside a saturated control needs — reaching for a tint instead also moves that surface in the hierarchy.
+
+Incorrect:
+
+```css
+--surface: oklch(0.92 0.14 250); /* a tint holding full chroma — clipped */
+```
+
+Correct:
+
+```css
+--surface: oklch(0.92 0.03 250); /* tint: L up, C down the envelope */
+--quiet:   oklch(0.58 0.04 250); /* tone: same L as the accent, low purity */
+```
+
+### MUST — In a single-hue or analogous scheme, separate any two ranks that differ only in lightness by at least 0.15 in OKLCh L.
+
+*Why:* The hue channel that would otherwise carry the distinction is unavailable, so lightness must do all of it — the same 0.15 this skill already requires between semantic colours. Adjacent hues at similar lightness are harder to distinguish than distant ones, which is why analogous schemes fail flat rather than clashing.
+
+### MUST — A monochromatic system must either declare its semantic hue family as a named exception, or carry state on non-colour channels only.
+
+*Why:* A single hue has no red for error and no green for success, so one of the two happens: an exception is written down and stays at one family, or red and green arrive unannounced and the system has three families with no rule governing them. Writing it down is what stops the exception multiplying.
+
+*Exceptions:*
+- Two-state systems where chroma itself carries the state — the highest-chroma, lowest-L member is the alarming one — which stops working at around four states.
 
 ### MUST — Define colour ramps in a perceptually uniform space such as OKLCh, not by stepping HSL lightness or hand-picking hex values.
 
@@ -265,6 +295,10 @@ Correct:
 ### SHOULD NOT — Do not express a disabled state with opacity alone; reduce chroma and move lightness toward the surface instead.
 
 *Why:* Opacity composites against whatever happens to sit behind the element, so the resulting contrast is unknown at authoring time and changes with context. It also compounds inside already-translucent ancestors and dims the focus indicator, which can push a still-focusable control below the 3:1 non-text floor.
+
+### SHOULD — Give two complementary hues a dominant-to-subordinate area ratio of roughly 80:20 rather than equal area.
+
+*Why:* Opposed hues at equal area vibrate because neither can win and the eye keeps re-deciding where to look. The defect is caused by area rather than by the colour values, so adjusting the hues does not fix it; making the second hue an accent does, and an accent with one job is what the palette wanted anyway.
 
 ### SHOULD — Taper chroma toward both ends of a ramp rather than holding it constant across all steps.
 
@@ -393,5 +427,6 @@ Run `vishwakarma audit` if the project has the CLI available.
 These are not loaded by default. Read one only when its question is the question you
 currently have.
 
+- `references/colour-schemes.md` — How do tints, tones and shades actually work in a perceptual space, how do I build a monochromatic system that does not look muddy, and what does each classical relationship cost?
 - `references/palette-from-one-colour.md` — I have one brand hex value. How do I derive a complete, even, accessible palette — ramps, neutrals, and semantic colours — from it?
 - `references/dark-theme-construction.md` — How do I build a dark theme that is genuinely designed rather than an inversion — surfaces, elevation, accent adjustment, borders, images, and the switching mechanism?

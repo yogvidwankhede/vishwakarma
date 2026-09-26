@@ -89,7 +89,24 @@ terrible authoring format: it discards the relationships that make a palette a s
 
 ---
 
-## 2. Shaping a ramp
+## 2. Choose the scheme before the ramp
+
+The scheme is how many hue families the system may use, and it decides what hierarchy is
+allowed to be made of, so it comes before any ramp.
+
+**Monochromatic** is the strictest and the most often botched, because the pigment vocabulary
+hides two independent axes: a **tint** raises L and a **shade** lowers it — chroma falling with
+both, per the envelope below — while a **tone** lowers chroma at roughly *constant* L. Treated
+as one slider they couple, so nothing in the palette can be both light and vivid. With no hue
+channel to lean on, two ranks differing only in L need the 0.15 separation section 7 asks of
+semantic colours.
+
+\`colour-schemes.md\` has monochrome in full, the other four relationships with their failure
+modes, and the semantic-state problem one hue creates.
+
+---
+
+## 3. Shaping a ramp
 
 An eleven-step ramp needs three curves.
 
@@ -113,7 +130,7 @@ colour.
 
 ---
 
-## 3. Three token layers, and why the indirection earns its keep
+## 4. Three token layers, and why the indirection earns its keep
 
 \`\`\`
 --blue-600: oklch(0.58 0.16 255);        /* primitive: what the colour is   */
@@ -134,7 +151,7 @@ waiting for dark mode.
 
 ---
 
-## 4. A dark theme is built, not inverted
+## 5. A dark theme is built, not inverted
 
 Mapping L to 1-L produces a theme that is technically dark and visually wrong.
 
@@ -150,40 +167,32 @@ against white text, causing halation for astigmatic readers. Sit at L 0.18 and L
 
 ---
 
-## 5. Contrast: gate on WCAG 2, reason with APCA
+## 6. Contrast: gate on WCAG 2, reason with APCA
 
-WCAG 2's ratio is \`(L1 + 0.05) / (L2 + 0.05)\` over relative luminance: fixed flare term,
-symmetric, blind to polarity and to font size beyond one crude threshold. It is demonstrably
-wrong at the extremes — \`#767676\` scores 4.54:1 against white *and* 4.62:1 against black,
-passing SC 1.4.3 in both directions. No single grey can be adequately readable against both
-ends of the range; the additive term inflates ratios among dark pairs.
+WCAG 2's ratio is symmetric over relative luminance with a fixed flare term, so it is blind to
+polarity and demonstrably wrong at the extremes: \`#767676\` scores 4.54:1 against white *and*
+4.62:1 against black, passing SC 1.4.3 in both directions when no single grey can be adequately
+readable against both ends.
 
-APCA models this properly — polarity-aware, spatial-frequency-aware, reporting Lc 0 to about
-108 (Lc 75 body text, Lc 60 content text, Lc 45 headlines, Lc 30 floor, Lc 15 invisible). But
-APCA was removed from the WCAG 3 drafts in 2023, WCAG 3 still has no determined algorithm, and
-every legal regime references WCAG 2.x. So **gate CI on WCAG 2 and use APCA to break ties**:
-prefer the higher Lc among passing candidates, and treat any dark-theme pair below Lc 60 as
-suspect however good its ratio.
+APCA models it properly — polarity- and spatial-frequency-aware, reporting Lc 0 to about 108
+(Lc 75 body, Lc 60 content, Lc 45 headline, Lc 30 floor). But it was removed from the WCAG 3
+drafts in 2023, WCAG 3 still names no algorithm, and every legal regime references WCAG 2.x. So
+**gate CI on WCAG 2 and break ties with APCA**: prefer the higher Lc among passing candidates,
+and treat any dark-theme pair below Lc 60 as suspect however good its ratio.
 
-The requirement people forget is **SC 1.4.11: 3:1 for non-text** — input borders, switch
-tracks, unchecked checkboxes, icon-only buttons, chart series edges, focus indicators. A
-hairline border at 1.4:1 is the commonest accessibility defect in otherwise careful systems. A
-focus ring must clear 3:1 against *both* the component and the page behind it.
+The forgotten requirement is **SC 1.4.11: 3:1 for non-text** — input borders, switch tracks,
+unchecked boxes, icon-only buttons, chart series edges, focus rings. A hairline border at 1.4:1
+is the commonest accessibility defect in otherwise careful systems.
 
 ---
 
-## 6. Hue is never the message
+## 7. Hue is never the message, and the gamut is not yours
 
-Around 8% of men and 0.5% of women have a colour vision deficiency, most often affecting
-red-green discrimination — precisely the pair used for error and success. Encode state with an
-icon, a label, or a shape, and separate semantic colours by at least 0.15 in OKLCh L.
-
----
-
-## 7. Wide gamut, gracefully
-
-Browser gamut-mapping clips per-colour, so it can flatten adjacent ramp steps into one. Author
-in sRGB, then opt specific accents into wider gamut explicitly:
+Around 8% of men and 0.5% of women cannot reliably separate red from green — precisely the pair
+used for error and success — so state needs an icon, a label or a shape, and semantic colours
+need at least 0.15 of OKLCh L between them. Gamut-mapping carries the same shape of hazard: it
+clips per colour, so two out-of-range steps can flatten into one. Author in sRGB and opt
+individual accents up explicitly.
 
 \`\`\`css
 --color-accent: oklch(0.58 0.16 255);
@@ -213,21 +222,125 @@ inside already-translucent containers, and fades the focus ring along with every
 
 ## The specific failures
 
-- **Purple-to-blue everything.** Any hue works if the ramp is even; the violet-indigo-cyan
-  band announces itself as a default.
-- **Pure grey neutrals.** \`oklch(L 0 0)\` beside a warm brand colour looks accidental. Carry
-  0.005 to 0.02 of chroma at the brand hue through the whole neutral ramp.
-- **Too many hues.** Beyond three families plus neutrals, the palette is a collection rather
-  than a system.
-- **Decorative accent.** An accent that also appears in an illustration, a badge, and a chart
-  no longer marks the primary action.
-- **Secondary text at 3:1.** If text must fall below 4.5:1 to look right, delete it rather
-  than dim it.
-- **\`filter: invert(1)\` dark mode.** It inverts photographs and logos, rotates every hue by
-  180 degrees so the brand colour becomes its complement, and double-inverts anything that
-  tries to compensate.`,
+The rules below carry them with their mechanisms. \`design-judgment\`'s \`anti-patterns.md\` has
+the purple-to-blue palette and the other visual tells, each with its replacement.`,
 
     references: [
+      {
+        id: 'colour-schemes',
+        title: 'Colour schemes: monochromatic, analogous, complementary, triadic',
+        answers:
+          'How do tints, tones and shades actually work in a perceptual space, how do I build a monochromatic system that does not look muddy, and what does each classical relationship cost?',
+        content: `# Colour schemes
+
+A scheme constrains how many hue families exist. That constraint is what makes a palette read
+as a system rather than a collection, and the cost of each scheme is paid in a different
+currency.
+
+## Monochromatic: one hue, two axes
+
+The classical description is pigment: a **tint** is the colour plus white, a **shade** is the
+colour plus black, a **tone** is the colour plus grey. Those three are usually taught as
+points on one scale, which is where monochrome systems go wrong, because in a perceptual space
+they are movements along **two independent axes**.
+
+| Pigment term | OKLCh movement | What it is for |
+|---|---|---|
+| **Tint** | L up, C down along the envelope | Surfaces, hovers, subtle borders |
+| **Shade** | L down, C down along the envelope | Text, emphasis, depth |
+| **Tone** | C down at roughly constant L | A sibling that must not compete |
+
+Two consequences follow, and both are the difference between a considered monochrome and a
+muddy one.
+
+**A tint is not the same chroma at a higher lightness.** The gamut pinches to a point at white,
+so the envelope in section 3 — 0.15x peak chroma at L 0.97 — is not a stylistic choice. Hold
+chroma constant while raising L and the browser clips, which collapses adjacent steps into one
+rendered colour and produces a ramp with fewer usable values than it appears to have.
+
+**Tone is the axis nobody uses deliberately, and it is the one that buys restraint.** A tone is
+a desaturated sibling at the *same* lightness: it can sit beside a saturated element of equal
+weight without competing for rank, because it differs in purity rather than in prominence. That
+is exactly what a large surface next to a small saturated control needs, and reaching for a
+tint instead — which also changes L — moves the surface in the hierarchy, which was not the
+intention.
+
+The failure to name: treating "lighter, greyer, darker" as one slider couples L and C, so the
+mid-range of the palette is simultaneously lighter *and* flatter. Nothing in it can be both
+light and vivid, and the accent has nowhere to go.
+
+### Building one
+
+1. Pick the hue. Place the base colour on the L ladder from section 3.
+2. Build the **tint and shade ramp** — the eleven steps, with the chroma envelope and the hue
+   drift applied exactly as for any ramp. This is the spine.
+3. Build a **tone track**: for each step that carries a surface, a sibling at the same L with
+   chroma scaled to roughly 0.15 to 0.3 of the ramp value. In a monochrome system these replace
+   the neutral family rather than sitting beside it — the same hue at low purity, which is why
+   they never look accidental the way \`oklch(L 0 0)\` does. This deliberately sits above the
+   0.005–0.02 ceiling the tinted-neutral rule sets: that ceiling keeps a neutral below
+   nameability *next to other hues*, and a single-hue scheme has none to be confused with.
+   Recognisably brand-hued surfaces are the licence monochrome buys, and the one thing a
+   multi-hue system cannot borrow from it.
+4. **Widen the semantic gaps.** With hue unavailable, two ranks separated only by L need at
+   least 0.15 between them. That eliminates roughly half the eleven steps as rank carriers;
+   they remain useful as surfaces and borders, not as levels.
+5. Verify the contract. A monochrome palette fails contrast in a characteristic way: mid-ramp
+   text on a mid-ramp surface, where both sides came from the same visually pleasing region.
+
+### The semantic problem
+
+A single-hue scheme has no red for error and no green for success. Three honest resolutions:
+
+- **Declare a named exception.** The scheme is monochrome plus exactly one semantic family,
+  written down as part of the system. This is what most real products do, and writing it down
+  is what stops the exception multiplying.
+- **Move state off colour entirely.** Icon, label, weight, border style. Section 6 requires a
+  non-colour cue anyway, so monochrome only removes a crutch that should not have been
+  load-bearing.
+- **Use chroma as the state channel.** Error is the highest-chroma, lowest-L member. This works
+  for two states and breaks at four, because chroma has less usable range than hue.
+
+The dishonest resolution is introducing red and green anyway while still calling the scheme
+monochromatic. The palette then has three hue families and no stated rule about them, which is
+strictly worse than having chosen a three-hue scheme deliberately.
+
+### What monochrome buys
+
+Every pair in the palette is harmonious by construction, so the page cannot look like a
+collection of unrelated decisions. And because there is no hue variety to hide behind, the one
+deliberate departure — a single warm tone in an otherwise cool system — becomes unmissable.
+That is the argument for the scheme: it makes emphasis cheap by making everything else quiet.
+
+## Analogous: hues within 30 to 60 degrees
+
+Harmonious for the same reason monochrome is, with slightly more variety. The trap is the
+opposite of what people expect: adjacent hues at similar lightness are **harder** to tell apart
+than distant ones, so an analogous scheme still needs L separation to carry rank. Choosing
+analogous hues and then giving them equal lightness produces a palette that is pleasant and
+completely flat.
+
+## Complementary: roughly 180 degrees apart
+
+Maximum hue contrast, and the one scheme with a failure mode caused by *area* rather than
+value. Two opposed hues at equal area vibrate, because neither can win and the eye keeps
+re-deciding. The fix is not adjusting the colours; it is a dominant-to-subordinate area ratio
+of roughly 80:20, which turns the second hue into an accent — and an accent with one job is
+what section 1 wanted anyway.
+
+## Split-complementary
+
+The complement replaced by its two neighbours, 150 and 210 degrees from the base. It keeps most
+of the contrast and removes the vibration, because no two hues are exactly opposed. It is the
+safer complementary, and it costs one more hue family against the limit of three.
+
+## Triadic: three hues 120 degrees apart
+
+Three equally strong families, which is exactly the budget — and it spends all of it on colour
+before any semantic hue exists. A triadic palette that also needs success, warning and error is
+already at six families. Reaching for triadic is usually a sign that colour is being asked to
+carry hierarchy that space, size and weight should carry instead.`,
+      },
       {
         id: 'palette-from-one-colour',
         title: 'Building a full palette from a single brand colour',
@@ -504,6 +617,74 @@ lowering opacity will often drop below the 3:1 non-text floor and disappear enti
   },
 
   rules: [
+    {
+      id: 'colour-systems/scheme-before-ramp',
+      strength: 'must',
+      statement:
+        'State the scheme — how many hue families the system may use — before shaping any ramp.',
+      evidence: {
+        rationale:
+          'The scheme decides what hierarchy is permitted to be made of. Shaping ramps first and counting hues afterwards is how a palette reaches six families with no rule about any of them, which is strictly worse than having chosen three deliberately.',
+        confidence: 'strong',
+      },
+      verifiedBy: 'contract-audit',
+    },
+    {
+      id: 'colour-systems/tint-tone-shade-are-two-axes',
+      strength: 'must',
+      statement:
+        'Treat tint and shade as lightness movements and tone as a chroma reduction at constant lightness, never as one combined slider.',
+      evidence: {
+        rationale:
+          'Coupling the two axes means the middle of the palette is simultaneously lighter and flatter, so no value can be both light and vivid and the accent has nowhere to go. A tone is specifically a desaturated sibling at the same L, which is what a surface beside a saturated control needs — reaching for a tint instead also moves that surface in the hierarchy.',
+        confidence: 'strong',
+      },
+      examples: {
+        language: 'css',
+        bad: '--surface: oklch(0.92 0.14 250); /* a tint holding full chroma — clipped */',
+        good: '--surface: oklch(0.92 0.03 250); /* tint: L up, C down the envelope */\n--quiet:   oklch(0.58 0.04 250); /* tone: same L as the accent, low purity */',
+      },
+      verifiedBy: 'ramp-evenness',
+    },
+    {
+      id: 'colour-systems/monochrome-widens-lightness-gaps',
+      strength: 'must',
+      statement:
+        'In a single-hue or analogous scheme, separate any two ranks that differ only in lightness by at least 0.15 in OKLCh L.',
+      evidence: {
+        rationale:
+          'The hue channel that would otherwise carry the distinction is unavailable, so lightness must do all of it — the same 0.15 this skill already requires between semantic colours. Adjacent hues at similar lightness are harder to distinguish than distant ones, which is why analogous schemes fail flat rather than clashing.',
+        confidence: 'strong',
+      },
+      verifiedBy: 'ramp-evenness',
+    },
+    {
+      id: 'colour-systems/declare-the-semantic-exception',
+      strength: 'must',
+      statement:
+        'A monochromatic system must either declare its semantic hue family as a named exception, or carry state on non-colour channels only.',
+      evidence: {
+        rationale:
+          'A single hue has no red for error and no green for success, so one of the two happens: an exception is written down and stays at one family, or red and green arrive unannounced and the system has three families with no rule governing them. Writing it down is what stops the exception multiplying.',
+        confidence: 'strong',
+      },
+      exceptions: [
+        'Two-state systems where chroma itself carries the state — the highest-chroma, lowest-L member is the alarming one — which stops working at around four states.',
+      ],
+      verifiedBy: 'contract-audit',
+    },
+    {
+      id: 'colour-systems/complement-by-area-not-value',
+      strength: 'should',
+      statement:
+        'Give two complementary hues a dominant-to-subordinate area ratio of roughly 80:20 rather than equal area.',
+      evidence: {
+        rationale:
+          'Opposed hues at equal area vibrate because neither can win and the eye keeps re-deciding where to look. The defect is caused by area rather than by the colour values, so adjusting the hues does not fix it; making the second hue an accent does, and an accent with one job is what the palette wanted anyway.',
+        confidence: 'strong',
+      },
+      verifiedBy: 'contract-audit',
+    },
     {
       id: 'colour-systems/perceptual-space',
       strength: 'must',
