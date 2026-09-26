@@ -13,7 +13,7 @@ budgets and feel rather than about layout.
 Install the skills from https://github.com/yogvidwankhede/vishwakarma
 ```
 
-Claude fetches the compiled catalog and copies all 42 skills into your project — including
+Claude fetches the compiled catalog and copies all 43 skills into your project — including
 [Vishwakarma Studios](studios.md), the game development skill. No commands, no build, no npm.
 Stop reading here if that is all you need.
 

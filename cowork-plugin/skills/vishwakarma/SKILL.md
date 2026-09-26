@@ -153,6 +153,7 @@ Load the file for the branch you are on. Do not read the whole tree.
 | Web Vitals, render performance, React render behaviour | `rendering-performance.md` |
 | Startup budgets, frame budgets, field gates, size | `mobile-performance.md` |
 | Scroll-driven animation, parallax, pinned sequences | `scroll-experiences.md` |
+| Scrubbed video, frame sequences, scroll-driven cameras — motion that is sampled rather than interpolated | `media-driven-motion.md` |
 | Metadata, structured data, Open Graph | `seo-and-metadata.md` |
 | Linting, static analysis, testing strategy, CI gates | `code-quality.md` |
 | Ambiguity, baselines, debugging, diff scope | `engineering-discipline.md` |

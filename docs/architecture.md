@@ -51,7 +51,7 @@ guidance if it crowds out the user's actual code.
 │  Gets the intelligence into an agent, in that agent's native form     │
 ├──────────────────────────────────────────────────────────────────────┤
 │  Knowledge                                                            │
-│  skills · prompts                                                     │
+│  skills                                                               │
 │  What good looks like, why, and how to check                          │
 ├──────────────────────────────────────────────────────────────────────┤
 │  Enforcement                                                          │
@@ -96,7 +96,7 @@ core ──┬─→ tokens ──┬─→ theme
        └─→ skills ─┼─→ adapters ─→ cli
                    └─────────────→ mcp
 
-registry ─→ cli          prompts (standalone)
+registry ─→ cli
 ```
 
 Dependencies point in one direction only. Nothing in the foundation knows that React

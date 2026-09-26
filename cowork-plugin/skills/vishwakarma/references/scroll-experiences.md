@@ -156,9 +156,12 @@ from `innerHeight`, and any `resize` handler that recomputes positions, will fir
 address-bar transition and shift triggers under the user's finger. Use `svh`/`lvh`/`dvh`
 instead of `vh`, and ignore height-only resizes on touch devices.
 
-Finally, gate parallax and scrubbed motion behind `prefers-reduced-motion: reduce`.
-Large-area scroll-coupled movement is a documented vestibular trigger; under reduced motion,
-render the end state.
+Finally, gate parallax and scrubbed motion behind `prefers-reduced-motion: reduce`, rendering
+the end state instead.
+
+**Boundary.** Everything here scrubs a property. When the thing scrubbed is a frame source —
+video, an image sequence, a rendered camera — `media-driven-motion` owns decode, memory and the
+still, and `useProgressBinding`'s `onProgress` needs `native: false` to fire at all.
 
 ## Rules
 

@@ -28,6 +28,7 @@ export { interactionDesign } from './interaction-design.js'
 export { interfaceCopy } from './interface-copy.js'
 export { interfaceStates } from './interface-states.js'
 export { layoutComposition } from './layout-composition.js'
+export { mediaDrivenMotion } from './media-driven-motion.js'
 export { methodologyFeedback } from './methodology-feedback.js'
 export { microInteractions } from './micro-interactions.js'
 export { mobilePerformance } from './mobile-performance.js'
@@ -71,6 +72,7 @@ import { interactionDesign } from './interaction-design.js'
 import { interfaceCopy } from './interface-copy.js'
 import { interfaceStates } from './interface-states.js'
 import { layoutComposition } from './layout-composition.js'
+import { mediaDrivenMotion } from './media-driven-motion.js'
 import { methodologyFeedback } from './methodology-feedback.js'
 import { microInteractions } from './micro-interactions.js'
 import { mobilePerformance } from './mobile-performance.js'
@@ -116,6 +118,7 @@ export const catalog: SkillManifest[] = [
   interfaceCopy,
   interfaceStates,
   layoutComposition,
+  mediaDrivenMotion,
   methodologyFeedback,
   microInteractions,
   mobilePerformance,

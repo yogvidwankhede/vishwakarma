@@ -28,6 +28,8 @@
     "cowork:build": "pnpm artifacts:deps && node scripts/build-cowork-plugin.mjs",
     "cowork:check": "pnpm artifacts:deps && node scripts/build-cowork-plugin.mjs --check",
     "cowork:pack": "pnpm artifacts:deps && node scripts/build-cowork-plugin.mjs && cd cowork-plugin && zip -rq ../vishwakarma.plugin . -x \"*.DS_Store\"",
+    "skills:budget": "pnpm artifacts:deps && node scripts/skill-budget.mjs",
+    "skills:budget:strict": "pnpm artifacts:deps && node scripts/skill-budget.mjs --strict",
     "audit:licenses": "node scripts/audit-licenses.mjs",
     "audit:originality": "node scripts/audit-originality.mjs",
     "changeset": "changeset",

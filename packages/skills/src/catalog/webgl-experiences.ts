@@ -1034,6 +1034,7 @@ reduce\`, and Save-Data on — six complete pages, or the scene is not finished.
     'rendering-performance',
     'mobile-performance',
     'scroll-experiences',
+    'media-driven-motion',
     'accessible-components',
     'vishwakarma-studios',
   ],
