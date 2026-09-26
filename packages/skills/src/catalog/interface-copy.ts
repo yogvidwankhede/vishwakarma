@@ -164,6 +164,52 @@ Sign in to continue."
 
 ---
 
+## 7. Settled mechanics
+
+Case, numerals, time, plurals, truncation, placeholders and translation headroom are decided
+once for a codebase and then applied without further judgment. \`copy-mechanics.md\` has each
+with its reasoning: sentence case over title case, \`Intl.PluralRules\` over an appended s,
+relative time only while recency is the point, a visible \`<label>\` rather than a placeholder,
+and roughly 30 per cent more room than the English string needs.
+
+---
+
+## 8. The accessible name is copy
+
+Screen reader and voice control users hear the accessible name, not the pixels. For a button
+it resolves from \`aria-labelledby\`, then \`aria-label\`, then text content — and \`aria-label\`
+silently overrides visible text.
+
+That override is where copy breaks accessibility. A button reading "Save" with
+\`aria-label="Submit form"\` cannot be operated by a voice user saying "click Save", because
+the utterance is matched against the accessible name. WCAG 2.2 SC 2.5.3 (Label in Name)
+requires the accessible name to contain the visible label: a name may *extend* the visible
+text but must never replace it.
+
+Link text must stand alone, because screen reader users navigate by listing every link with
+its context stripped. Eleven "Read more" links produce eleven identical entries. Write the
+destination in: "Read the migration guide".
+
+---
+
+## 9. Before shipping
+
+Search for \`lorem\`, \`ipsum\`, \`TODO\`, \`asdf\`, \`Oops\`, and \`!\` in message strings. Placeholder
+copy reaching production is not a rare accident — it occupies the right shape, so it survives
+visual review and is caught only by a string search.`,
+
+    references: [
+      {
+        id: 'copy-mechanics',
+        title: 'Settled copy mechanics: case, numerals, time, plurals, truncation, translation',
+        answers:
+          'Sentence case or title case, relative or absolute time, how to pluralise correctly, where to truncate, and how much room translation needs?',
+        content: `# Settled copy mechanics
+
+Each decision below is made once for a codebase and then applied mechanically. They are
+gathered out of the body because none of them needs judgment at the point of use — only
+consistency, which is exactly what drifts when the reasoning is not written down.
+
 ## 7. Mechanics to decide once
 
 **Case.** Sentence case ("Save changes") or title case ("Save Changes") — pick one for every
@@ -201,35 +247,8 @@ Copy-driven layout needs headroom. German running text averages roughly 30% long
 English and short labels can more than double, so never size a button to its English string.
 Use logical properties (\`padding-inline\`, \`text-align: start\`) so right-to-left locales
 mirror correctly, and remember that RTL flips more than text: icon order, progress direction,
-back arrows and slider polarity mirror, while clocks and numerals do not.
-
----
-
-## 9. The accessible name is copy
-
-Screen reader and voice control users hear the accessible name, not the pixels. For a button
-it resolves from \`aria-labelledby\`, then \`aria-label\`, then text content — and \`aria-label\`
-silently overrides visible text.
-
-That override is where copy breaks accessibility. A button reading "Save" with
-\`aria-label="Submit form"\` cannot be operated by a voice user saying "click Save", because
-the utterance is matched against the accessible name. WCAG 2.2 SC 2.5.3 (Label in Name)
-requires the accessible name to contain the visible label: a name may *extend* the visible
-text but must never replace it.
-
-Link text must stand alone, because screen reader users navigate by listing every link with
-its context stripped. Eleven "Read more" links produce eleven identical entries. Write the
-destination in: "Read the migration guide".
-
----
-
-## 10. Before shipping
-
-Search for \`lorem\`, \`ipsum\`, \`TODO\`, \`asdf\`, \`Oops\`, and \`!\` in message strings. Placeholder
-copy reaching production is not a rare accident — it occupies the right shape, so it survives
-visual review and is caught only by a string search.`,
-
-    references: [
+back arrows and slider polarity mirror, while clocks and numerals do not.`,
+      },
       {
         id: 'copy-rewrites',
         title: 'Before and after: rewrites across common UI situations',

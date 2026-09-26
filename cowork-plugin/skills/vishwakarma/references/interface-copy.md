@@ -99,48 +99,17 @@ Sign in to continue."
 
 ---
 
-## 7. Mechanics to decide once
+## 7. Settled mechanics
 
-**Case.** Sentence case ("Save changes") or title case ("Save Changes") — pick one for every
-button, heading, tab, and menu item. Sentence case is safer: title case has no agreed rule
-set across English variants, so a codebase using it drifts within weeks.
-
-**Numerals.** Digits, not words: "3 files". A non-breaking space between value and unit
-("24 MB") so they never wrap apart. Format with `Intl.NumberFormat`.
-
-**Time.** Relative time ("3 minutes ago") is right when recency is the point and precision is
-not. Absolute time is right when the moment may be referenced, compared, or reported — audit
-logs, receipts, scheduled events — and relative time decays, so "2 years ago" is worse than
-the date. Ship relative text inside `<time datetime="2026-07-25T10:00:00Z">` with the
-absolute value on hover.
-
-**Plurals.** Never "1 items", never "item(s)". English has two plural forms, Arabic six and
-Polish four, and the form is chosen by the numeral itself, so appending an `s` is a bug, not
-a shortcut. Use `Intl.PluralRules` or ICU syntax, and write the zero case as its own branch:
-"No results" beats "0 results" — zero reports absence, not quantity.
+Case, numerals, time, plurals, truncation, placeholders and translation headroom are decided
+once for a codebase and then applied without further judgment. `copy-mechanics.md` has each
+with its reasoning: sentence case over title case, `Intl.PluralRules` over an appended s,
+relative time only while recency is the point, a visible `<label>` rather than a placeholder,
+and roughly 30 per cent more room than the English string needs.
 
 ---
 
-## 8. Truncation, placeholders, translation
-
-Truncate where the information stops being useful and keep the full value reachable:
-filenames truncate in the middle so the extension survives ("annual-report…-final.pdf"),
-sentences truncate at the end, and any value the user must act on needs the whole string
-exposed on hover, focus, or in a detail view.
-
-Placeholder text is not a label. It disappears on focus, so the field's name vanishes exactly
-while it is being filled, it usually fails contrast, and it is not a reliable accessible
-name. Ship a visible `<label>`; let the placeholder carry only a format example.
-
-Copy-driven layout needs headroom. German running text averages roughly 30% longer than
-English and short labels can more than double, so never size a button to its English string.
-Use logical properties (`padding-inline`, `text-align: start`) so right-to-left locales
-mirror correctly, and remember that RTL flips more than text: icon order, progress direction,
-back arrows and slider polarity mirror, while clocks and numerals do not.
-
----
-
-## 9. The accessible name is copy
+## 8. The accessible name is copy
 
 Screen reader and voice control users hear the accessible name, not the pixels. For a button
 it resolves from `aria-labelledby`, then `aria-label`, then text content — and `aria-label`
@@ -158,7 +127,7 @@ destination in: "Read the migration guide".
 
 ---
 
-## 10. Before shipping
+## 9. Before shipping
 
 Search for `lorem`, `ipsum`, `TODO`, `asdf`, `Oops`, and `!` in message strings. Placeholder
 copy reaching production is not a rare accident — it occupies the right shape, so it survives
@@ -595,6 +564,7 @@ grep -rniE "lorem ipsum|dolor sit amet|asdf|\\bTODO\\b|FIXME|Oops|Whoops" --incl
 These are not loaded by default. Read one only when its question is the question you
 currently have.
 
+- `references/copy-mechanics.md` — Sentence case or title case, relative or absolute time, how to pluralise correctly, where to truncate, and how much room translation needs?
 - `references/copy-rewrites.md` — I have a specific bad string — a button, error, empty state, dialog, tooltip, or notification — what does the corrected version look like and why?
 - `references/accessible-naming.md` — How do I write aria-label, alt text, and link text so screen reader and voice control users get the same information as sighted users?
 - `references/generated-copy-tells.md` — This marketing or landing-page copy reads as AI-generated but I cannot say why — which construction is doing it, what is the mechanism, and what does the rewrite look like?

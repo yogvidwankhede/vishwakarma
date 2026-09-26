@@ -100,37 +100,30 @@ comboboxes, tree views. Then implement the full pattern, not a fragment of it.
 
 ## 2. Focus management is the hard part
 
-Every composite widget needs a decision about where focus lives. There are two correct
-mechanisms.
+Every composite widget needs a decision about where focus lives, and there are exactly two
+correct mechanisms. **Roving tabindex** — one item at \`tabindex="0"\`, every sibling at
+\`-1\`, arrow keys moving both DOM focus and the \`0\` — is right whenever the focused item is
+a real element you can focus: tabs, toolbars, menus, trees, radio groups. It is the more
+robust choice because the browser handles the focus event, the scrolling and the ring
+itself. **\`aria-activedescendant\`** is right only when focus must stay in a text field
+while a list is navigated — comboboxes, and little else. Because nothing actually moved it
+costs you the two things the browser was doing for free, so a listbox using it must call
+\`scrollIntoView({ block: 'nearest' })\` itself or its selection silently walks off the
+bottom of the visible area.
 
-**Roving tabindex**: exactly one item in the group carries \`tabindex="0"\`, every sibling
-carries \`tabindex="-1"\`, and arrow keys move both DOM focus and the \`0\`. Use it whenever
-the focused item is a real element you can focus — tabs, toolbars, menus, trees, radio
-groups. It is the more robust option because the browser handles the focus event, the
-scrolling, and the ring itself.
+Three things are broken more often than the mechanism choice. A modal needs a real **trap**,
+via \`<dialog>.showModal()\` or \`inert\` on the sibling content — never \`aria-hidden\` over
+content that stays focusable, which is the worst state available: a keyboard user tabs into
+elements the screen reader refuses to describe. On close, **focus returns to whatever opened
+it**, or to the nearest surviving container at \`tabindex="-1"\` when that element is gone;
+focus falling to \`<body>\` sends a screen-reader user back to the top of the document with no
+explanation. And initial focus goes to the first meaningful control — or, for a dialog with
+substantial reading content, to its heading at \`tabindex="-1"\` so the title is announced
+first — never to a destructive action.
 
-**\`aria-activedescendant\`**: DOM focus stays on a container or text input, whose
-\`aria-activedescendant\` points at the id of the virtually focused option. Use it when focus
-must stay in a text field while a list is navigated — comboboxes, and little else. Because
-nothing actually moved, the browser will neither scroll the active option into view nor
-draw a ring on it. A listbox that does not call \`scrollIntoView({ block: 'nearest' })\` is
-one whose selection silently walks off the bottom of the visible area.
+\`focus-recipes.md\` has all eight of these as working code.
 
-Modal dialogs additionally require a **trap**: Tab from the last tabbable element wraps to
-the first, Shift+Tab from the first wraps to the last, and outside content is neither
-focusable nor reachable by the screen-reader virtual cursor. Use \`<dialog>.showModal()\`, or
-\`inert\` on the sibling content (Baseline since 2023). Do not use \`aria-hidden\` on the
-background while leaving it focusable — that is the worst state available, where a keyboard
-user tabs into elements the screen reader refuses to describe.
-
-On close, **return focus to the element that opened the dialog**. If it no longer exists —
-deleted row, dismissed card — focus its nearest surviving container with \`tabindex="-1"\`.
-Focus falling to \`<body>\` sends a screen-reader user back to the top of the document with
-no explanation.
-
-Initial focus goes to the first meaningful control, or — for dialogs with substantial
-reading content — to the heading with \`tabindex="-1"\`, so the title is announced first.
-Never autofocus a destructive action.
+---
 
 ## 3. Names, and the aria-label trap
 
